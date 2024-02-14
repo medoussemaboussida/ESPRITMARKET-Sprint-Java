@@ -1,15 +1,15 @@
 package entities;
 
 public class Produit {
-    private int id;
+    private int idProduit;
     private String nomProduit;
     private int prix;
     private int quantite;
     private Categorie categorie;
     private String imageProduit;
 
-    public Produit(int id, String nomProduit, int quantite, int prix, Categorie categorie, String imageProduit) {
-        this.id = id;
+    public Produit(int  idProduit, String nomProduit, int quantite, int prix, Categorie categorie, String imageProduit) {
+        this. idProduit =  idProduit;
         this.nomProduit = nomProduit;
         this.prix = prix;
         this.quantite = quantite;
@@ -29,12 +29,12 @@ public class Produit {
     public Produit() {
     }
 
-    public int getId() {
-        return id;
+    public int getIdProduit() {
+        return idProduit;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIdProduit(int  idProduit) {
+        this.idProduit =  idProduit;
     }
 
     public String getNomProduit() {

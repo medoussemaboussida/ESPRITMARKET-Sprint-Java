@@ -6,6 +6,6 @@ public interface IServiceProduit <T>{
     void addProduit (T t);
     List<T> readProduit();
     void modifyProduit(T t);
-    void deleteProduit(int id);
+    void deleteProduit(int  idProduit);
 
 }

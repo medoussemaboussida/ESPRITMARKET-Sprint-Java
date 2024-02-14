@@ -23,7 +23,7 @@ public class ProduitService implements IServiceProduit<Produit> {
         String requete = "insert into Produit (categorie_id,nomProduit,quantite,prix,imageProduit) values (?,?,?,?,?)";
         try {
             pst = conn.prepareStatement(requete);
-            pst.setInt(1,p.getCategorie().getId());
+            pst.setInt(1,p.getCategorie().getIdCategorie());
             pst.setString(2,p.getNomProduit());
             pst.setInt(3,p.getQuantite());
             pst.setInt(4,p.getPrix());
@@ -38,13 +38,13 @@ public class ProduitService implements IServiceProduit<Produit> {
 @Override
 public List<Produit> readProduit()
 {
-    String requete = "select * from produit p,categorie c where p.categorie_id=c.id";
+    String requete = "select * from produit p,categorie c where p.categorie_id=c.idCategorie";
     List<Produit> list=new ArrayList<>();
     try {
         statement = conn.createStatement();
         ResultSet rs=statement.executeQuery(requete);
         while (rs.next()) {
-            Categorie c = new Categorie(rs.getInt("c.id"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
+            Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
             Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6));
             list.add(prod);
         }
@@ -58,15 +58,15 @@ public List<Produit> readProduit()
    @Override
     public void modifyProduit(Produit p)
     {
-        String requete = "UPDATE produit set categorie_id = ?,nomProduit = ?,quantite = ?,prix = ? ,imageProduit = ? where id= ?";
+        String requete = "UPDATE produit set categorie_id = ?,nomProduit = ?,quantite = ?,prix = ? ,imageProduit = ? where  idProduit= ?";
         try {
             pst = conn.prepareStatement(requete);
-            pst.setInt(1,p.getCategorie().getId());
+            pst.setInt(1,p.getCategorie().getIdCategorie());
             pst.setString(2,p.getNomProduit());
             pst.setInt(3,p.getQuantite());
             pst.setInt(4,p.getPrix());
             pst.setString(5,p.getImageProduit());
-            pst.setInt(6,p.getId());
+            pst.setInt(6,p.getIdProduit());
             pst.executeUpdate();
             System.out.println("Produit Modifiée!");
         } catch (SQLException e)
@@ -76,13 +76,13 @@ public List<Produit> readProduit()
     }
 
     @Override
-   public void deleteProduit(int id)
+   public void deleteProduit(int idProduit)
     {
 
-        String requete = "delete from produit where id = ?";
+        String requete = "delete from produit where  idProduit = ?";
         try {
             pst=conn.prepareStatement(requete);
-            pst.setInt(1,id);
+            pst.setInt(1, idProduit);
             pst.executeUpdate();
             System.out.println("produit supprimé!");
         } catch (SQLException e)

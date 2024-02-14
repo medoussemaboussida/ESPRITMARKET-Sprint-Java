@@ -1,5 +1,7 @@
 package service;
 import entities.Categorie;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import utils.DataSource;
 
 import java.sql.*;
@@ -33,10 +35,11 @@ public class CategorieService implements IServiceCategorie<Categorie> {
 
 
     @Override
-   public List<Categorie> readCategorie()
+   public ObservableList<Categorie> readCategorie()
     {
         String requete = "select * from categorie";
-        List<Categorie> list=new ArrayList<>();
+        ObservableList<Categorie> list = FXCollections.observableArrayList();
+
         try {
             statement = conn.createStatement();
             ResultSet rs=statement.executeQuery(requete);
@@ -52,11 +55,11 @@ public class CategorieService implements IServiceCategorie<Categorie> {
     }
 
     @Override
-    public void deleteCategorie(int id) {
-        String requete = "delete from categorie where id = ?";
+    public void deleteCategorie(int idCategorie) {
+        String requete = "delete from categorie where idCategorie = ?";
         try {
             pst=conn.prepareStatement(requete);
-            pst.setInt(1,id);
+            pst.setInt(1,idCategorie);
             pst.executeUpdate();
             System.out.println("Categorie supprimé!");
         } catch (SQLException e)
@@ -67,12 +70,12 @@ public class CategorieService implements IServiceCategorie<Categorie> {
     @Override
    public void modifyCategorie(Categorie c)
     {
-        String requete = "UPDATE categorie set nomCategorie = ?, imageCategorie = ? where id= ?";
+        String requete = "UPDATE categorie set nomCategorie = ?, imageCategorie = ? where idCategorie= ?";
         try {
             pst = conn.prepareStatement(requete);
             pst.setString(1,c.getNomCategorie() );
             pst.setString(2,c.getImageCategorie());
-            pst.setInt(3,c.getId());
+            pst.setInt(3,c.getIdCategorie());
             pst.executeUpdate();
             System.out.println("Categorie Modifiée!");
         } catch (SQLException e)

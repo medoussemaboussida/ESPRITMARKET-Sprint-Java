@@ -1,12 +1,12 @@
 package entities;
 
 public class Categorie {
-    private int id;
+    private int idCategorie;
     private String nomCategorie;
     private String imageCategorie;
 
-    public  Categorie(int id, String nomCategorie, String imageCategorie) {
-        this.id = id;
+    public  Categorie(int idCategorie, String nomCategorie, String imageCategorie) {
+        this.idCategorie = idCategorie;
         this.nomCategorie = nomCategorie;
         this.imageCategorie = imageCategorie;
     }
@@ -17,23 +17,23 @@ public class Categorie {
     }
 
     public Categorie(int id, String name) {
-        this.id = id;
+        this.idCategorie = idCategorie;
         this.nomCategorie = nomCategorie;
     }
 
-    public Categorie(int id) {
-        this.id = id;
+    public Categorie(int idCategorie) {
+        this.idCategorie = idCategorie;
     }
 
     public  Categorie() {
     }
 
-    public int getId() {
-        return id;
+    public int getIdCategorie() {
+        return idCategorie;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setIdCategorie(int id) {
+        this.idCategorie = id;
     }
 
     public String getNomCategorie() {
@@ -55,7 +55,7 @@ public class Categorie {
     @Override
     public String toString() {
 
-        return "Categorie{" + "idCategorie=" +id + ", NomCategorie=" + nomCategorie + ", image Categorie=" + imageCategorie + '}';
+        return "Categorie{" + "idCategorie=" +idCategorie + ", NomCategorie=" + nomCategorie + ", image Categorie=" + imageCategorie + '}';
     }
 
 }
