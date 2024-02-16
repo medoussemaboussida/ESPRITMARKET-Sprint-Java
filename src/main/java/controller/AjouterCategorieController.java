@@ -1,36 +1,70 @@
 package controller;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.common.BitMatrix;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.pdf.PdfWriter;
 import entities.Categorie;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import service.CategorieService;
 import javafx.scene.image.Image;
 
+import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import javax.management.Notification;
+import javax.swing.text.Document;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
+
 import javafx.fxml.Initializable;
 import utils.DataSource;
 
+
 public class AjouterCategorieController implements Initializable {
+    @FXML
+    private ImageView qrcode;
 
-    private final CategorieService cs =new CategorieService();
-    private CategorieService css =new CategorieService();
-
+    @FXML
+    private Button qrcodebtn;
+    private final CategorieService cs = new CategorieService();
+    private CategorieService css = new CategorieService();
+    @FXML
+    private ComboBox<String> sortCategorieBox;
 
     @FXML
     private Button ajouterCategorie;
@@ -42,8 +76,7 @@ public class AjouterCategorieController implements Initializable {
     private ImageView tfImage;
 
     private String ImagePath;
-    @FXML
-    private Label image_link;
+
     @FXML
     private TextField tfNomCategorie;
 
@@ -57,9 +90,12 @@ public class AjouterCategorieController implements Initializable {
     private TableView<Categorie> tabCategorie;
     String filepath = null, filename = null, fn = null;
     String uploads = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/Images/";
+    String uploads2 = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/PDF/";
+
     FileChooser fc = new FileChooser();
     ObservableList<Categorie> list = FXCollections.observableArrayList();
     public int idCategorie;
+
     public int getIdCategorie() {
         return idCategorie;
     }
@@ -74,54 +110,86 @@ public class AjouterCategorieController implements Initializable {
 
     @FXML
     private Button supprimerCategorie;
+    private List<Categorie> temp;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-showCategorie();
+        sortCategorieBox.getItems().removeAll(sortCategorieBox.getItems());
+        sortCategorieBox.getItems().addAll("Trier", "Trier par Nom ↑", "Trier par Nom ↓");
+        sortCategorieBox.getSelectionModel().select("Trier");
+        showCategorie();
 
     }
-
-
-
-   public void btn_image_action(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
-       File file = fc.showOpenDialog(null);
-       // Shows a new file open dialog.
-       if (file != null) {
-           // URI that represents this abstract pathname
-          tfImage.setImage(new Image(file.toURI().toString()));
-
-           filename = file.getName();
-           filepath = file.getAbsolutePath();
-
-           fn = filename;
-
-           FileChannel source = new FileInputStream(filepath).getChannel();
-           FileChannel dest = new FileOutputStream(uploads + filename).getChannel();
-           dest.transferFrom(source, 0, source.size());
-       } else {
-           System.out.println("Fichier invalide!");
-       }
-       }
 
     @FXML
+    private TextField RechercherCategorie;
+    @FXML
+    private Button pdfCategorie;
+
+    //telecharger une image
+    public void btn_image_action(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
+        File file = fc.showOpenDialog(null);
+        // Shows a new file open dialog.
+        if (file != null) {
+            // URI that represents this abstract pathname
+            tfImage.setImage(new Image(file.toURI().toString()));
+
+            filename = file.getName();
+            filepath = file.getAbsolutePath();
+
+            fn = filename;
+
+            FileChannel source = new FileInputStream(filepath).getChannel();
+            FileChannel dest = new FileOutputStream(uploads + filename).getChannel();
+            dest.transferFrom(source, 0, source.size());
+        } else {
+            System.out.println("Fichier invalide!");
+        }
+    }
+
+
+    //ajouter une categorie
+    @FXML
     public void AjouterCategorie(javafx.event.ActionEvent actionEvent) throws SQLException {
-       cs.addCategorie(new Categorie(tfNomCategorie.getText(),filename));
+        cs.addCategorie(new Categorie(tfNomCategorie.getText(), filename));
         Alert a = new Alert(Alert.AlertType.WARNING);
         a.setTitle("Succes");
-        a.setContentText("Cateygorie Ajoutée");
+        a.setContentText("Categorie Ajoutée");
         a.showAndWait();
+        showCategorie();
     }
-    public void showCategorie()
-    {
+
+    //afficher les categories
+    public void showCategorie() {
         nomCategorieTab.setCellValueFactory(new PropertyValueFactory<>("nomCategorie"));
+        imageCategorieTab.setCellFactory(column -> new TableCell<Categorie, String>() {
+            private final ImageView imageView = new ImageView();
+
+            @Override
+            protected void updateItem(String imagePath, boolean empty) {
+                super.updateItem(imagePath, empty);
+
+                if (empty || imagePath == null) {
+                    setGraphic(null);
+                } else {
+                    // Charger et afficher l'image
+                    Image image = new Image("file:///" + uploads + imagePath);
+                    imageView.setImage(image);
+                    imageView.setFitWidth(120); // Réglez la largeur de l'image selon vos besoins
+                    imageView.setFitHeight(100); // Réglez la hauteur de l'image selon vos besoins
+                    setGraphic(imageView);
+                }
+            }
+        });
         imageCategorieTab.setCellValueFactory(new PropertyValueFactory<>("imageCategorie"));
-        list= cs.readCategorie();
+        list = cs.readCategorie();
         tabCategorie.setItems(list);
 
     }
 
 
-    public void SetValue(MouseEvent mouseEvent)throws SQLException, ClassNotFoundException {
+    //prendre les valeurs du tableView et l'affiche dans textfield
+    public void SetValue(MouseEvent mouseEvent) throws SQLException, ClassNotFoundException {
         Categorie selected = tabCategorie.getSelectionModel().getSelectedItem();
 
         if (selected != null) {
@@ -133,10 +201,11 @@ showCategorie();
         }
     }
 
+    //modifier une categorie
     @FXML
-    public void ModifierCategorie(ActionEvent actionEvent)throws SQLException, ClassNotFoundException {
-        String nomC=tfNomCategorie.getText();
-        Categorie c = new Categorie(idCategorie,nomC,fn);
+    public void ModifierCategorie(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
+        String nomC = tfNomCategorie.getText();
+        Categorie c = new Categorie(idCategorie, nomC, fn);
         css.modifyCategorie(c);
         Alert a = new Alert(Alert.AlertType.WARNING);
 
@@ -147,20 +216,21 @@ showCategorie();
 
     }
 
-    public void SupprimerCategorie(ActionEvent actionEvent)throws SQLException, ClassNotFoundException  {
-        Categorie selected=tabCategorie.getSelectionModel().getSelectedItem();
-        if(selected!=null)
-        {
+    //supprimer une categorie
+    public void SupprimerCategorie(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
+        Categorie selected = tabCategorie.getSelectionModel().getSelectedItem();
+        if (selected != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Voulez-Vous Supprimer cet Categorie?");
             alert.setContentText("Supprimer?");
-            ButtonType okButton = new ButtonType("Yes", ButtonBar.ButtonData.YES);
-            ButtonType noButton = new ButtonType("No", ButtonBar.ButtonData.NO);
+            ButtonType okButton = new ButtonType("Oui", ButtonBar.ButtonData.YES);
+            ButtonType noButton = new ButtonType("Non", ButtonBar.ButtonData.NO);
             ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
             alert.getButtonTypes().setAll(okButton, noButton, cancelButton);
             alert.showAndWait().ifPresent(type -> {
                 if (type == okButton) {
-                    css.deleteCategorie(idCategorie);
+                    css.deleteCategorie(selected.getIdCategorie());
+                    showCategorie();
                 } else if (type == noButton) {
                     showCategorie();
                 } else {
@@ -169,4 +239,177 @@ showCategorie();
             });
         }
     }
+
+    public void backCategorie(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MenuProduitCategorie.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root1));
+        Node source = (Node) actionEvent.getSource();
+        Stage currentStage = (Stage) source.getScene().getWindow();
+        currentStage.close();
+        stage.show();
+
+    }
+
+    @FXML
+    public void searchCategorie(KeyEvent keyEvent) {
+        FilteredList<Categorie> filter = new FilteredList<>(list, ev -> true);
+
+        RechercherCategorie.textProperty().addListener((observable, oldValue, newValue) -> {
+            filter.setPredicate(t -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                if (String.valueOf(t.getNomCategorie()).toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        });
+
+        SortedList<Categorie> sort = new SortedList<>(filter);
+        sort.comparatorProperty().bind(tabCategorie.comparatorProperty());
+        tabCategorie.setItems(sort);
+
+    }
+
+    @FXML
+    public void sortCategorie(ActionEvent actionEvent) {
+        String selected = sortCategorieBox.getSelectionModel().getSelectedItem();
+        if (selected.equals("Trier par Nom ↑")) {
+            temp = css.sortCategorieAsc();
+
+        } else if (selected.equals("Trier par Nom ↓")) {
+            temp = css.sortCategorieDesc();
+
+        }
+        // Mettez à jour la liste observable utilisée par votre TableView (par exemple, 'list')
+        ObservableList<Categorie> updatedList = FXCollections.observableArrayList(temp);
+
+        // Mettre à jour la TableView
+        tabCategorie.setItems(updatedList);
+    }
+
+    @FXML
+    public void generatePdfCategorie(ActionEvent actionEvent) {
+
+        ObservableList<Categorie> data = tabCategorie.getItems();
+
+        try {
+            // Créez un nouveau document PDF
+            PDDocument document = new PDDocument();
+
+            // Créez une page dans le document
+            PDPage page = new PDPage();
+            document.addPage(page);
+
+            // Obtenez le contenu de la page
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+            // Écrivez du texte dans le document
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(100, 700);
+
+
+            for (Categorie categorie : data) {
+// Ajouter l'image
+                String imagePath = uploads + categorie.getImageCategorie();
+                PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, document);
+
+                String ligne = "ID : " + categorie.getIdCategorie() + "     Nom : " + categorie.getNomCategorie();
+                contentStream.showText(ligne);
+
+                contentStream.newLine();;
+                contentStream.newLineAtOffset(0, -15);
+
+
+            }
+
+            contentStream.endText();
+
+            // Fermez le contenu de la page
+            contentStream.close();
+
+            String outputPath = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/PDF/categories.pdf";
+            File file = new File(outputPath);
+            document.save(file);
+
+            // Fermez le document
+            document.close();
+
+            System.out.println("Le PDF a été généré avec succès.");
+            Desktop.getDesktop().open(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void generateQrCode(ActionEvent actionEvent) {
+
+        Categorie selected = tabCategorie.getSelectionModel().getSelectedItem();
+        // Vérifiez si un élément est sélectionné
+        if (selected != null) {
+            // Générez la chaîne de données pour le QR code
+            String qrData = "Nom: " + selected.getNomCategorie();
+
+            // Générez et affichez le QR code
+            generateAndDisplayQRCode(qrData);
+        } else {
+            // Affichez un message d'erreur ou prenez une autre action appropriée
+            System.out.println("Aucune catégorie sélectionnée.");
+        }
+
+    }
+    private void generateAndDisplayQRCode(String qrData) {
+        try {
+            // Configuration pour générer le QR code
+            Map<EncodeHintType, Object> hints = new HashMap<>();
+            hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+
+            // Générer le QR code avec ZXing
+            BitMatrix matrix = new MultiFormatWriter().encode(qrData, BarcodeFormat.QR_CODE, 184, 199, hints);
+// Ajuster la taille de l'ImageView
+            qrcode.setFitWidth(184);
+            qrcode.setFitHeight(199);
+
+            // Convertir la matrice en image JavaFX
+            Image qrCodeImage = matrixToImage(matrix);
+
+            // Afficher l'image du QR code dans l'ImageView
+            qrcode.setImage(qrCodeImage);
+            Alert a = new Alert(Alert.AlertType.WARNING);
+
+            a.setTitle("Succes");
+            a.setContentText("qr code generer");
+            a.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    // Méthode pour convertir une matrice BitMatrix en image BufferedImage
+    private Image matrixToImage(BitMatrix matrix) {
+        int width = matrix.getWidth();
+        int height = matrix.getHeight();
+
+        WritableImage writableImage = new WritableImage(width, height);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int pixelColor = matrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF;
+                pixelWriter.setArgb(x, y, pixelColor);
+            }
+        }
+
+        System.out.println("Matrice convertie en image avec succès");
+
+        return writableImage;
+    }
+
 }

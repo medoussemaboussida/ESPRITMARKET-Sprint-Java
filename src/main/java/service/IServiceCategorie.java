@@ -9,5 +9,8 @@ public interface IServiceCategorie <T> {
     ObservableList<T> readCategorie();
     void deleteCategorie(int idCategorie);
     void modifyCategorie (T t);
+    ObservableList<T> sortCategorieAsc();
+    ObservableList<T> sortCategorieDesc();
+
 
 }

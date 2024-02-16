@@ -83,6 +83,45 @@ public class CategorieService implements IServiceCategorie<Categorie> {
             throw new RuntimeException(e);
         }
     }
+@Override
+   public ObservableList<Categorie> sortCategorieAsc()
+    {
+        ObservableList<Categorie> list = FXCollections.observableArrayList();
+        try {
+            String req = "SELECT * FROM categorie order by nomCategorie asc";
+            statement = conn.createStatement();
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(req);
+            while (rs.next()) {
+                Categorie c = new Categorie(rs.getString("nomCategorie"), rs.getString("imageCategorie"));
+                list.add(c);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return list;
+    }
+
+    @Override
+    public ObservableList<Categorie> sortCategorieDesc()
+    {
+        ObservableList<Categorie> list = FXCollections.observableArrayList();
+        try {
+            String req = "SELECT * FROM categorie order by nomCategorie desc";
+          statement = conn.createStatement();
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(req);
+            while (rs.next()) {
+                Categorie c = new Categorie(rs.getString("nomCategorie"), rs.getString("imageCategorie"));
+                list.add(c);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return list;
+    }
 
     }
 

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MenuProduitCategorieController">
+   <children>
+      <Button fx:id="IdMenuCategorie" layoutX="227.0" layoutY="98.0" mnemonicParsing="false" onAction="#MenuCategorie" prefHeight="25.0" prefWidth="146.0" text="Gestion des categories" />
+      <Button fx:id="IdMenuProduit" layoutX="227.0" layoutY="157.0" mnemonicParsing="false" onAction="#MenuProduit" prefHeight="25.0" prefWidth="146.0" text="Gestion des Produits" />
+      <Button layoutX="227.0" layoutY="217.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="146.0" text="Gestion des paniers" />
+      <Button layoutX="227.0" layoutY="280.0" mnemonicParsing="false" text="Gestion des commandes" />
+      <ImageView fx:id="LogoApp" fitHeight="267.0" fitWidth="271.0" focusTraversable="true" layoutX="-25.0" layoutY="-97.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Photos/EspritMarket-logos_transparent.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

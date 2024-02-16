@@ -1,6 +1,8 @@
 package service;
 
 import entities.Produit;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import utils.DataSource;
 import entities.Categorie;
 
@@ -36,10 +38,10 @@ public class ProduitService implements IServiceProduit<Produit> {
         }
     }
 @Override
-public List<Produit> readProduit()
+public ObservableList<Produit> readProduit()
 {
     String requete = "select * from produit p,categorie c where p.categorie_id=c.idCategorie";
-    List<Produit> list=new ArrayList<>();
+    ObservableList<Produit> list= FXCollections.observableArrayList();
     try {
         statement = conn.createStatement();
         ResultSet rs=statement.executeQuery(requete);
