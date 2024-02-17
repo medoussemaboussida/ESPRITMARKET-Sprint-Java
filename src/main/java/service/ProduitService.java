@@ -93,6 +93,49 @@ public ObservableList<Produit> readProduit()
         }
 
     }
+
+
+    @Override
+    public ObservableList<Produit> sortProduitPrixAsc()
+    {
+        ObservableList<Produit> list = FXCollections.observableArrayList();
+        try {
+            String req = "SELECT * FROM  produit p,categorie c where p.categorie_id=c.idCategorie order by p.prix asc";
+            statement = conn.createStatement();
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(req);
+            while (rs.next()) {
+                Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
+                Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6));
+                list.add(prod);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return list;
+    }
+
+    @Override
+    public ObservableList<Produit> sortProduitPrixDesc()
+    {
+        ObservableList<Produit> list = FXCollections.observableArrayList();
+        try {
+            String req = "SELECT * FROM produit p,categorie c where p.categorie_id=c.idCategorie order by p.prix desc";
+            statement = conn.createStatement();
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(req);
+            while (rs.next()) {
+                Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
+                Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6));
+                list.add(prod);
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        return list;
+    }
 }
 
 

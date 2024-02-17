@@ -11,32 +11,33 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="453.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AjouterCategorieController">
+<AnchorPane prefHeight="497.0" prefWidth="693.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AjouterCategorieController">
    <children>
       <Label layoutX="31.0" layoutY="55.0" text="NomCategorie :" />
       <Label layoutX="31.0" layoutY="95.0" text="ImageCategorie :" />
       <TextField fx:id="tfNomCategorie" layoutX="128.0" layoutY="51.0" prefHeight="25.0" prefWidth="132.0" />
-      <Label layoutX="255.0" layoutY="14.0" text="Catégorie">
+      <Label layoutX="297.0" layoutY="14.0" text="Catégorie">
          <font>
             <Font name="System Bold" size="16.0" />
          </font>
       </Label>
       <Button fx:id="ajouterCategorie" layoutX="46.0" layoutY="142.0" mnemonicParsing="false" onAction="#AjouterCategorie" prefHeight="25.0" prefWidth="61.0" text="Ajouter" />
-      <ImageView fx:id="tfImage" fitHeight="172.0" fitWidth="216.0" layoutX="370.0" layoutY="39.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="tfImage" fitHeight="172.0" fitWidth="216.0" layoutX="450.0" layoutY="39.0" pickOnBounds="true" preserveRatio="true" />
       <Button fx:id="btnImageC" layoutX="150.0" layoutY="91.0" mnemonicParsing="false" onAction="#btn_image_action" text="inserer Image" />
-      <TableView fx:id="tabCategorie" layoutX="31.0" layoutY="199.0" onMouseClicked="#SetValue" prefHeight="222.0" prefWidth="265.0">
+      <TableView fx:id="tabCategorie" layoutX="31.0" layoutY="262.0" onMouseClicked="#SetValue" prefHeight="222.0" prefWidth="400.0">
         <columns>
-          <TableColumn fx:id="nomCategorieTab" prefWidth="108.0" text="nomCategorie" />
-          <TableColumn fx:id="imageCategorieTab" prefWidth="157.0" text="ImageCategorie" />
+          <TableColumn fx:id="nomCategorieTab" prefWidth="187.0" text="nomCategorie" />
+          <TableColumn fx:id="imageCategorieTab" prefWidth="212.0" text="ImageCategorie" />
         </columns>
       </TableView>
       <Button fx:id="modifierCategorie" layoutX="120.0" layoutY="142.0" mnemonicParsing="false" onAction="#ModifierCategorie" prefHeight="25.0" prefWidth="61.0" text="Modifier" />
-      <Button fx:id="supprimerCategorie" layoutX="194.0" layoutY="142.0" mnemonicParsing="false" onAction="#SupprimerCategorie" text="Supprimer" />
+      <Button fx:id="supprimerCategorie" layoutX="277.0" layoutY="142.0" mnemonicParsing="false" onAction="#SupprimerCategorie" text="Supprimer" />
       <Hyperlink layoutX="14.0" layoutY="3.0" onAction="#backCategorie" prefHeight="23.0" prefWidth="51.0" text="Retour" />
-      <TextField fx:id="RechercherCategorie" layoutX="300.0" layoutY="199.0" onKeyPressed="#searchCategorie" prefHeight="25.0" prefWidth="91.0" promptText="search" />
-      <ComboBox fx:id="sortCategorieBox" layoutX="300.0" layoutY="235.0" onAction="#sortCategorie" prefHeight="25.0" prefWidth="91.0" />
-      <Button fx:id="pdfCategorie" layoutX="302.0" layoutY="276.0" mnemonicParsing="false" onAction="#generatePdfCategorie" prefHeight="25.0" prefWidth="91.0" text="Génerer PDF" />
-      <ImageView fx:id="qrcode" fitHeight="199.0" fitWidth="184.0" layoutX="398.0" layoutY="217.0" pickOnBounds="true" preserveRatio="true" />
-      <Button fx:id="qrcodebtn" layoutX="302.0" layoutY="325.0" mnemonicParsing="false" onAction="#generateQrCode" prefHeight="25.0" prefWidth="91.0" text="Generer Qrcode" />
+      <TextField fx:id="RechercherCategorie" layoutX="38.0" layoutY="223.0" onKeyPressed="#searchCategorie" prefHeight="25.0" prefWidth="138.0" promptText="search" />
+      <ComboBox fx:id="sortCategorieBox" layoutX="185.0" layoutY="223.0" onAction="#sortCategorie" prefHeight="25.0" prefWidth="91.0" />
+      <Button fx:id="pdfCategorie" layoutX="282.0" layoutY="223.0" mnemonicParsing="false" onAction="#generatePdfCategorie" prefHeight="25.0" prefWidth="61.0" text=" PDF" />
+      <ImageView fx:id="qrcode" fitHeight="199.0" fitWidth="184.0" layoutX="466.0" layoutY="274.0" pickOnBounds="true" preserveRatio="true" />
+      <Button fx:id="qrcodebtn" layoutX="195.0" layoutY="142.0" mnemonicParsing="false" onAction="#generateQrCode" prefHeight="25.0" prefWidth="72.0" text=" Qrcode" />
+      <Button fx:id="excelCategorie" layoutX="353.0" layoutY="223.0" mnemonicParsing="false" onAction="#generateExcelCategorie" prefHeight="25.0" prefWidth="73.0" text="Excel" />
    </children>
 </AnchorPane>

@@ -1,11 +1,17 @@
 package controller;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.common.BitMatrix;
 import entities.Categorie;
 import entities.Produit;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,29 +19,56 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import service.CategorieService;
 import service.ProduitService;
+import utils.DataSource;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.Label;
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.FileChannel;
-import java.sql.SQLException;
-import java.util.ArrayList;
+import java.sql.*;
+import java.text.DecimalFormat;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class AjouterProduitController implements Initializable {
+
+    @FXML
+    private PieChart pieChart;
+    private Connection conn;
+    private PreparedStatement pst;
+    private Statement statement;
     private final ProduitService ps=new ProduitService();
     private ProduitService pss=new ProduitService();
+    @FXML
+    private TextField RechercherProduit;
+
     @FXML
     private ComboBox<Categorie> ComboProduitC;
 
@@ -90,10 +123,29 @@ public class AjouterProduitController implements Initializable {
     public void setIdProduit(int id) {
         this.idProduit = id;
     }
+    @FXML
+    private ComboBox<String> sortProduitBox;
+    private List<Produit> temp;
+
+    @FXML
+    private ImageView qrcodeProduit;
+    @FXML
+    private Button pdfProduit;
+
+    @FXML
+    private Button excelProduit;
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        showProduit();
+        conn =DataSource.getInstance().getCnx();
+        sortProduitBox.getItems().removeAll(sortProduitBox.getItems());
+        sortProduitBox.getItems().addAll("Trier", "Trier par Prix ↑", "Trier par Prix ↓");
+        sortProduitBox.getSelectionModel().select("Trier");
         setCombo();
+        showProduit();
+
+        addDataToChart();
+
     }
     public void btn_image_produit_action(ActionEvent actionEvent)throws SQLException, FileNotFoundException, IOException {
         File file = fc.showOpenDialog(null);
@@ -264,4 +316,263 @@ public class AjouterProduitController implements Initializable {
         stage.show();
 
     }
+
+    @FXML
+    public void sortProduit(ActionEvent actionEvent) {
+        String selected = sortProduitBox.getSelectionModel().getSelectedItem();
+        if (selected.equals("Trier par Prix ↑")) {
+            temp = pss.sortProduitPrixAsc();
+
+        } else if (selected.equals("Trier par Prix ↓")) {
+            temp = pss.sortProduitPrixDesc();
+
+        }
+        // Mettez à jour la liste observable utilisée par votre TableView (par exemple, 'list')
+        ObservableList<Produit> updatedList = FXCollections.observableArrayList(temp);
+
+        // Mettre à jour la TableView
+        tabProduit.setItems(updatedList);
+    }
+
+    //qrcode produit
+    @FXML
+    public void generateQrCodeProduit(ActionEvent actionEvent) {
+        Produit selected = tabProduit.getSelectionModel().getSelectedItem();
+        // Vérifiez si un élément est sélectionné
+        if (selected != null) {
+            // Générez la chaîne de données pour le QR code
+            String qrData = "Nom: " + selected.getNomProduit()+"Quantite: "+selected.getQuantite()+"Prix: "+selected.getPrix()+"Categorie associée: "+selected.getCategorie();
+
+            // Générez et affichez le QR code
+            generateAndDisplayQRCode(qrData);
+        } else {
+            // Affichez un message d'erreur ou prenez une autre action appropriée
+            System.out.println("Aucun Produit sélectionnée.");
+        }
+
+    }
+    //generate qrcode et l'afficher
+    private void generateAndDisplayQRCode(String qrData) {
+        try {
+            // Configuration pour générer le QR code
+            Map<EncodeHintType, Object> hints = new HashMap<>();
+            hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+
+            // Générer le QR code avec ZXing
+            BitMatrix matrix = new MultiFormatWriter().encode(qrData, BarcodeFormat.QR_CODE, 184, 199, hints);
+// Ajuster la taille de l'ImageView
+            qrcodeProduit.setFitWidth(184);
+            qrcodeProduit.setFitHeight(199);
+
+            // Convertir la matrice en image JavaFX
+            Image qrCodeImage = matrixToImage(matrix);
+
+            // Afficher l'image du QR code dans l'ImageView
+            qrcodeProduit.setImage(qrCodeImage);
+            Alert a = new Alert(Alert.AlertType.WARNING);
+
+            a.setTitle("Succes");
+            a.setContentText("qr code generer");
+            a.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Méthode pour convertir une matrice BitMatrix en image BufferedImage
+    private Image matrixToImage(BitMatrix matrix) {
+        int width = matrix.getWidth();
+        int height = matrix.getHeight();
+
+        WritableImage writableImage = new WritableImage(width, height);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int pixelColor = matrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF;
+                pixelWriter.setArgb(x, y, pixelColor);
+            }
+        }
+
+        System.out.println("Matrice convertie en image avec succès");
+
+        return writableImage;
+    }
+
+    @FXML
+    public void searchProduit(KeyEvent keyEvent) {
+        FilteredList<Produit> filter = new FilteredList<>(list, ev -> true);
+
+        RechercherProduit.textProperty().addListener((observable, oldValue, newValue) -> {
+            filter.setPredicate(t -> {
+                if (newValue == null || newValue.isEmpty()) {
+                    return true;
+                }
+                String lowerCaseFilter = newValue.toLowerCase();
+                if (String.valueOf(t.getNomProduit()).toLowerCase().contains(lowerCaseFilter)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        });
+
+        SortedList<Produit> sort = new SortedList<>(filter);
+        sort.comparatorProperty().bind(tabProduit.comparatorProperty());
+        tabProduit.setItems(sort);
+
+    }
+
+@FXML
+    public void generatePdfProduit(ActionEvent actionEvent) {
+    ObservableList<Produit> data = tabProduit.getItems();
+
+    try {
+        // Créez un nouveau document PDF
+        PDDocument document = new PDDocument();
+
+        // Créez une page dans le document
+        PDPage page = new PDPage();
+        document.addPage(page);
+
+        // Obtenez le contenu de la page
+        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+        // Écrivez du texte dans le document
+        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+        contentStream.beginText();
+        contentStream.newLineAtOffset(100, 700);
+
+
+        for (Produit produit : data) {
+
+
+            String ligne = "ID : " + produit.getIdProduit() + "        Nom : " + produit.getNomProduit() +"     Quantité : "+produit.getQuantite()+"        Prix : "+produit.getPrix();
+            contentStream.showText(ligne);
+
+            contentStream.newLine();;
+            contentStream.newLineAtOffset(0, -15);
+
+
+        }
+
+        contentStream.endText();
+
+        // Fermez le contenu de la page
+        contentStream.close();
+
+        String outputPath = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/PDF/produits.pdf";
+        File file = new File(outputPath);
+        document.save(file);
+
+        // Fermez le document
+        document.close();
+
+        System.out.println("Le PDF a été généré avec succès.");
+        Desktop.getDesktop().open(file);
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+    }
+
+    @FXML
+    public void generateExcelProduit(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
+
+        String req = "SELECT idProduit,nomProduit,quantite,prix FROM produit ";
+        statement = conn.createStatement();
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(req);
+
+        HSSFWorkbook wb = new HSSFWorkbook();
+        HSSFSheet sheet = wb.createSheet("Détails produit");
+        HSSFRow header = sheet.createRow(0);
+
+
+
+        header.createCell(0).setCellValue("idProduit");
+        header.createCell(1).setCellValue("nomProduit");
+        header.createCell(2).setCellValue("quantite");
+        header.createCell(3).setCellValue("prix");
+
+
+        int index = 1;
+        while(rs.next()){
+            HSSFRow row = sheet.createRow(index);
+
+            row.createCell(0).setCellValue(rs.getInt("idProduit"));
+            row.createCell(1).setCellValue(rs.getString("nomProduit"));
+            row.createCell(2).setCellValue(rs.getInt("quantite"));
+            row.createCell(3).setCellValue(rs.getInt("prix"));
+
+            index++;
+        }
+
+        FileOutputStream file = new FileOutputStream("C:/Users/Hp/Desktop/produitCategorie/src/main/java/EXCEL/produit.xls");
+        wb.write(file);
+        file.close();
+
+        JOptionPane.showMessageDialog(null, "Exportation 'EXCEL' effectuée avec succés");
+
+        pst.close();
+        rs.close();
+
+    }
+
+
+
+    private void addDataToChart() {
+        // Efface les données existantes
+        pieChart.getData().clear();
+
+        // Récupère les statistiques des prix
+        int produitsEntre10000Et20000 = getProduitsCountByPriceRange(0,1000);
+        int produitsEntre30000Et50000 = getProduitsCountByPriceRange(2000,10000);
+        int totalProduits = getTotalProduitsCount();
+
+        // Ajoute les données au PieChart
+        PieChart.Data data1 = new PieChart.Data("Produits entre 10,000 et 20,000", produitsEntre10000Et20000);
+        PieChart.Data data2 = new PieChart.Data("Produits entre 30,000 et 50,000", produitsEntre30000Et50000);
+        PieChart.Data data3 = new PieChart.Data("Autres Produits", totalProduits - produitsEntre10000Et20000 - produitsEntre30000Et50000);
+        pieChart.getData().addAll(data1, data2, data3);
+
+    }
+
+    private int getProduitsCountByPriceRange(int minPrice, int maxPrice) {
+        try {
+            String query = "SELECT COUNT(*) FROM produit WHERE prix BETWEEN ? AND ?";
+            PreparedStatement pst = conn.prepareStatement(query);
+            pst.setInt(1, minPrice);
+            pst.setInt(2, maxPrice);
+
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private int getTotalProduitsCount() {
+        try {
+            String query = "SELECT COUNT(*) FROM produit";
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
 }
+
+
+

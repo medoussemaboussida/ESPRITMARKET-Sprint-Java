@@ -24,7 +24,11 @@ public class Produit {
         this.categorie = categorie;
         this.imageProduit = imageProduit;
     }
-
+public Produit(String nomProduit,int prix)
+{
+    this.nomProduit=nomProduit;
+    this.prix=prix;
+}
 
     public Produit() {
     }

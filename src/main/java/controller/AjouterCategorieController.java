@@ -36,18 +36,19 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import service.CategorieService;
 import javafx.scene.image.Image;
-
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.FileChannel;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.*;
 import javax.management.Notification;
+import javax.swing.*;
 import javax.swing.text.Document;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 
@@ -56,13 +57,20 @@ import utils.DataSource;
 
 
 public class AjouterCategorieController implements Initializable {
+    private Connection conn;
+    private PreparedStatement pst;
+    private Statement statement;
+
     @FXML
     private ImageView qrcode;
 
     @FXML
     private Button qrcodebtn;
+    //appel du service crud
     private final CategorieService cs = new CategorieService();
     private CategorieService css = new CategorieService();
+
+    //appel des elements graphiques
     @FXML
     private ComboBox<String> sortCategorieBox;
 
@@ -88,10 +96,11 @@ public class AjouterCategorieController implements Initializable {
 
     @FXML
     private TableView<Categorie> tabCategorie;
+
+    //le path  et les elements pour stocker les images
     String filepath = null, filename = null, fn = null;
     String uploads = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/Images/";
     String uploads2 = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/PDF/";
-
     FileChooser fc = new FileChooser();
     ObservableList<Categorie> list = FXCollections.observableArrayList();
     public int idCategorie;
@@ -112,8 +121,12 @@ public class AjouterCategorieController implements Initializable {
     private Button supprimerCategorie;
     private List<Categorie> temp;
 
+    @FXML
+    private Button excelCategorie;
+    //initialisation de l'interface
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        conn =DataSource.getInstance().getCnx();
         sortCategorieBox.getItems().removeAll(sortCategorieBox.getItems());
         sortCategorieBox.getItems().addAll("Trier", "Trier par Nom ↑", "Trier par Nom ↓");
         sortCategorieBox.getSelectionModel().select("Trier");
@@ -126,7 +139,7 @@ public class AjouterCategorieController implements Initializable {
     @FXML
     private Button pdfCategorie;
 
-    //telecharger une image
+    //telecharger une image et mettre dans dossier images
     public void btn_image_action(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
         File file = fc.showOpenDialog(null);
         // Shows a new file open dialog.
@@ -188,7 +201,7 @@ public class AjouterCategorieController implements Initializable {
     }
 
 
-    //prendre les valeurs du tableView et l'affiche dans textfield
+    //prendre les valeurs du tableView et l'affiche dans textfield quand je clique
     public void SetValue(MouseEvent mouseEvent) throws SQLException, ClassNotFoundException {
         Categorie selected = tabCategorie.getSelectionModel().getSelectedItem();
 
@@ -240,6 +253,7 @@ public class AjouterCategorieController implements Initializable {
         }
     }
 
+    //bouton retour pour retourner vers le menu
     public void backCategorie(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MenuProduitCategorie.fxml"));
         Parent root1 = (Parent) fxmlLoader.load();
@@ -252,6 +266,7 @@ public class AjouterCategorieController implements Initializable {
 
     }
 
+    //action chercher categorie par nom
     @FXML
     public void searchCategorie(KeyEvent keyEvent) {
         FilteredList<Categorie> filter = new FilteredList<>(list, ev -> true);
@@ -276,6 +291,8 @@ public class AjouterCategorieController implements Initializable {
 
     }
 
+
+//trie selon le nom de categorie
     @FXML
     public void sortCategorie(ActionEvent actionEvent) {
         String selected = sortCategorieBox.getSelectionModel().getSelectedItem();
@@ -293,6 +310,7 @@ public class AjouterCategorieController implements Initializable {
         tabCategorie.setItems(updatedList);
     }
 
+    //generate pdf
     @FXML
     public void generatePdfCategorie(ActionEvent actionEvent) {
 
@@ -348,6 +366,7 @@ public class AjouterCategorieController implements Initializable {
         }
     }
 
+    //generate qrcode
     @FXML
     public void generateQrCode(ActionEvent actionEvent) {
 
@@ -365,6 +384,7 @@ public class AjouterCategorieController implements Initializable {
         }
 
     }
+    //generate qrcode et l'afficher
     private void generateAndDisplayQRCode(String qrData) {
         try {
             // Configuration pour générer le QR code
@@ -392,6 +412,7 @@ public class AjouterCategorieController implements Initializable {
             e.printStackTrace();
         }
     }
+
     // Méthode pour convertir une matrice BitMatrix en image BufferedImage
     private Image matrixToImage(BitMatrix matrix) {
         int width = matrix.getWidth();
@@ -412,4 +433,41 @@ public class AjouterCategorieController implements Initializable {
         return writableImage;
     }
 
+    //generate excel
+    @FXML
+    public void generateExcelCategorie(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
+
+        String req = "SELECT idCategorie,nomCategorie FROM categorie ";
+        statement = conn.createStatement();
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(req);
+
+        HSSFWorkbook wb = new HSSFWorkbook();
+        HSSFSheet sheet = wb.createSheet("Détails Categorie");
+        HSSFRow header = sheet.createRow(0);
+
+
+
+        header.createCell(0).setCellValue("idCategorie");
+        header.createCell(1).setCellValue("nomCategorie");
+
+
+        int index = 1;
+        while(rs.next()){
+            HSSFRow row = sheet.createRow(index);
+
+            row.createCell(0).setCellValue(rs.getInt("idCategorie"));
+            row.createCell(1).setCellValue(rs.getString("nomCategorie"));
+            index++;
+        }
+
+        FileOutputStream file = new FileOutputStream("C:/Users/Hp/Desktop/produitCategorie/src/main/java/EXCEL/categorie.xls");
+        wb.write(file);
+        file.close();
+
+        JOptionPane.showMessageDialog(null, "Exportation 'EXCEL' effectuée avec succés");
+
+        pst.close();
+        rs.close();
+    }
 }

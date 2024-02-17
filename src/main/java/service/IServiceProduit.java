@@ -9,5 +9,6 @@ public interface IServiceProduit <T>{
     ObservableList<T> readProduit();
     void modifyProduit(T t);
     void deleteProduit(int  idProduit);
-
+    ObservableList<T> sortProduitPrixAsc();
+    ObservableList<T> sortProduitPrixDesc();
 }
