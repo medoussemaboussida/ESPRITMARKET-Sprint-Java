@@ -1,5 +1,6 @@
 package service;
 
+import entities.Offre;
 import entities.Produit;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,7 +23,7 @@ public class ProduitService implements IServiceProduit<Produit> {
     @Override
     public void addProduit(Produit p)
     {
-        String requete = "insert into Produit (categorie_id,nomProduit,quantite,prix,imageProduit) values (?,?,?,?,?)";
+        String requete = "insert into Produit (categorie_id,nomProduit,quantite,prix,imageProduit,idOffre) values (?,?,?,?,?,?)";
         try {
             pst = conn.prepareStatement(requete);
             pst.setInt(1,p.getCategorie().getIdCategorie());
@@ -30,6 +31,7 @@ public class ProduitService implements IServiceProduit<Produit> {
             pst.setInt(3,p.getQuantite());
             pst.setInt(4,p.getPrix());
             pst.setString(5,p.getImageProduit());
+            pst.setInt(6,p.getOffre().getIdOffre());
             pst.executeUpdate();
             System.out.println("Produit ajoutée!");
         } catch (SQLException e)
@@ -40,14 +42,15 @@ public class ProduitService implements IServiceProduit<Produit> {
 @Override
 public ObservableList<Produit> readProduit()
 {
-    String requete = "select * from produit p,categorie c where p.categorie_id=c.idCategorie";
+    String requete = "SELECT * FROM produit p JOIN categorie c ON p.categorie_id = c.idCategorie JOIN offre o ON p.idOffre = o.idOffre";
     ObservableList<Produit> list= FXCollections.observableArrayList();
     try {
         statement = conn.createStatement();
         ResultSet rs=statement.executeQuery(requete);
         while (rs.next()) {
             Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
-            Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6));
+            Offre o=new Offre(rs.getInt("o.idOffre"), rs.getString("o.descriptionOffre"), rs.getString("o.nomOffre"),rs.getDate("o.dateDebut"),rs.getDate("o.dateFin") );
+            Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6),o);
             list.add(prod);
         }
     } catch (SQLException e)
@@ -60,7 +63,7 @@ public ObservableList<Produit> readProduit()
    @Override
     public void modifyProduit(Produit p)
     {
-        String requete = "UPDATE produit set categorie_id = ?,nomProduit = ?,quantite = ?,prix = ? ,imageProduit = ? where  idProduit= ?";
+        String requete = "UPDATE produit set categorie_id = ?,nomProduit = ?,quantite = ?,prix = ? ,imageProduit = ? ,idOffre=? where  idProduit= ?";
         try {
             pst = conn.prepareStatement(requete);
             pst.setInt(1,p.getCategorie().getIdCategorie());
@@ -68,7 +71,9 @@ public ObservableList<Produit> readProduit()
             pst.setInt(3,p.getQuantite());
             pst.setInt(4,p.getPrix());
             pst.setString(5,p.getImageProduit());
-            pst.setInt(6,p.getIdProduit());
+            pst.setInt(6,p.getOffre().getIdOffre());
+            pst.setInt(7,p.getIdProduit());
+
             pst.executeUpdate();
             System.out.println("Produit Modifiée!");
         } catch (SQLException e)
@@ -100,13 +105,14 @@ public ObservableList<Produit> readProduit()
     {
         ObservableList<Produit> list = FXCollections.observableArrayList();
         try {
-            String req = "SELECT * FROM  produit p,categorie c where p.categorie_id=c.idCategorie order by p.prix asc";
+            String req = "SELECT * FROM produit p JOIN categorie c ON p.categorie_id = c.idCategorie JOIN offre o ON p.idOffre = o.idOffre ORDER BY p.prix ASC";
             statement = conn.createStatement();
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(req);
             while (rs.next()) {
                 Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
-                Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6));
+                Offre o=new Offre(rs.getInt("o.idOffre"), rs.getString("o.descriptionOffre"), rs.getString("o.nomOffre"),rs.getDate("o.dateDebut"),rs.getDate("o.dateFin") );
+                Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6),o);
                 list.add(prod);
             }
         } catch (SQLException ex) {
@@ -121,13 +127,14 @@ public ObservableList<Produit> readProduit()
     {
         ObservableList<Produit> list = FXCollections.observableArrayList();
         try {
-            String req = "SELECT * FROM produit p,categorie c where p.categorie_id=c.idCategorie order by p.prix desc";
+            String req = "SELECT * FROM produit p JOIN categorie c ON p.categorie_id = c.idCategorie JOIN offre o ON p.idOffre = o.idOffre ORDER BY p.prix desc";
             statement = conn.createStatement();
             Statement st = conn.createStatement();
             ResultSet rs = st.executeQuery(req);
             while (rs.next()) {
                 Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
-                Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6));
+                Offre o=new Offre(rs.getInt("o.idOffre"), rs.getString("o.descriptionOffre"), rs.getString("o.nomOffre"),rs.getDate("o.dateDebut"),rs.getDate("o.dateFin") );
+                Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6),o);
                 list.add(prod);
             }
         } catch (SQLException ex) {

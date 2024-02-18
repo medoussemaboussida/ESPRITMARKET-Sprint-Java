@@ -5,7 +5,9 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import entities.Categorie;
+import entities.Offre;
 import entities.Produit;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -43,6 +45,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import service.CategorieService;
+import service.OffreService;
 import service.ProduitService;
 import utils.DataSource;
 
@@ -64,10 +67,12 @@ public class AjouterProduitController implements Initializable {
     private Connection conn;
     private PreparedStatement pst;
     private Statement statement;
-    private final ProduitService ps=new ProduitService();
-    private ProduitService pss=new ProduitService();
+    private final ProduitService ps = new ProduitService();
+    private ProduitService pss = new ProduitService();
     @FXML
     private TextField RechercherProduit;
+    @FXML
+    private ComboBox<Offre> comboOffreP;
 
     @FXML
     private ComboBox<Categorie> ComboProduitC;
@@ -107,9 +112,12 @@ public class AjouterProduitController implements Initializable {
     private TableColumn<Produit, String> nomProduitTab;
 
     @FXML
-    private TableColumn<Produit,Integer> nomQuantiteTab;
+    private TableColumn<Produit, Integer> nomQuantiteTab;
     @FXML
     private TableColumn<Produit, String> imageProduitTab;
+    @FXML
+    private TableColumn<Produit, String> OffreProduitTab;
+
     String filepath = null, filename = null, fn = null;
     String uploads = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/Images/";
     FileChooser fc = new FileChooser();
@@ -123,6 +131,7 @@ public class AjouterProduitController implements Initializable {
     public void setIdProduit(int id) {
         this.idProduit = id;
     }
+
     @FXML
     private ComboBox<String> sortProduitBox;
     private List<Produit> temp;
@@ -137,17 +146,19 @@ public class AjouterProduitController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        conn =DataSource.getInstance().getCnx();
+        conn = DataSource.getInstance().getCnx();
         sortProduitBox.getItems().removeAll(sortProduitBox.getItems());
         sortProduitBox.getItems().addAll("Trier", "Trier par Prix ↑", "Trier par Prix ↓");
         sortProduitBox.getSelectionModel().select("Trier");
         setCombo();
+        setComboOffre();
         showProduit();
 
         addDataToChart();
 
     }
-    public void btn_image_produit_action(ActionEvent actionEvent)throws SQLException, FileNotFoundException, IOException {
+
+    public void btn_image_produit_action(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
         File file = fc.showOpenDialog(null);
         // Shows a new file open dialog.
         if (file != null) {
@@ -169,11 +180,12 @@ public class AjouterProduitController implements Initializable {
 
     @FXML
     public void AjouterProduit(ActionEvent actionEvent) throws SQLException {
-        String nomProd =tfNomProduit.getText();
+        String nomProd = tfNomProduit.getText();
         Categorie cat = ComboProduitC.getValue();
+        Offre of = comboOffreP.getValue();
         int prix = Integer.parseInt(tfPrixProduit.getText());
-        int quantite= Integer.parseInt(tfQuantiteProduit.getText());
-        ps.addProduit(new Produit(nomProd,quantite,prix,cat,filename));
+        int quantite = Integer.parseInt(tfQuantiteProduit.getText());
+        ps.addProduit(new Produit(nomProd, quantite, prix, cat, filename, of));
         Alert a = new Alert(Alert.AlertType.WARNING);
         a.setTitle("Succes");
         a.setContentText("Produit Ajoutée");
@@ -181,11 +193,12 @@ public class AjouterProduitController implements Initializable {
     }
 
     public void ModifierProduit(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
-        String nomProd =tfNomProduit.getText();
+        String nomProd = tfNomProduit.getText();
         Categorie cat = ComboProduitC.getValue();
+        Offre of = comboOffreP.getValue();
         int prix = Integer.parseInt(tfPrixProduit.getText());
-        int quantite= Integer.parseInt(tfQuantiteProduit.getText());
-        Produit p = new Produit(idProduit,nomProd,quantite,prix,cat,fn);
+        int quantite = Integer.parseInt(tfQuantiteProduit.getText());
+        Produit p = new Produit(idProduit, nomProd, quantite, prix, cat, fn, of);
         pss.modifyProduit(p);
         Alert a = new Alert(Alert.AlertType.WARNING);
 
@@ -196,10 +209,9 @@ public class AjouterProduitController implements Initializable {
 
     }
 
-    public void SupprimerProduit(ActionEvent actionEvent) throws SQLException, ClassNotFoundException  {
-       Produit selected=tabProduit.getSelectionModel().getSelectedItem();
-        if(selected!=null)
-        {
+    public void SupprimerProduit(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
+        Produit selected = tabProduit.getSelectionModel().getSelectedItem();
+        if (selected != null) {
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Voulez-Vous Supprimer ce produit ?");
             alert.setContentText("Supprimer?");
@@ -211,6 +223,7 @@ public class AjouterProduitController implements Initializable {
                 if (type == okButton) {
                     pss.deleteProduit(selected.getIdProduit());
                     showProduit();
+                    tabProduit.refresh();
                 } else if (type == noButton) {
                     showProduit();
                 } else {
@@ -221,10 +234,7 @@ public class AjouterProduitController implements Initializable {
     }
 
 
-
-
-    public void showProduit()
-    {
+    public void showProduit() {
         nomProduitTab.setCellValueFactory(new PropertyValueFactory<>("nomProduit"));
         nomQuantiteTab.setCellValueFactory(new PropertyValueFactory<>("quantite"));
         nomPrixTab.setCellValueFactory(new PropertyValueFactory<>("prix"));
@@ -235,8 +245,16 @@ public class AjouterProduitController implements Initializable {
                 return new SimpleStringProperty(nomCategorie);
             }
         });
-        imageProduitTab.setCellFactory(column -> new TableCell<Produit,String>() {
+        OffreProduitTab.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Produit, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<Produit, String> param) {
+                String nomOffre = param.getValue().getOffre().getNomOffre();
+                return new SimpleStringProperty(nomOffre);
+            }
+        });
+        imageProduitTab.setCellFactory(column -> new TableCell<Produit, String>() {
             private final ImageView imageView = new ImageView();
+
             @Override
             protected void updateItem(String imagePath, boolean empty) {
                 super.updateItem(imagePath, empty);
@@ -245,7 +263,7 @@ public class AjouterProduitController implements Initializable {
                     setGraphic(null);
                 } else {
                     // Charger et afficher l'image
-                    Image image = new Image("file:///"+uploads+ imagePath);
+                    Image image = new Image("file:///" + uploads + imagePath);
                     imageView.setImage(image);
                     imageView.setFitWidth(120); // Réglez la largeur de l'image selon vos besoins
                     imageView.setFitHeight(100); // Réglez la hauteur de l'image selon vos besoins
@@ -255,10 +273,11 @@ public class AjouterProduitController implements Initializable {
         });
         imageProduitTab.setCellValueFactory(new PropertyValueFactory<>("imageProduit"));
 
-        list= ps.readProduit();
+        list = ps.readProduit();
         tabProduit.setItems(list);
 
     }
+
     public void setValue(MouseEvent mouseEvent) throws SQLException, ClassNotFoundException {
         Produit selected = tabProduit.getSelectionModel().getSelectedItem();
         CategorieService tabC = new CategorieService();
@@ -267,14 +286,46 @@ public class AjouterProduitController implements Initializable {
             tfNomProduit.setText(selected.getNomProduit());
             tfPrixProduit.setText(String.valueOf(selected.getPrix()));
             tfQuantiteProduit.setText(String.valueOf(selected.getQuantite()));
+            comboOffreP.setValue(selected.getOffre());
             idProduit = selected.getIdProduit();
             fn = selected.getImageProduit();
             Image im = new Image("file:" + uploads + selected.getImageProduit());
             tfImageP.setImage(im);
         }
     }
-    public void setCombo()
-    {
+
+    public void setComboOffre() {
+        OffreService tabO = new OffreService();
+        List<Offre> tabListOffre = tabO.readOffre();
+        ArrayList<Offre> Offres = new ArrayList<>();
+        for (Offre o : tabListOffre) {
+            Offre of = new Offre();
+            of.setIdOffre(o.getIdOffre());
+            of.setNomOffre(o.getNomOffre());
+            Offres.add(of);
+        }
+        ObservableList<Offre> choices = FXCollections.observableArrayList(Offres);
+        comboOffreP.setItems(choices);
+        comboOffreP.setConverter(new StringConverter<Offre>() {
+            @Override
+            public String toString(Offre offre) {
+                if (offre == null) {
+                    return null;
+                } else {
+                    return offre.getNomOffre();
+                }
+            }
+
+            @Override
+            public Offre fromString(String string) {
+                // Vous pouvez implémenter cette méthode si nécessaire
+                return null;
+            }
+        });
+    }
+
+
+    public void setCombo() {
         CategorieService tabC = new CategorieService();
         List<Categorie> tabList = tabC.readCategorie();
         ArrayList<Categorie> cats = new ArrayList<>();
@@ -287,6 +338,7 @@ public class AjouterProduitController implements Initializable {
 
         ObservableList<Categorie> choices = FXCollections.observableArrayList(cats);
         ComboProduitC.setItems(choices);
+
         ComboProduitC.setConverter(new StringConverter<Categorie>() {
             @Override
             public String toString(Categorie categorie) {
@@ -341,7 +393,7 @@ public class AjouterProduitController implements Initializable {
         // Vérifiez si un élément est sélectionné
         if (selected != null) {
             // Générez la chaîne de données pour le QR code
-            String qrData = "Nom: " + selected.getNomProduit()+"Quantite: "+selected.getQuantite()+"Prix: "+selected.getPrix()+"Categorie associée: "+selected.getCategorie();
+            String qrData = "Nom: " + selected.getNomProduit() + "Quantite: " + selected.getQuantite() + "Prix: " + selected.getPrix() + "Categorie associée: " + selected.getCategorie();
 
             // Générez et affichez le QR code
             generateAndDisplayQRCode(qrData);
@@ -351,6 +403,7 @@ public class AjouterProduitController implements Initializable {
         }
 
     }
+
     //generate qrcode et l'afficher
     private void generateAndDisplayQRCode(String qrData) {
         try {
@@ -424,56 +477,57 @@ public class AjouterProduitController implements Initializable {
 
     }
 
-@FXML
+    @FXML
     public void generatePdfProduit(ActionEvent actionEvent) {
-    ObservableList<Produit> data = tabProduit.getItems();
+        ObservableList<Produit> data = tabProduit.getItems();
 
-    try {
-        // Créez un nouveau document PDF
-        PDDocument document = new PDDocument();
+        try {
+            // Créez un nouveau document PDF
+            PDDocument document = new PDDocument();
 
-        // Créez une page dans le document
-        PDPage page = new PDPage();
-        document.addPage(page);
+            // Créez une page dans le document
+            PDPage page = new PDPage();
+            document.addPage(page);
 
-        // Obtenez le contenu de la page
-        PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            // Obtenez le contenu de la page
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
 
-        // Écrivez du texte dans le document
-        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-        contentStream.beginText();
-        contentStream.newLineAtOffset(100, 700);
-
-
-        for (Produit produit : data) {
+            // Écrivez du texte dans le document
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(100, 700);
 
 
-            String ligne = "ID : " + produit.getIdProduit() + "        Nom : " + produit.getNomProduit() +"     Quantité : "+produit.getQuantite()+"        Prix : "+produit.getPrix();
-            contentStream.showText(ligne);
-
-            contentStream.newLine();;
-            contentStream.newLineAtOffset(0, -15);
+            for (Produit produit : data) {
 
 
+                String ligne = "ID : " + produit.getIdProduit() + "        Nom : " + produit.getNomProduit() + "     Quantité : " + produit.getQuantite() + "        Prix : " + produit.getPrix();
+                contentStream.showText(ligne);
+
+                contentStream.newLine();
+                ;
+                contentStream.newLineAtOffset(0, -15);
+
+
+            }
+
+            contentStream.endText();
+
+            // Fermez le contenu de la page
+            contentStream.close();
+
+            String outputPath = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/PDF/produits.pdf";
+            File file = new File(outputPath);
+            document.save(file);
+
+            // Fermez le document
+            document.close();
+
+            System.out.println("Le PDF a été généré avec succès.");
+            Desktop.getDesktop().open(file);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        contentStream.endText();
-
-        // Fermez le contenu de la page
-        contentStream.close();
-
-        String outputPath = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/PDF/produits.pdf";
-        File file = new File(outputPath);
-        document.save(file);
-
-        // Fermez le document
-        document.close();
-
-        System.out.println("Le PDF a été généré avec succès.");
-        Desktop.getDesktop().open(file);
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
     }
 
     @FXML
@@ -489,7 +543,6 @@ public class AjouterProduitController implements Initializable {
         HSSFRow header = sheet.createRow(0);
 
 
-
         header.createCell(0).setCellValue("idProduit");
         header.createCell(1).setCellValue("nomProduit");
         header.createCell(2).setCellValue("quantite");
@@ -497,7 +550,7 @@ public class AjouterProduitController implements Initializable {
 
 
         int index = 1;
-        while(rs.next()){
+        while (rs.next()) {
             HSSFRow row = sheet.createRow(index);
 
             row.createCell(0).setCellValue(rs.getInt("idProduit"));
@@ -520,14 +573,13 @@ public class AjouterProduitController implements Initializable {
     }
 
 
-
     private void addDataToChart() {
         // Efface les données existantes
         pieChart.getData().clear();
 
         // Récupère les statistiques des prix
-        int produitsEntre10000Et20000 = getProduitsCountByPriceRange(0,1000);
-        int produitsEntre30000Et50000 = getProduitsCountByPriceRange(2000,10000);
+        int produitsEntre10000Et20000 = getProduitsCountByPriceRange(0, 1000);
+        int produitsEntre30000Et50000 = getProduitsCountByPriceRange(2000, 10000);
         int totalProduits = getTotalProduitsCount();
 
         // Ajoute les données au PieChart
@@ -570,6 +622,21 @@ public class AjouterProduitController implements Initializable {
         }
         return 0;
     }
+
+
+    @FXML
+    public void refreshProduit(ActionEvent actionEvent) {
+    showProduit();
+    }
+    /*
+
+    private void updateTextField (String newT){
+        Platform.runLater(() -> {
+            tfNomProduit.setText(newT);
+            tfQuantiteProduit.setText(newT);
+            tfPrixProduit.setText(newT);
+        });
+    }*/
 
 
 }

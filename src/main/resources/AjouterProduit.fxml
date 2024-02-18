@@ -11,7 +11,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="582.0" prefWidth="970.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AjouterProduitController">
+<AnchorPane prefHeight="611.0" prefWidth="970.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AjouterProduitController">
    <children>
       <TextField fx:id="tfNomProduit" layoutX="131.0" layoutY="60.0" prefHeight="25.0" prefWidth="104.0" />
       <TextField fx:id="tfQuantiteProduit" layoutX="131.0" layoutY="127.0" prefHeight="25.0" prefWidth="104.0" />
@@ -23,26 +23,30 @@
       <Label layoutX="43.0" layoutY="165.0" text="Prix :" />
       <Label layoutX="43.0" layoutY="201.0" text="ImageProduit :" />
       <Button fx:id="btImageProduit" layoutX="131.0" layoutY="197.0" mnemonicParsing="false" onAction="#btn_image_produit_action" prefHeight="25.0" prefWidth="104.0" text="Insérer image" />
-      <Button fx:id="ajouterProduit" layoutX="43.0" layoutY="243.0" mnemonicParsing="false" onAction="#AjouterProduit" text="Ajouter" />
-      <Button fx:id="modifierProduit" layoutX="114.0" layoutY="243.0" mnemonicParsing="false" onAction="#ModifierProduit" text="Modifier" />
-      <Button fx:id="supprimerProduit" layoutX="183.0" layoutY="243.0" mnemonicParsing="false" onAction="#SupprimerProduit" text="Supprimer" />
+      <Button fx:id="ajouterProduit" layoutX="29.0" layoutY="293.0" mnemonicParsing="false" onAction="#AjouterProduit" text="Ajouter" />
+      <Button fx:id="modifierProduit" layoutX="91.0" layoutY="293.0" mnemonicParsing="false" onAction="#ModifierProduit" text="Modifier" />
+      <Button fx:id="supprimerProduit" layoutX="163.0" layoutY="293.0" mnemonicParsing="false" onAction="#SupprimerProduit" text="Supprimer" />
       <ImageView fx:id="tfImageP" fitHeight="179.0" fitWidth="213.0" layoutX="290.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true" />
-      <TableView fx:id="tabProduit" layoutX="9.0" layoutY="292.0" onMouseClicked="#setValue" prefHeight="273.0" prefWidth="585.0">
+      <TableView fx:id="tabProduit" layoutX="14.0" layoutY="324.0" onMouseClicked="#setValue" prefHeight="273.0" prefWidth="693.0">
         <columns>
           <TableColumn fx:id="nomProduitTab" prefWidth="98.0" text="NomProduit" />
           <TableColumn fx:id="nomCategorieTab" prefWidth="96.0" text="Categoire" />
             <TableColumn fx:id="nomQuantiteTab" prefWidth="78.0" text="Quantité" />
             <TableColumn fx:id="nomPrixTab" prefWidth="76.0" text="Prix" />
-            <TableColumn fx:id="imageProduitTab" prefWidth="236.0" text="ImageProduit" />
+            <TableColumn fx:id="imageProduitTab" prefWidth="213.0" text="ImageProduit" />
+            <TableColumn fx:id="OffreProduitTab" prefWidth="131.0" text="OffreAssocié" />
         </columns>
       </TableView>
       <Hyperlink layoutX="14.0" layoutY="3.0" onAction="#backProduit" text="Retour" />
-      <ComboBox fx:id="sortProduitBox" layoutX="277.0" layoutY="243.0" onAction="#sortProduit" prefHeight="25.0" prefWidth="78.0" />
+      <ComboBox fx:id="sortProduitBox" layoutX="251.0" layoutY="293.0" onAction="#sortProduit" prefHeight="25.0" prefWidth="78.0" />
       <ImageView fx:id="qrcodeProduit" fitHeight="179.0" fitWidth="222.0" layoutX="545.0" layoutY="44.0" pickOnBounds="true" preserveRatio="true" />
-      <Button fx:id="qrcodeProduitbtn" layoutX="371.0" layoutY="243.0" mnemonicParsing="false" onAction="#generateQrCodeProduit" text="QRCode" />
-      <TextField fx:id="RechercherProduit" layoutX="445.0" layoutY="243.0" onKeyPressed="#searchProduit" prefHeight="25.0" prefWidth="78.0" />
-      <Button fx:id="pdfProduit" layoutX="536.0" layoutY="243.0" mnemonicParsing="false" onAction="#generatePdfProduit" prefHeight="25.0" prefWidth="55.0" text="PDF" />
-      <Button fx:id="excelProduit" layoutX="604.0" layoutY="243.0" mnemonicParsing="false" onAction="#generateExcelProduit" text="Excel" />
-      <PieChart fx:id="pieChart" layoutX="643.0" layoutY="305.0" prefHeight="216.0" prefWidth="248.0" />
+      <Button fx:id="qrcodeProduitbtn" layoutX="336.0" layoutY="293.0" mnemonicParsing="false" onAction="#generateQrCodeProduit" text="QRCode" />
+      <TextField fx:id="RechercherProduit" layoutX="407.0" layoutY="293.0" onKeyPressed="#searchProduit" prefHeight="25.0" prefWidth="78.0" />
+      <Button fx:id="pdfProduit" layoutX="490.0" layoutY="293.0" mnemonicParsing="false" onAction="#generatePdfProduit" prefHeight="25.0" prefWidth="55.0" text="PDF" />
+      <Button fx:id="excelProduit" layoutX="555.0" layoutY="293.0" mnemonicParsing="false" onAction="#generateExcelProduit" text="Excel" />
+      <PieChart fx:id="pieChart" layoutX="708.0" layoutY="336.0" prefHeight="216.0" prefWidth="248.0" />
+      <Label layoutX="40.0" layoutY="244.0" text="Offre associèe : " />
+      <ComboBox fx:id="comboOffreP" layoutX="131.0" layoutY="240.0" prefHeight="25.0" prefWidth="104.0" />
+      <Hyperlink fx:id="refreshProduit" layoutX="897.0" layoutY="15.0" onAction="#refreshProduit" text="Refresh" />
    </children>
 </AnchorPane>
