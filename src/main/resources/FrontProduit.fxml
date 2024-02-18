@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="630.0" prefWidth="703.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FrontProduitController">
+   <children>
+      <TableView fx:id="tabProduitFront" layoutY="176.0" prefHeight="452.0" prefWidth="703.0">
+         <columns>
+            <TableColumn fx:id="imageProduitTab" prefWidth="291.0" text="Produit" />
+            <TableColumn fx:id="nomQuantiteTab" prefWidth="160.0" text="Quantité en stock" />
+            <TableColumn fx:id="nomPrixTab" prefWidth="132.0" text="Prix (DT)" />
+            <TableColumn fx:id="panierTab" prefWidth="119.0" text="Action" />
+         </columns>
+      </TableView>
+      <ComboBox fx:id="ComboProduitC" layoutX="149.0" layoutY="141.0" onAction="#filtrerProduit" prefHeight="25.0" prefWidth="119.0" />
+      <Label layoutX="14.0" layoutY="145.0" text="Choisir une categorie :" />
+      <ImageView fitHeight="211.0" fitWidth="248.0" layoutY="-76.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Photos/EspritMarket-logos_transparent.png" />
+         </image>
+      </ImageView>
+   </children>
+</AnchorPane>

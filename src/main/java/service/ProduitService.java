@@ -143,6 +143,29 @@ public ObservableList<Produit> readProduit()
 
         return list;
     }
+
+
+    public ObservableList<Produit> readProduitByCategorie(int categorieId) {
+        String requete = "SELECT * FROM produit p JOIN categorie c ON p.categorie_id = c.idCategorie JOIN offre o ON p.idOffre = o.idOffre WHERE c.idCategorie = ?";
+        ObservableList<Produit> list = FXCollections.observableArrayList();
+
+        try {
+            PreparedStatement preparedStatement = conn.prepareStatement(requete);
+            preparedStatement.setInt(1, categorieId);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"), rs.getString("c.imageCategorie"));
+                Offre o = new Offre(rs.getInt("o.idOffre"), rs.getString("o.descriptionOffre"), rs.getString("o.nomOffre"), rs.getDate("o.dateDebut"), rs.getDate("o.dateFin"));
+                Produit prod = new Produit(rs.getInt(1), rs.getString(3), rs.getInt(4), rs.getInt(5), c, rs.getString(6), o);
+                list.add(prod);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
 }
 
 

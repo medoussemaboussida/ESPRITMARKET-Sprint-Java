@@ -11,4 +11,5 @@ public interface IServiceProduit <T>{
     void deleteProduit(int  idProduit);
     ObservableList<T> sortProduitPrixAsc();
     ObservableList<T> sortProduitPrixDesc();
+    ObservableList<T> readProduitByCategorie(int categorieId);
 }
