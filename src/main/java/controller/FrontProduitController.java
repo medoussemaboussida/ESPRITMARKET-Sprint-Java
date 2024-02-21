@@ -1,6 +1,7 @@
 package controller;
 import entities.*;
 import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -26,6 +27,8 @@ import javafx.util.StringConverter;
 import service.*;
 
 import java.awt.*;
+import java.awt.ScrollPane;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -58,10 +61,10 @@ public class FrontProduitController implements Initializable {
         this.idProduit = id;
     }
 
-    @FXML
+   /* @FXML
     private TableColumn<Produit, HBox> panierTab;
-  //  @FXML
-    //private TableColumn<PanierProduit, HBox> tabDeletePanierr;
+    @FXML
+    private TableColumn<PanierProduit, HBox> tabDeletePanierr;
 
     @FXML
     private TableColumn<Produit, Integer> nomPrixTab;
@@ -74,71 +77,13 @@ public class FrontProduitController implements Initializable {
 
     @FXML
     private TableView<Produit> tabProduitFront;
+    */
+
     @FXML
     private ComboBox<Categorie> ComboProduitC;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-
-        panierTab.setCellFactory(column -> new TableCell<Produit, HBox>() {
-            String uploads = "C:/Users/Hp/Desktop/produitCategorie/src/main/resources/Photos/panier.png";
-
-            private final Button addButton = new Button("+");
-            private final ImageView imageView = new ImageView(new Image("file:///" + uploads));
-
-            //partieUser
-
-            {
-
-                imageView.setFitWidth(20);
-                imageView.setFitHeight(20);
-                addButton.setOnAction(event -> {
-                    int idUtilisateur = 1; // Remplacez cela par l'ID réel de l'utilisateur connecté
-                    UtilisateurService utilisateurService = new UtilisateurService();
-                    Utilisateur utilisateur = utilisateurService.getUserById(idUtilisateur);
-                    Produit produit = getTableView().getItems().get(getIndex());
-                    Panier panier = pns.selectPanierParUserId(utilisateur.getIdUser());
-                    Panier panierExistant = pns.selectPanierParUserId(utilisateur.getIdUser()); // Remplacez userId par l'ID de l'utilisateur connecté
-
-                    if (panierExistant != null) {
-                        PanierProduitService panierProduitService = new PanierProduitService();
-                        panierProduitService.ajouterProduitAuPanier(panier, produit.getIdProduit());
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Avertissement");
-                        alert.setHeaderText(null);
-                        alert.setContentText("produit ajouté au  panier existe deja.");
-                        alert.showAndWait();
-
-                    } else {
-                        // Le panier n'existe pas, afficher un message d'alerte
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Avertissement");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Vous n'avez pas de panier. Veuillez créer un panier d'abord.");
-                        alert.showAndWait();
-                        pns.ajouterPanier(utilisateur.getIdUser());
-                    }
-                    tabProduitFront.refresh();
-
-                });
-            }
-
-            @Override
-            protected void updateItem(HBox item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    // Créez un conteneur HBox pour le bouton et l'image
-                    HBox hbox = new HBox(addButton, imageView);
-                    hbox.setSpacing(5);  // Définissez l'espacement entre le bouton et l'image
-
-                    setGraphic(hbox);
-                }
-            }
-        });
 
 
         int idUtilisateur = 1; // Remplacez cela par l'ID réel de l'utilisateur connecté
@@ -161,15 +106,15 @@ public class FrontProduitController implements Initializable {
 
 
 
-       // showProduitFront();
+
         setCombo();
         ComboProduitC.setOnAction(this::filtrerProduit);
-        showProduitFront();
-       // showProduitDuPanierUser();
+       // showProduitFront();
+        showProduitFrontp();
 
     }
 
-
+/*
     public void showProduitFront() {
         imageProduitTab.setCellFactory(column -> new TableCell<Produit, String>() {
             private final javafx.scene.image.ImageView imageView = new ImageView();
@@ -198,7 +143,7 @@ public class FrontProduitController implements Initializable {
         tabProduitFront.setItems(list);
 
     }
-
+*/
 
     public void setCombo() {
         CategorieService tabC = new CategorieService();
@@ -242,8 +187,14 @@ public class FrontProduitController implements Initializable {
         temp = ps.readProduitByCategorie(categorieId);
         ObservableList<Produit> updatedList = FXCollections.observableArrayList(temp);
 
-        // Mettre à jour la TableView
-        tabProduitFront.setItems(updatedList);
+        // Clear the existing content in ListView
+        listView.getItems().clear();
+
+        // Add each product to ListView
+        for (Produit produit : updatedList) {
+            VBox productBox = createProductBox(produit);
+            listView.getItems().add(productBox);
+        }
     }
     @FXML
     private ImageView PanierImage;
@@ -259,87 +210,88 @@ public class FrontProduitController implements Initializable {
 
 
 
-    /*private void updateGridPane(List<Produit> produits) {
-        Categorie selectedCategorie = ComboProduitC.getValue();
-        int categorieId = selectedCategorie.getIdCategorie();
-        temp = ps.readProduitByCategorie(categorieId);
-        ObservableList<Produit> updatedList = FXCollections.observableArrayList(temp);
+    @FXML
+    private ListView<VBox> listView;
 
-        // Mettre à jour la TableView
-        tabProduitFront.setItems(updatedList);
+    public void showProduitFrontp() {
+        // Clear the existing content in ListView
+        listView.getItems().clear();
+
+        // Fetch the list of products from your service
+        list = ps.readProduit();
+
+        // Add each product to ListView
+        for (Produit produit : list) {
+            VBox productBox = createProductBox(produit);
+            listView.getItems().add(productBox);
+        }
     }
-*/
-/*
-    @FXML
-    private TableView<PanierProduit> panierTable;
+
+    private VBox createProductBox(Produit produit) {
+        VBox vbox = new VBox();
+
+        // Create and set up UI components for each product
+        javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView();
+        loadAndSetImage(imageView, produit.getImageProduit());
+
+        Label nameLabel = new Label(produit.getNomProduit());
+        Label priceLabel = new Label("Prix: " + produit.getPrix());
+        Label quantityLabel = new Label("Quantité: " + produit.getQuantite());
+        Button addButton = new Button("+");
+
+        // Add components to VBox
+        vbox.getChildren().addAll(imageView, nameLabel, priceLabel, quantityLabel, addButton);
+
+        // Set spacing and alignment as needed
+        vbox.setSpacing(10);
+        vbox.setAlignment(Pos.CENTER);
 
 
+        addButton.setOnAction(event -> {
+            int idUtilisateur = 1; // Remplacez cela par l'ID réel de l'utilisateur connecté
+            UtilisateurService utilisateurService = new UtilisateurService();
+            Utilisateur utilisateur = utilisateurService.getUserById(idUtilisateur);
+            Panier panier = pns.selectPanierParUserId(utilisateur.getIdUser());
+            Panier panierExistant = pns.selectPanierParUserId(utilisateur.getIdUser());
 
-    @FXML
-    private TableColumn<PanierProduit, String> tabProduitcart;
-
-
-    PanierProduitService pps=new PanierProduitService();
-    ObservableList<PanierProduit> list1 = FXCollections.observableArrayList();
-    public void showProduitDuPanierUser() {
-        int idUtilisateur = 1; // Remplacez cela par l'ID réel de l'utilisateur connecté
-        UtilisateurService utilisateurService = new UtilisateurService();
-        Utilisateur utilisateur = utilisateurService.getUserById(idUtilisateur);
-        Panier panier = pns.selectPanierParUserId(utilisateur.getIdUser());
-
-        list1 = pps.getProduitsDuPanierUtilisateur(panier);
-
-        tabProduitcart.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PanierProduit, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<PanierProduit, String> param) {
-                String nomProduit = param.getValue().getProduit().getNomProduit();
-                return new SimpleStringProperty(nomProduit);
+            if (panierExistant != null) {
+                PanierProduitService panierProduitService = new PanierProduitService();
+                panierProduitService.ajouterProduitAuPanier(panier, produit.getIdProduit());
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Avertissement");
+                alert.setHeaderText(null);
+                alert.setContentText("Produit ajouté au panier existe déjà.");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Avertissement");
+                alert.setHeaderText(null);
+                alert.setContentText("Vous n'avez pas de panier. Veuillez créer un panier d'abord.");
+                alert.showAndWait();
+                pns.ajouterPanier(utilisateur.getIdUser());
             }
-
+            // Rafraîchir la vue du produit
+            showProduitFrontp();
         });
 
 
-        tabDeletePanierr.setCellFactory(column -> new TableCell<PanierProduit, HBox>() {
-            private final Button DeleteButton = new Button("Delete");
-            {
-                DeleteButton.setOnAction(event -> {
-                    PanierProduit pn = getTableView().getItems().get(getIndex());
-                    Panier panier = pns.selectPanierParUserId(utilisateur.getIdUser());
-                    pps.DeleteProduitAuPanier(panier,pn.getProduit().getIdProduit());
-                    Alert alert = new Alert(Alert.AlertType.WARNING);
-                    alert.setTitle("Avertissement");
-                    alert.setHeaderText(null);
-                    alert.setContentText("produit produit supprimé de votre panier.");
-                    alert.showAndWait();
 
-                });
-                }
-
-
-
-                @Override
-                protected void updateItem(HBox item, boolean empty) {
-                super.updateItem(item, empty);
-
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    // Créez un conteneur HBox pour le bouton et l'image
-                    HBox hbox = new HBox(DeleteButton);
-
-                    setGraphic(hbox);
-                }
-            }
-
-            });
-
-
-        panierTable.setItems(list1);
-
+        return vbox;
     }
-*/
-
-    //check le panier
+    private void loadAndSetImage(ImageView imageView, String imagePath) {
+        // Charger et afficher l'image en utilisant le chemin complet du fichier
+        File imageFile = new File(uploads + imagePath);
+        if (imageFile.exists()) {
+            Image image = new Image("file:///" + imageFile.getAbsolutePath());
+            imageView.setImage(image);
+            imageView.setFitWidth(150);
+            imageView.setFitHeight(150);
+        } else {
+            // Gérer le cas où le fichier d'image n'existe pas
+            System.out.println("Le fichier d'image n'existe pas : " + imagePath);
+            imageView.setImage(null);
+        }
+    }
 
 }
 
