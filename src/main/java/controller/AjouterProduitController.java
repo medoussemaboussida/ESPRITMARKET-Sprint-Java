@@ -183,7 +183,7 @@ public class AjouterProduitController implements Initializable {
         String nomProd = tfNomProduit.getText();
         Categorie cat = ComboProduitC.getValue();
         Offre of = comboOffreP.getValue();
-        int prix = Integer.parseInt(tfPrixProduit.getText());
+        Float prix = Float.parseFloat(tfPrixProduit.getText());
         int quantite = Integer.parseInt(tfQuantiteProduit.getText());
         ps.addProduit(new Produit(nomProd, quantite, prix, cat, filename, of));
         Alert a = new Alert(Alert.AlertType.WARNING);
@@ -196,7 +196,7 @@ public class AjouterProduitController implements Initializable {
         String nomProd = tfNomProduit.getText();
         Categorie cat = ComboProduitC.getValue();
         Offre of = comboOffreP.getValue();
-        int prix = Integer.parseInt(tfPrixProduit.getText());
+       Float prix = Float.parseFloat(tfPrixProduit.getText());
         int quantite = Integer.parseInt(tfQuantiteProduit.getText());
         Produit p = new Produit(idProduit, nomProd, quantite, prix, cat, fn, of);
         pss.modifyProduit(p);

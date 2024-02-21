@@ -29,7 +29,7 @@ public class ProduitService implements IServiceProduit<Produit> {
             pst.setInt(1,p.getCategorie().getIdCategorie());
             pst.setString(2,p.getNomProduit());
             pst.setInt(3,p.getQuantite());
-            pst.setInt(4,p.getPrix());
+            pst.setFloat(4,p.getPrix());
             pst.setString(5,p.getImageProduit());
             pst.setInt(6,p.getOffre().getIdOffre());
             pst.executeUpdate();
@@ -50,7 +50,7 @@ public ObservableList<Produit> readProduit()
         while (rs.next()) {
             Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
             Offre o=new Offre(rs.getInt("o.idOffre"), rs.getString("o.descriptionOffre"), rs.getString("o.nomOffre"),rs.getDate("o.dateDebut"),rs.getDate("o.dateFin") );
-            Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6),o);
+            Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getFloat(5),c,rs.getString(6),o);
             list.add(prod);
         }
     } catch (SQLException e)
@@ -69,7 +69,7 @@ public ObservableList<Produit> readProduit()
             pst.setInt(1,p.getCategorie().getIdCategorie());
             pst.setString(2,p.getNomProduit());
             pst.setInt(3,p.getQuantite());
-            pst.setInt(4,p.getPrix());
+            pst.setFloat(4,p.getPrix());
             pst.setString(5,p.getImageProduit());
             pst.setInt(6,p.getOffre().getIdOffre());
             pst.setInt(7,p.getIdProduit());
@@ -112,7 +112,7 @@ public ObservableList<Produit> readProduit()
             while (rs.next()) {
                 Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
                 Offre o=new Offre(rs.getInt("o.idOffre"), rs.getString("o.descriptionOffre"), rs.getString("o.nomOffre"),rs.getDate("o.dateDebut"),rs.getDate("o.dateFin") );
-                Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6),o);
+                Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getFloat(5),c,rs.getString(6),o);
                 list.add(prod);
             }
         } catch (SQLException ex) {
@@ -134,7 +134,7 @@ public ObservableList<Produit> readProduit()
             while (rs.next()) {
                 Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
                 Offre o=new Offre(rs.getInt("o.idOffre"), rs.getString("o.descriptionOffre"), rs.getString("o.nomOffre"),rs.getDate("o.dateDebut"),rs.getDate("o.dateFin") );
-                Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getInt(5),c,rs.getString(6),o);
+                Produit prod = new Produit(rs.getInt(1),rs.getString(3),rs.getInt(4),rs.getFloat(5),c,rs.getString(6),o);
                 list.add(prod);
             }
         } catch (SQLException ex) {
@@ -157,7 +157,7 @@ public ObservableList<Produit> readProduit()
             while (rs.next()) {
                 Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"), rs.getString("c.imageCategorie"));
                 Offre o = new Offre(rs.getInt("o.idOffre"), rs.getString("o.descriptionOffre"), rs.getString("o.nomOffre"), rs.getDate("o.dateDebut"), rs.getDate("o.dateFin"));
-                Produit prod = new Produit(rs.getInt(1), rs.getString(3), rs.getInt(4), rs.getInt(5), c, rs.getString(6), o);
+                Produit prod = new Produit(rs.getInt(1), rs.getString(3), rs.getInt(4), rs.getFloat(5), c, rs.getString(6), o);
                 list.add(prod);
             }
         } catch (SQLException e) {

@@ -3,13 +3,13 @@ package entities;
 public class Produit {
     private int idProduit;
     private String nomProduit;
-    private int prix;
+    private Float prix;
     private int quantite;
     private Categorie categorie;
     private String imageProduit;
     private Offre offre;
 
-    public Produit(int  idProduit, String nomProduit, int quantite, int prix, Categorie categorie, String imageProduit,Offre offre) {
+    public Produit(int  idProduit, String nomProduit, int quantite, Float prix, Categorie categorie, String imageProduit,Offre offre) {
         this. idProduit =  idProduit;
         this.nomProduit = nomProduit;
         this.prix = prix;
@@ -19,7 +19,7 @@ public class Produit {
         this.offre=offre;
     }
 
-    public Produit(String nomProduit, int quantite, int prix, Categorie categorie, String imageProduit,Offre offre) {
+    public Produit(String nomProduit, int quantite, Float prix, Categorie categorie, String imageProduit,Offre offre) {
         this.nomProduit = nomProduit;
         this.prix = prix;
         this.quantite = quantite;
@@ -27,7 +27,7 @@ public class Produit {
         this.imageProduit = imageProduit;
         this.offre=offre;
     }
-public Produit(String nomProduit,int prix)
+public Produit(String nomProduit,Float prix)
 {
     this.nomProduit=nomProduit;
     this.prix=prix;
@@ -52,11 +52,11 @@ public Produit(String nomProduit,int prix)
         this.nomProduit= nomProduit;
     }
 
-    public int getPrix() {
+    public Float getPrix() {
         return prix;
     }
 
-    public void setPrix(int prix) {
+    public void setPrix(Float prix) {
         this.prix = prix;
     }
 

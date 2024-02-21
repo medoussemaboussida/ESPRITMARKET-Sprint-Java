@@ -10,7 +10,7 @@ public class PanierProduit {
     {
 
     }
-    public PanierProduit(int idPanierProduit,Produit produit,Panier panier)
+    public PanierProduit(int idPanierProduit,Panier panier,Produit produit)
     {
         this.idPanierProduit=idPanierProduit;
         this.produit=produit;
@@ -27,5 +27,17 @@ public class PanierProduit {
 
     public int getIdPanierProduit() {
         return idPanierProduit;
+    }
+
+    public void setProduit(Produit produit) {
+        this.produit = produit;
+    }
+
+    public void setPanier(Panier panier) {
+        this.panier = panier;
+    }
+
+    public void setIdPanierProduit(int idPanierProduit) {
+        this.idPanierProduit = idPanierProduit;
     }
 }

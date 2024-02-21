@@ -1,10 +1,9 @@
 package controller;
-import entities.Categorie;
-import entities.Panier;
-import entities.Utilisateur;
+import entities.*;
 import javafx.event.ActionEvent;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import entities.Produit;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -18,8 +17,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import service.*;
@@ -29,12 +30,17 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.scene.Node;
 import javafx.scene.control.TableView;
-
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 public class FrontProduitController implements Initializable {
     private final ProduitService ps = new ProduitService();
     String filepath = null, filename = null, fn = null;
@@ -42,7 +48,8 @@ public class FrontProduitController implements Initializable {
     FileChooser fc = new FileChooser();
     ObservableList<Produit> list = FXCollections.observableArrayList();
     public int idProduit;
-PanierService pns=new PanierService();
+    PanierService pns = new PanierService();
+
     public int getIdProduit() {
         return getIdProduit();
     }
@@ -50,8 +57,11 @@ PanierService pns=new PanierService();
     public void setIdProduit(int id) {
         this.idProduit = id;
     }
+
     @FXML
-    private TableColumn<Produit,HBox>panierTab;
+    private TableColumn<Produit, HBox> panierTab;
+  //  @FXML
+    //private TableColumn<PanierProduit, HBox> tabDeletePanierr;
 
     @FXML
     private TableColumn<Produit, Integer> nomPrixTab;
@@ -69,6 +79,8 @@ PanierService pns=new PanierService();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
+
         panierTab.setCellFactory(column -> new TableCell<Produit, HBox>() {
             String uploads = "C:/Users/Hp/Desktop/produitCategorie/src/main/resources/Photos/panier.png";
 
@@ -91,7 +103,7 @@ PanierService pns=new PanierService();
 
                     if (panierExistant != null) {
                         PanierProduitService panierProduitService = new PanierProduitService();
-                        panierProduitService.ajouterProduitAuPanier(panier,produit.getIdProduit());
+                        panierProduitService.ajouterProduitAuPanier(panier, produit.getIdProduit());
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Avertissement");
                         alert.setHeaderText(null);
@@ -148,13 +160,14 @@ PanierService pns=new PanierService();
         }
 
 
-        showProduitFront();
+
+       // showProduitFront();
         setCombo();
         ComboProduitC.setOnAction(this::filtrerProduit);
+        showProduitFront();
+       // showProduitDuPanierUser();
+
     }
-
-
-
 
 
     public void showProduitFront() {
@@ -177,14 +190,14 @@ PanierService pns=new PanierService();
                 }
             }
         });
-        imageProduitTab.setCellValueFactory(new PropertyValueFactory<>("imageProduit"));        nomQuantiteTab.setCellValueFactory(new PropertyValueFactory<>("quantite"));
+        imageProduitTab.setCellValueFactory(new PropertyValueFactory<>("imageProduit"));
+        nomQuantiteTab.setCellValueFactory(new PropertyValueFactory<>("quantite"));
         nomPrixTab.setCellValueFactory(new PropertyValueFactory<>("prix"));
 
         list = ps.readProduit();
         tabProduitFront.setItems(list);
 
     }
-
 
 
     public void setCombo() {
@@ -218,22 +231,120 @@ PanierService pns=new PanierService();
             }
         });
     }
+
     private List<Produit> temp;
+    private List<PanierProduit> temp1;
 
     @FXML
     public void filtrerProduit(ActionEvent actionEvent) {
         Categorie selectedCategorie = ComboProduitC.getValue();
         int categorieId = selectedCategorie.getIdCategorie();
-temp=ps.readProduitByCategorie(categorieId);
+        temp = ps.readProduitByCategorie(categorieId);
         ObservableList<Produit> updatedList = FXCollections.observableArrayList(temp);
 
         // Mettre à jour la TableView
         tabProduitFront.setItems(updatedList);
+    }
+    @FXML
+    private ImageView PanierImage;
 
+    public void checkPanier(MouseEvent mouseEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FrontPanierCommande.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root1));
+        Node source = (Node) mouseEvent.getSource();
+        stage.show();
     }
 
 
+
+    /*private void updateGridPane(List<Produit> produits) {
+        Categorie selectedCategorie = ComboProduitC.getValue();
+        int categorieId = selectedCategorie.getIdCategorie();
+        temp = ps.readProduitByCategorie(categorieId);
+        ObservableList<Produit> updatedList = FXCollections.observableArrayList(temp);
+
+        // Mettre à jour la TableView
+        tabProduitFront.setItems(updatedList);
+    }
+*/
+/*
+    @FXML
+    private TableView<PanierProduit> panierTable;
+
+
+
+    @FXML
+    private TableColumn<PanierProduit, String> tabProduitcart;
+
+
+    PanierProduitService pps=new PanierProduitService();
+    ObservableList<PanierProduit> list1 = FXCollections.observableArrayList();
+    public void showProduitDuPanierUser() {
+        int idUtilisateur = 1; // Remplacez cela par l'ID réel de l'utilisateur connecté
+        UtilisateurService utilisateurService = new UtilisateurService();
+        Utilisateur utilisateur = utilisateurService.getUserById(idUtilisateur);
+        Panier panier = pns.selectPanierParUserId(utilisateur.getIdUser());
+
+        list1 = pps.getProduitsDuPanierUtilisateur(panier);
+
+        tabProduitcart.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<PanierProduit, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<PanierProduit, String> param) {
+                String nomProduit = param.getValue().getProduit().getNomProduit();
+                return new SimpleStringProperty(nomProduit);
+            }
+
+        });
+
+
+        tabDeletePanierr.setCellFactory(column -> new TableCell<PanierProduit, HBox>() {
+            private final Button DeleteButton = new Button("Delete");
+            {
+                DeleteButton.setOnAction(event -> {
+                    PanierProduit pn = getTableView().getItems().get(getIndex());
+                    Panier panier = pns.selectPanierParUserId(utilisateur.getIdUser());
+                    pps.DeleteProduitAuPanier(panier,pn.getProduit().getIdProduit());
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Avertissement");
+                    alert.setHeaderText(null);
+                    alert.setContentText("produit produit supprimé de votre panier.");
+                    alert.showAndWait();
+
+                });
+                }
+
+
+
+                @Override
+                protected void updateItem(HBox item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    // Créez un conteneur HBox pour le bouton et l'image
+                    HBox hbox = new HBox(DeleteButton);
+
+                    setGraphic(hbox);
+                }
+            }
+
+            });
+
+
+        panierTable.setItems(list1);
+
+    }
+*/
+
+    //check le panier
+
 }
+
+
+
 
 
 
