@@ -1,0 +1,10 @@
+/* styles.css */
+#commandeButton {
+    -fx-background-color: #011528;
+    -fx-text-fill: #f4874b; /* Pour rendre le texte lisible sur le fond sombre */
+}
+#commandeButton:hover {
+    -fx-background-color: #f4874b;
+    -fx-text-fill: #011528;
+}
+

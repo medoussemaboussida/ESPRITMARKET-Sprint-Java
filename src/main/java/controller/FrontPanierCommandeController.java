@@ -41,9 +41,10 @@ public class FrontPanierCommandeController implements Initializable{
     ObservableList<PanierProduit> list1 = FXCollections.observableArrayList();
     @FXML
     private Button commandeButton;
-    int idUtilisateur = 1; // Remplacez cela par l'ID réel de l'utilisateur connecté
+    int idUtilisateur = 1; //  l'utilisateur connecté
     UtilisateurService utilisateurService = new UtilisateurService();
     Utilisateur utilisateur = utilisateurService.getUserById(idUtilisateur);
+    //selectionner la panier de user qui est connecté
     Panier panier = pns.selectPanierParUserId(utilisateur.getIdUser());
 
     @Override
@@ -75,7 +76,7 @@ public class FrontPanierCommandeController implements Initializable{
                     Alert alert = new Alert(Alert.AlertType.WARNING);
                     alert.setTitle("Avertissement");
                     alert.setHeaderText(null);
-                    alert.setContentText("produit produit supprimé de votre panier.");
+                    alert.setContentText("produit supprimé de votre panier.");
                     alert.showAndWait();
 
                 });

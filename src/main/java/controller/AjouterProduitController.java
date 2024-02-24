@@ -159,6 +159,7 @@ public class AjouterProduitController implements Initializable {
     }
 
     public void btn_image_produit_action(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = fc.showOpenDialog(null);
         // Shows a new file open dialog.
         if (file != null) {
@@ -180,18 +181,84 @@ public class AjouterProduitController implements Initializable {
 
     @FXML
     public void AjouterProduit(ActionEvent actionEvent) throws SQLException {
-        String nomProd = tfNomProduit.getText();
-        Categorie cat = ComboProduitC.getValue();
-        Offre of = comboOffreP.getValue();
-        Float prix = Float.parseFloat(tfPrixProduit.getText());
-        int quantite = Integer.parseInt(tfQuantiteProduit.getText());
-        ps.addProduit(new Produit(nomProd, quantite, prix, cat, filename, of));
-        Alert a = new Alert(Alert.AlertType.WARNING);
-        a.setTitle("Succes");
-        a.setContentText("Produit Ajoutée");
-        a.showAndWait();
-    }
 
+        if (tfNomProduit.getText().isEmpty()) {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("nom Produit est vide !");
+            a.showAndWait();
+
+        }
+        else if(ComboProduitC.getValue()==null)
+        {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("il faut sélectionner une categorie !");
+            a.showAndWait();
+        }
+
+      else if (tfQuantiteProduit.getText().isEmpty())
+        {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("quantite est vide !");
+            a.showAndWait();
+        }
+        else if(tfPrixProduit.getText().isEmpty())
+        {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("Prix est vide !");
+            a.showAndWait();
+        }
+        else if (fn == null) {
+
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("Charger une image svp !.");
+            a.showAndWait();
+
+        }
+        else if(comboOffreP.getValue()==null)
+        {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("il faut sélectionner une offre !");
+            a.showAndWait();
+        }
+
+        else {
+            String nomProd = tfNomProduit.getText();
+            Categorie cat = ComboProduitC.getValue();
+            Offre of = comboOffreP.getValue();
+            Float prix = Float.parseFloat(tfPrixProduit.getText());
+            int quantite = Integer.parseInt(tfQuantiteProduit.getText());
+            if(quantite<=0)
+            {
+                Alert a = new Alert(Alert.AlertType.WARNING);
+                a.setTitle("Erreur");
+                a.setContentText("prix supérieur à 0!");
+                a.showAndWait();
+            }
+            else
+            if(prix<=0)
+            {
+                Alert a = new Alert(Alert.AlertType.WARNING);
+                a.setTitle("Erreur");
+                a.setContentText("prix supérieur à 0!");
+                a.showAndWait();
+
+            }
+            else {
+
+                ps.addProduit(new Produit(nomProd, quantite, prix, cat, filename, of));
+                Alert a = new Alert(Alert.AlertType.WARNING);
+                a.setTitle("Succes");
+                a.setContentText("Produit Ajoutée");
+                a.showAndWait();
+            }
+        }
+    }
     public void ModifierProduit(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
         String nomProd = tfNomProduit.getText();
         Categorie cat = ComboProduitC.getValue();

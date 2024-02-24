@@ -9,26 +9,30 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="472.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FrontPanierCommandeController">
    <children>
-      <TableView fx:id="panierTable" layoutX="75.0" layoutY="100.0" prefHeight="240.0" prefWidth="323.0">
+      <TableView fx:id="panierTable" layoutX="75.0" layoutY="110.0" prefHeight="240.0" prefWidth="323.0">
          <columns>
             <TableColumn fx:id="tabProduitcart" prefWidth="163.0" text="Produits" />
             <TableColumn fx:id="tabDeletePanierr" prefWidth="630.0" />
          </columns>
       </TableView>
-      <Label layoutX="198.0" layoutY="67.0" text="Votre Panier ">
+      <Label layoutX="382.0" layoutY="14.0" text="Votre Panier ">
          <font>
             <Font name="Arial Narrow Bold" size="15.0" />
          </font>
       </Label>
-      <ImageView fitHeight="254.0" fitWidth="240.0" layoutX="-19.0" layoutY="-91.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="147.0" fitWidth="361.0" layoutX="-56.0" layoutY="-73.0" pickOnBounds="true" preserveRatio="true" rotate="-26.0">
+         <image>
+            <Image url="@Photos/011528.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="254.0" fitWidth="240.0" layoutX="-20.0" layoutY="-97.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@Photos/EspritMarket-logos_transparent.png" />
          </image>
       </ImageView>
-      <Button fx:id="commandeButton" layoutX="163.0" layoutY="350.0" mnemonicParsing="false" onAction="#passerCommande" text="Passer une commande">
+      <Button fx:id="commandeButton" layoutX="163.0" layoutY="359.0" mnemonicParsing="false" onAction="#passerCommande" stylesheets="@css/button.css" text="Passer une commande" textAlignment="CENTER" textFill="#e87902">
          <font>
             <Font name="Arial Narrow" size="15.0" />
          </font>

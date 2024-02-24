@@ -236,8 +236,8 @@ public class FrontProduitController implements Initializable {
 
         Label nameLabel = new Label(produit.getNomProduit());
         Label priceLabel = new Label("Prix: " + produit.getPrix());
-        Label quantityLabel = new Label("Quantité: " + produit.getQuantite());
-        Button addButton = new Button("+");
+        Label quantityLabel = new Label("Quantité en stock: " + produit.getQuantite());
+        Button addButton = new Button("Ajouter dans votre panier");
 
         // Add components to VBox
         vbox.getChildren().addAll(imageView, nameLabel, priceLabel, quantityLabel, addButton);
@@ -260,7 +260,7 @@ public class FrontProduitController implements Initializable {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Avertissement");
                 alert.setHeaderText(null);
-                alert.setContentText("Produit ajouté au panier existe déjà.");
+                alert.setContentText("Produit ajouté dans votre panier .");
                 alert.showAndWait();
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);

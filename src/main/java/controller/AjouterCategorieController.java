@@ -141,6 +141,7 @@ public class AjouterCategorieController implements Initializable {
 
     //telecharger une image et mettre dans dossier images
     public void btn_image_action(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = fc.showOpenDialog(null);
         // Shows a new file open dialog.
         if (file != null) {
@@ -164,12 +165,42 @@ public class AjouterCategorieController implements Initializable {
     //ajouter une categorie
     @FXML
     public void AjouterCategorie(javafx.event.ActionEvent actionEvent) throws SQLException {
-        cs.addCategorie(new Categorie(tfNomCategorie.getText(), filename));
-        Alert a = new Alert(Alert.AlertType.WARNING);
-        a.setTitle("Succes");
-        a.setContentText("Categorie Ajoutée");
-        a.showAndWait();
-        showCategorie();
+        if (tfNomCategorie.getText().isEmpty()) {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("Le nom de la catégorie ne peut pas être vide.");
+            a.showAndWait();
+
+        }
+    else if(!estAlphabetique(tfNomCategorie.getText())) {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("Le nom dot contenir les lettres alphabetiques uniquement.");
+            a.showAndWait();
+
+        }
+        else if (fn == null) {
+
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("Charger une image svp !.");
+            a.showAndWait();
+
+        }
+
+        else {
+            cs.addCategorie(new Categorie(tfNomCategorie.getText(), filename));
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Succes");
+            a.setContentText("Categorie Ajoutée");
+            a.showAndWait();
+            showCategorie();
+        }
+    }
+
+    //lettre alpha
+    private boolean estAlphabetique(String str) {
+        return str.matches("^[a-zA-Z]+$");
     }
 
     //afficher les categories
@@ -219,14 +250,38 @@ public class AjouterCategorieController implements Initializable {
     public void ModifierCategorie(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
         String nomC = tfNomCategorie.getText();
         Categorie c = new Categorie(idCategorie, nomC, fn);
-        css.modifyCategorie(c);
-        Alert a = new Alert(Alert.AlertType.WARNING);
+        if (nomC.isEmpty()) {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("Le nom de la catégorie ne peut pas être vide.");
+            a.showAndWait();
 
-        a.setTitle("Succes");
-        a.setContentText("Cateygorie Modifiée");
-        a.showAndWait();
-        showCategorie();
+        }
+        else if(!estAlphabetique(nomC)) {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("Le nom dot contenir les lettres alphabetiques uniquement.");
+            a.showAndWait();
 
+        }
+        else if (fn == null) {
+
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("Charger une image svp !.");
+            a.showAndWait();
+
+        }
+
+else {
+            css.modifyCategorie(c);
+            Alert a = new Alert(Alert.AlertType.WARNING);
+
+            a.setTitle("Succes");
+            a.setContentText("Catégorie Modifiée");
+            a.showAndWait();
+            showCategorie();
+        }
     }
 
     //supprimer une categorie
