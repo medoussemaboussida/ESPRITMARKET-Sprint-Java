@@ -8,36 +8,36 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Line?>
 
-<AnchorPane fx:id="pageFront" prefHeight="732.0" prefWidth="1134.0" stylesheets="@css/button.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FrontProduitController">
+<AnchorPane fx:id="pageFront" prefHeight="694.0" prefWidth="1168.0" stylesheets="@css/button.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FrontProduitController">
    <children>
-      <ComboBox fx:id="ComboProduitC" layoutX="529.0" layoutY="13.0" onAction="#filtrerProduit" prefHeight="25.0" prefWidth="114.0" promptText="Catégories" stylesheets="@css/button.css" />
-      <ImageView fitHeight="331.0" fitWidth="742.0" layoutX="-283.0" layoutY="199.0" pickOnBounds="true" preserveRatio="true" rotate="90.0">
+      <ComboBox fx:id="ComboProduitC" layoutX="556.0" layoutY="26.0" onAction="#filtrerProduit" prefHeight="25.0" prefWidth="114.0" promptText="Catégories" stylesheets="@css/button.css" />
+      <ImageView fitHeight="322.0" fitWidth="733.0" layoutX="-253.0" layoutY="167.0" pickOnBounds="true" preserveRatio="true" rotate="90.0">
          <image>
             <Image url="@Photos/011528.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="427.0" fitWidth="298.0" layoutX="-33.0" layoutY="-107.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="427.0" fitWidth="298.0" layoutX="-18.0" layoutY="-110.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@Photos/EspritMarket-logos_transparent.png" />
          </image>
       </ImageView>
-      <ImageView fx:id="PanierImage" fitHeight="25.0" fitWidth="27.0" layoutX="657.0" layoutY="13.0" onMouseClicked="#checkPanier" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="PanierImage" fitHeight="25.0" fitWidth="27.0" layoutX="683.0" layoutY="26.0" onMouseClicked="#checkPanier" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@Photos/panier.png" />
          </image>
       </ImageView>
-      <ListView fx:id="listView" layoutX="250.0" layoutY="131.0" prefHeight="601.0" prefWidth="882.0" />
+      <ListView fx:id="listView" layoutX="274.0" layoutY="131.0" prefHeight="563.0" prefWidth="894.0" />
       <ImageView fitHeight="45.0" fitWidth="46.0" layoutX="970.0" layoutY="71.0" opacity="0.67" pickOnBounds="true" preserveRatio="true" rotate="45.0">
          <image>
             <Image url="@Photos/soda.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="53.0" fitWidth="64.0" layoutX="431.0" layoutY="67.0" opacity="0.64" pickOnBounds="true" preserveRatio="true" rotate="-45.0">
+      <ImageView fitHeight="53.0" fitWidth="64.0" layoutX="420.0" layoutY="67.0" opacity="0.64" pickOnBounds="true" preserveRatio="true" rotate="-45.0">
          <image>
             <Image url="@Photos/shop2.png" />
          </image>
       </ImageView>
-      <TextField layoutX="265.0" layoutY="10.0" prefHeight="32.0" prefWidth="254.0" promptText="Rechercher" />
-      <Line endX="114.8309326171875" layoutX="115.0" layoutY="84.0" startX="-100.0" stroke="#ffa01a" />
+      <TextField layoutX="289.0" layoutY="23.0" prefHeight="31.0" prefWidth="254.0" promptText="Rechercher" />
+      <Line endX="114.8309326171875" layoutX="124.0" layoutY="81.0" startX="-100.0" stroke="#ffa01a" />
    </children>
 </AnchorPane>

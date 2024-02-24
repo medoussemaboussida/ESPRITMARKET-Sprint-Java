@@ -442,6 +442,7 @@ public class AjouterProduitController implements Initializable {
         });
     }
 
+    /*
     public void backProduit(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MenuProduitCategorie.fxml"));
         Parent root1 = (Parent) fxmlLoader.load();
@@ -452,7 +453,7 @@ public class AjouterProduitController implements Initializable {
         currentStage.close();
         stage.show();
 
-    }
+    }*/
 
     @FXML
     public void sortProduit(ActionEvent actionEvent) {
@@ -713,6 +714,19 @@ public class AjouterProduitController implements Initializable {
     public void refreshProduit(ActionEvent actionEvent) {
     showProduit();
     }
+
+    // navbar vers categorie
+@FXML
+    public void switchToCategorie(ActionEvent actionEvent) throws IOException {
+    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/AjouterCategorie.fxml"));
+    Parent root1 = (Parent) fxmlLoader.load();
+    Stage stage = new Stage();
+    stage.setScene(new Scene(root1));
+    Node source = (Node) actionEvent.getSource();
+    Stage currentStage = (Stage) source.getScene().getWindow();
+    currentStage.close();
+    stage.show();
+}
     /*
 
     private void updateTextField (String newT){

@@ -123,10 +123,11 @@ public class AjouterCategorieController implements Initializable {
 
     @FXML
     private Button excelCategorie;
+
     //initialisation de l'interface
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        conn =DataSource.getInstance().getCnx();
+        conn = DataSource.getInstance().getCnx();
         sortCategorieBox.getItems().removeAll(sortCategorieBox.getItems());
         sortCategorieBox.getItems().addAll("Trier", "Trier par Nom ↑", "Trier par Nom ↓");
         sortCategorieBox.getSelectionModel().select("Trier");
@@ -171,24 +172,20 @@ public class AjouterCategorieController implements Initializable {
             a.setContentText("Le nom de la catégorie ne peut pas être vide.");
             a.showAndWait();
 
-        }
-    else if(!estAlphabetique(tfNomCategorie.getText())) {
+        } else if (!estAlphabetique(tfNomCategorie.getText())) {
             Alert a = new Alert(Alert.AlertType.WARNING);
             a.setTitle("Erreur");
             a.setContentText("Le nom dot contenir les lettres alphabetiques uniquement.");
             a.showAndWait();
 
-        }
-        else if (fn == null) {
+        } else if (fn == null) {
 
             Alert a = new Alert(Alert.AlertType.WARNING);
             a.setTitle("Erreur");
             a.setContentText("Charger une image svp !.");
             a.showAndWait();
 
-        }
-
-        else {
+        } else {
             cs.addCategorie(new Categorie(tfNomCategorie.getText(), filename));
             Alert a = new Alert(Alert.AlertType.WARNING);
             a.setTitle("Succes");
@@ -256,24 +253,20 @@ public class AjouterCategorieController implements Initializable {
             a.setContentText("Le nom de la catégorie ne peut pas être vide.");
             a.showAndWait();
 
-        }
-        else if(!estAlphabetique(nomC)) {
+        } else if (!estAlphabetique(nomC)) {
             Alert a = new Alert(Alert.AlertType.WARNING);
             a.setTitle("Erreur");
             a.setContentText("Le nom dot contenir les lettres alphabetiques uniquement.");
             a.showAndWait();
 
-        }
-        else if (fn == null) {
+        } else if (fn == null) {
 
             Alert a = new Alert(Alert.AlertType.WARNING);
             a.setTitle("Erreur");
             a.setContentText("Charger une image svp !.");
             a.showAndWait();
 
-        }
-
-else {
+        } else {
             css.modifyCategorie(c);
             Alert a = new Alert(Alert.AlertType.WARNING);
 
@@ -308,18 +301,6 @@ else {
         }
     }
 
-    //bouton retour pour retourner vers le menu
-    public void backCategorie(ActionEvent actionEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MenuProduitCategorie.fxml"));
-        Parent root1 = (Parent) fxmlLoader.load();
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root1));
-        Node source = (Node) actionEvent.getSource();
-        Stage currentStage = (Stage) source.getScene().getWindow();
-        currentStage.close();
-        stage.show();
-
-    }
 
     //action chercher categorie par nom
     @FXML
@@ -347,7 +328,7 @@ else {
     }
 
 
-//trie selon le nom de categorie
+    //trie selon le nom de categorie
     @FXML
     public void sortCategorie(ActionEvent actionEvent) {
         String selected = sortCategorieBox.getSelectionModel().getSelectedItem();
@@ -396,7 +377,8 @@ else {
                 String ligne = "ID : " + categorie.getIdCategorie() + "     Nom : " + categorie.getNomCategorie();
                 contentStream.showText(ligne);
 
-                contentStream.newLine();;
+                contentStream.newLine();
+                ;
                 contentStream.newLineAtOffset(0, -15);
 
 
@@ -439,6 +421,7 @@ else {
         }
 
     }
+
     //generate qrcode et l'afficher
     private void generateAndDisplayQRCode(String qrData) {
         try {
@@ -502,13 +485,12 @@ else {
         HSSFRow header = sheet.createRow(0);
 
 
-
         header.createCell(0).setCellValue("idCategorie");
         header.createCell(1).setCellValue("nomCategorie");
 
 
         int index = 1;
-        while(rs.next()){
+        while (rs.next()) {
             HSSFRow row = sheet.createRow(index);
 
             row.createCell(0).setCellValue(rs.getInt("idCategorie"));
@@ -524,5 +506,17 @@ else {
 
         pst.close();
         rs.close();
+    }
+
+    @FXML
+    public void switchToProduit(ActionEvent actionEvent) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/AjouterProduit.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root1));
+        Node source = (Node) actionEvent.getSource();
+        Stage currentStage = (Stage) source.getScene().getWindow();
+        currentStage.close();
+        stage.show();
     }
 }

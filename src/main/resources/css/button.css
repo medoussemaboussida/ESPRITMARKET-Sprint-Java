@@ -268,8 +268,29 @@
       -fx-background-color: #f4874b;
       -fx-text-fill: #011528;
       }
+       #switchCategorie
+            {
+            -fx-background-color: #011528;
+                -fx-text-fill: #f4874b;
+            }
+            #switchCategorie:hover
+            {
+            -fx-background-color: #f4874b;
+                -fx-text-fill: #011528;
+            }
 
       /* css du categorie back end*/
+
+  #switchProduit
+            {
+            -fx-background-color: #011528;
+                -fx-text-fill: #f4874b;
+            }
+            #switchProduit:hover
+            {
+            -fx-background-color: #f4874b;
+                -fx-text-fill: #011528;
+            }
 #btnImageC
 {
   -fx-background-color: #011528;
