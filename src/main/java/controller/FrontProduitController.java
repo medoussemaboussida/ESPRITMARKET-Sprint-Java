@@ -34,6 +34,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -190,12 +191,18 @@ public class FrontProduitController implements Initializable {
         // Clear the existing content in ListView
         listView.getItems().clear();
 
-        // Add each product to ListView
-        for (Produit produit : updatedList) {
-            VBox productBox = createProductBox(produit);
-            listView.getItems().add(productBox);
+        // Add each product to ListView as GridPane
+        for (int i = 0; i < updatedList.size(); i += 4) {
+            GridPane productGridPane = createProductGridPane(
+                    (i < updatedList.size()) ? updatedList.get(i) : null,
+                    (i + 1 < updatedList.size()) ? updatedList.get(i + 1) : null,
+                    (i + 2 < updatedList.size()) ? updatedList.get(i + 2) : null,
+                    (i + 3 < updatedList.size()) ? updatedList.get(i + 3) : null
+            );
+            listView.getItems().add(productGridPane);
         }
     }
+
     @FXML
     private ImageView PanierImage;
 
@@ -203,6 +210,7 @@ public class FrontProduitController implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FrontPanierCommande.fxml"));
         Parent root1 = (Parent) fxmlLoader.load();
         Stage stage = new Stage();
+        stage.setTitle("Votre Panier");
         stage.setScene(new Scene(root1));
         Node source = (Node) mouseEvent.getSource();
         stage.show();
@@ -211,7 +219,8 @@ public class FrontProduitController implements Initializable {
 
 
     @FXML
-    private ListView<VBox> listView;
+    private ListView<GridPane> listView;
+
 
     public void showProduitFrontp() {
         // Clear the existing content in ListView
@@ -221,29 +230,65 @@ public class FrontProduitController implements Initializable {
         list = ps.readProduit();
 
         // Add each product to ListView
-        for (Produit produit : list) {
-            VBox productBox = createProductBox(produit);
-            listView.getItems().add(productBox);
+        for (int i = 0; i < list.size(); i += 4) {
+            GridPane gridPane = createProductGridPane(
+                    list.get(i),
+                    (i + 1 < list.size()) ? list.get(i + 1) : null,
+                    (i + 2 < list.size()) ? list.get(i + 2) : null,
+                    (i + 3 < list.size()) ? list.get(i + 3) : null
+            );
+            listView.getItems().add(gridPane);
+            //css
+            gridPane.getStyleClass().add("grid-pane-product");
+
         }
+
     }
 
+    private GridPane createProductGridPane(Produit produit1, Produit produit2, Produit produit3, Produit produit4) {
+        GridPane gridPane = new GridPane();
+
+        // Create and set up UI components for each product
+        VBox vbox1 = createProductBox(produit1);
+        VBox vbox2 = (produit2 != null) ? createProductBox(produit2) : new VBox(); // Empty VBox if no second product
+        VBox vbox3 = (produit3 != null) ? createProductBox(produit3) : new VBox(); // Empty VBox if no third product
+        VBox vbox4 = (produit4 != null) ? createProductBox(produit4) : new VBox(); // Empty VBox if no fourth product
+
+        // Add components to GridPane
+        gridPane.add(vbox1, 0, 0);
+        gridPane.add(vbox2, 1, 0);
+        gridPane.add(vbox3, 2, 0);
+        gridPane.add(vbox4, 3, 0);
+
+        // Set horizontal gap between columns
+        gridPane.setHgap(10);
+
+        return gridPane;
+    }
     private VBox createProductBox(Produit produit) {
         VBox vbox = new VBox();
+        float prix = produit.getPrix();
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0.000"); // Format avec trois chiffres après la virgule
+        String prixFormate = decimalFormat.format(prix);
 
         // Create and set up UI components for each product
         javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView();
         loadAndSetImage(imageView, produit.getImageProduit());
 
         Label nameLabel = new Label(produit.getNomProduit());
-        Label priceLabel = new Label("Prix: " + produit.getPrix());
+        Label priceLabel = new Label("Prix: " + prixFormate);
         Label quantityLabel = new Label("Quantité en stock: " + produit.getQuantite());
-        Button addButton = new Button("Ajouter dans votre panier");
+        Button addButton = new Button("+");
+        addButton.getStyleClass().add("addbuttonPanier");
+        nameLabel.getStyleClass().add("product-label");
+        priceLabel.getStyleClass().add("product-label");
+        quantityLabel.getStyleClass().add("product-label");
 
         // Add components to VBox
         vbox.getChildren().addAll(imageView, nameLabel, priceLabel, quantityLabel, addButton);
 
         // Set spacing and alignment as needed
-        vbox.setSpacing(10);
+        vbox.setSpacing(11);
         vbox.setAlignment(Pos.CENTER);
 
 
@@ -284,8 +329,8 @@ public class FrontProduitController implements Initializable {
         if (imageFile.exists()) {
             Image image = new Image("file:///" + imageFile.getAbsolutePath());
             imageView.setImage(image);
-            imageView.setFitWidth(150);
-            imageView.setFitHeight(150);
+            imageView.setFitWidth(190);
+            imageView.setFitHeight(190);
         } else {
             // Gérer le cas où le fichier d'image n'existe pas
             System.out.println("Le fichier d'image n'existe pas : " + imagePath);

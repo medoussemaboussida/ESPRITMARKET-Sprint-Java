@@ -106,7 +106,7 @@ public class AjouterProduitController implements Initializable {
     private TableColumn<Produit, String> nomCategorieTab;
 
     @FXML
-    private TableColumn<Produit, Integer> nomPrixTab;
+    private TableColumn<Produit, Float> nomPrixTab;
 
     @FXML
     private TableColumn<Produit, String> nomProduitTab;
@@ -305,6 +305,24 @@ public class AjouterProduitController implements Initializable {
         nomProduitTab.setCellValueFactory(new PropertyValueFactory<>("nomProduit"));
         nomQuantiteTab.setCellValueFactory(new PropertyValueFactory<>("quantite"));
         nomPrixTab.setCellValueFactory(new PropertyValueFactory<>("prix"));
+ //format du prix
+        nomPrixTab.setCellFactory(new Callback<TableColumn<Produit, Float>, TableCell<Produit, Float>>() {
+            @Override
+            public TableCell<Produit, Float> call(TableColumn<Produit, Float> param) {
+                return new TableCell<Produit, Float>() {
+                    @Override
+                    protected void updateItem(Float item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item == null || empty) {
+                            setText(null);
+                        } else {
+                            DecimalFormat decimalFormat = new DecimalFormat("#,##0.000");
+                            setText(decimalFormat.format(item));
+                        }
+                    }
+                };
+            }
+        });
         nomCategorieTab.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Produit, String>, ObservableValue<String>>() {
             @Override
             public ObservableValue<String> call(TableColumn.CellDataFeatures<Produit, String> param) {
