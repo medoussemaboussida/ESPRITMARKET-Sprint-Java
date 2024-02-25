@@ -12,5 +12,6 @@ public interface IServicePanierProduit <T>{
     ObservableList<T> getProduitsDuPanierUtilisateur(Panier panier);
     void DeleteProduitAuPanier(Panier panier, int idProduit);
 
+    public ObservableList<PanierProduit> getAllProduitsPanier();
 
     }

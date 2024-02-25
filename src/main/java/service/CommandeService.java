@@ -1,13 +1,11 @@
 package service;
 
-import entities.Commande;
-import entities.Panier;
+import entities.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import utils.DataSource;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class CommandeService implements IServiceCommande<Commande>{
     private Connection conn;
@@ -45,6 +43,28 @@ public class CommandeService implements IServiceCommande<Commande>{
             System.out.println("Problème lors de l'ajout de la commande ou mise à jour de la quantité !");
             throw new RuntimeException(e);
         }
+    }
+
+
+    @Override
+    public ObservableList<Commande> readAllCommande()
+    {
+        String requete = "SELECT * FROM commande c JOIN panier pn ON c.idPanier = pn.idPanier JOIN utilisateur u ON pn.idUser=u.idUser";
+        ObservableList<Commande> list= FXCollections.observableArrayList();
+        try {
+            statement = conn.createStatement();
+            ResultSet rs=statement.executeQuery(requete);
+            while (rs.next()) {
+                Utilisateur u=new Utilisateur(rs.getInt("u.idUser"),rs.getString("u.nomUser"),rs.getString("u.prenomUser"), rs.getString("u.emailUser"),rs.getString("u.mdp"),rs.getString("u.nbPoints"),rs.getInt("u.numTel"),rs.getString("u.Role"));
+                Panier pn=new Panier(rs.getInt("pn.idPanier"),u);
+                Commande c =new Commande(rs.getInt(1),pn,rs.getDate(3));
+                list.add(c);
+            }
+        } catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
+        return list;
     }
 
 }

@@ -34,12 +34,11 @@ public class PanierProduitService  implements IServicePanierProduit<PanierProdui
 
     @Override
     public ObservableList<PanierProduit> getProduitsDuPanierUtilisateur(Panier panier) {
-        String requete = "SELECT pc.*, pr.*, pn.*, c.*, o.* " +
+        String requete = "SELECT pc.*, pr.*, pn.*, c.* " +
                 "FROM produitcart pc " +
                 "JOIN produit pr ON pc.idProduit = pr.idProduit " +
                 "JOIN panier pn ON pc.idPanier = pn.idPanier " +
                 "JOIN categorie c ON pr.categorie_id = c.idCategorie " +
-                "JOIN offre o ON pr.idOffre = o.idOffre " +
                 "WHERE pc.idPanier = ?";
 
 
@@ -52,8 +51,7 @@ public class PanierProduitService  implements IServicePanierProduit<PanierProdui
 
             while (rs.next()) {
                 Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
-                Offre o=new Offre(rs.getInt("o.idOffre"), rs.getString("o.descriptionOffre"), rs.getString("o.nomOffre"),rs.getDate("o.dateDebut"),rs.getDate("o.dateFin") );
-                Produit prod = new Produit(rs.getInt("pr.idProduit"), rs.getString("pr.nomProduit"), rs.getInt("pr.quantite"), rs.getFloat("pr.prix"), c, rs.getString("pr.imageProduit"), o);
+                Produit prod = new Produit(rs.getInt("pr.idProduit"), rs.getString("pr.nomProduit"), rs.getInt("pr.quantite"), rs.getFloat("pr.prix"), c, rs.getString("pr.imageProduit"));
                 PanierProduit pnss = new PanierProduit(rs.getInt("pc.idPanierProduit"), panier, prod);
                 list.add(pnss);
             }
@@ -81,5 +79,42 @@ public class PanierProduitService  implements IServicePanierProduit<PanierProdui
             throw new RuntimeException(e);
         }
     }
+
+
+
+
+    @Override
+    public ObservableList<PanierProduit> getAllProduitsPanier() {
+        String requete = "SELECT pc.*,pr.*, pn.*, c.*,u.* " +
+                "FROM produitcart pc " +
+                "JOIN produit pr ON pc.idProduit = pr.idProduit " +
+                "JOIN panier pn ON pc.idPanier = pn.idPanier " +
+                "JOIN utilisateur u ON pn.idUser = u.idUser " +
+                "JOIN categorie c ON pr.categorie_id = c.idCategorie";
+
+
+        ObservableList<PanierProduit> list = FXCollections.observableArrayList();
+
+        try {
+            PreparedStatement preparedStatement = conn.prepareStatement(requete);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                Utilisateur u=new Utilisateur(rs.getInt("u.idUser"),rs.getString("u.nomUser"),rs.getString("u.prenomUser"), rs.getString("u.emailUser"),rs.getString("u.mdp"),rs.getString("u.nbPoints"),rs.getInt("u.numTel"),rs.getString("u.Role"));
+                Panier pn=new Panier(rs.getInt("pn.idPanier"),u);
+                Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
+                Produit prod = new Produit(rs.getInt("pr.idProduit"), rs.getString("pr.nomProduit"), rs.getInt("pr.quantite"), rs.getFloat("pr.prix"), c, rs.getString("pr.imageProduit"));
+                PanierProduit pnss = new PanierProduit(rs.getInt("pc.idPanierProduit"),pn, prod);
+                list.add(pnss);
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur SQL : " + e.getMessage()); // Ajout d'une impression de message d'erreur
+            System.out.println("Erreur lors de la récupération des produits du panier");
+
+        }
+
+        return list;
+    }
+
 
 }

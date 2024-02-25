@@ -7,25 +7,23 @@ public class Produit {
     private int quantite;
     private Categorie categorie;
     private String imageProduit;
-    private Offre offre;
 
-    public Produit(int  idProduit, String nomProduit, int quantite, Float prix, Categorie categorie, String imageProduit,Offre offre) {
+    public Produit(int  idProduit, String nomProduit, int quantite, Float prix, Categorie categorie, String imageProduit) {
         this. idProduit =  idProduit;
         this.nomProduit = nomProduit;
         this.prix = prix;
         this.quantite = quantite;
         this.categorie = categorie;
         this.imageProduit = imageProduit;
-        this.offre=offre;
     }
 
-    public Produit(String nomProduit, int quantite, Float prix, Categorie categorie, String imageProduit,Offre offre) {
+    public Produit(String nomProduit, int quantite, Float prix, Categorie categorie, String imageProduit) {
         this.nomProduit = nomProduit;
         this.prix = prix;
         this.quantite = quantite;
         this.categorie = categorie;
         this.imageProduit = imageProduit;
-        this.offre=offre;
+
     }
 public Produit(String nomProduit,Float prix)
 {
@@ -76,13 +74,6 @@ public Produit(String nomProduit,Float prix)
         this.categorie = categorie;
     }
 
-    public Offre getOffre() {
-        return offre;
-    }
-
-    public void setOffre(Offre offre) {
-        this.offre = offre;
-    }
 
     public String getImageProduit() {
         return imageProduit;

@@ -48,7 +48,7 @@ import javafx.stage.Stage;
 public class FrontProduitController implements Initializable {
     private final ProduitService ps = new ProduitService();
     String filepath = null, filename = null, fn = null;
-    String uploads = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/Images/";
+    String uploads = "C:/xampp/htdocs/";
     FileChooser fc = new FileChooser();
     ObservableList<Produit> list = FXCollections.observableArrayList();
     public int idProduit;

@@ -99,7 +99,7 @@ public class AjouterCategorieController implements Initializable {
 
     //le path  et les elements pour stocker les images
     String filepath = null, filename = null, fn = null;
-    String uploads = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/Images/";
+    String uploads = "C:/xampp/htdocs/";
     String uploads2 = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/PDF/";
     FileChooser fc = new FileChooser();
     ObservableList<Categorie> list = FXCollections.observableArrayList();

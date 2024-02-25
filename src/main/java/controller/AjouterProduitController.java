@@ -5,7 +5,6 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import entities.Categorie;
-import entities.Offre;
 import entities.Produit;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -45,7 +44,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import service.CategorieService;
-import service.OffreService;
 import service.ProduitService;
 import utils.DataSource;
 
@@ -71,8 +69,6 @@ public class AjouterProduitController implements Initializable {
     private ProduitService pss = new ProduitService();
     @FXML
     private TextField RechercherProduit;
-    @FXML
-    private ComboBox<Offre> comboOffreP;
 
     @FXML
     private ComboBox<Categorie> ComboProduitC;
@@ -119,7 +115,7 @@ public class AjouterProduitController implements Initializable {
     private TableColumn<Produit, String> OffreProduitTab;
 
     String filepath = null, filename = null, fn = null;
-    String uploads = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/Images/";
+    String uploads = "C:/xampp/htdocs/";
     FileChooser fc = new FileChooser();
     ObservableList<Produit> list = FXCollections.observableArrayList();
     public int idProduit;
@@ -151,7 +147,6 @@ public class AjouterProduitController implements Initializable {
         sortProduitBox.getItems().addAll("Trier", "Trier par Prix ↑", "Trier par Prix ↓");
         sortProduitBox.getSelectionModel().select("Trier");
         setCombo();
-        setComboOffre();
         showProduit();
 
         addDataToChart();
@@ -219,18 +214,10 @@ public class AjouterProduitController implements Initializable {
             a.showAndWait();
 
         }
-        else if(comboOffreP.getValue()==null)
-        {
-            Alert a = new Alert(Alert.AlertType.WARNING);
-            a.setTitle("Erreur");
-            a.setContentText("il faut sélectionner une offre !");
-            a.showAndWait();
-        }
 
         else {
             String nomProd = tfNomProduit.getText();
             Categorie cat = ComboProduitC.getValue();
-            Offre of = comboOffreP.getValue();
             Float prix = Float.parseFloat(tfPrixProduit.getText());
             int quantite = Integer.parseInt(tfQuantiteProduit.getText());
             if(quantite<=0)
@@ -251,7 +238,7 @@ public class AjouterProduitController implements Initializable {
             }
             else {
 
-                ps.addProduit(new Produit(nomProd, quantite, prix, cat, filename, of));
+                ps.addProduit(new Produit(nomProd, quantite, prix, cat, filename));
                 Alert a = new Alert(Alert.AlertType.WARNING);
                 a.setTitle("Succes");
                 a.setContentText("Produit Ajoutée");
@@ -262,10 +249,9 @@ public class AjouterProduitController implements Initializable {
     public void ModifierProduit(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
         String nomProd = tfNomProduit.getText();
         Categorie cat = ComboProduitC.getValue();
-        Offre of = comboOffreP.getValue();
        Float prix = Float.parseFloat(tfPrixProduit.getText());
         int quantite = Integer.parseInt(tfQuantiteProduit.getText());
-        Produit p = new Produit(idProduit, nomProd, quantite, prix, cat, fn, of);
+        Produit p = new Produit(idProduit, nomProd, quantite, prix, cat, fn);
         pss.modifyProduit(p);
         Alert a = new Alert(Alert.AlertType.WARNING);
 
@@ -330,13 +316,7 @@ public class AjouterProduitController implements Initializable {
                 return new SimpleStringProperty(nomCategorie);
             }
         });
-        OffreProduitTab.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Produit, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<Produit, String> param) {
-                String nomOffre = param.getValue().getOffre().getNomOffre();
-                return new SimpleStringProperty(nomOffre);
-            }
-        });
+
         imageProduitTab.setCellFactory(column -> new TableCell<Produit, String>() {
             private final ImageView imageView = new ImageView();
 
@@ -371,7 +351,6 @@ public class AjouterProduitController implements Initializable {
             tfNomProduit.setText(selected.getNomProduit());
             tfPrixProduit.setText(String.valueOf(selected.getPrix()));
             tfQuantiteProduit.setText(String.valueOf(selected.getQuantite()));
-            comboOffreP.setValue(selected.getOffre());
             idProduit = selected.getIdProduit();
             fn = selected.getImageProduit();
             Image im = new Image("file:" + uploads + selected.getImageProduit());
@@ -379,35 +358,6 @@ public class AjouterProduitController implements Initializable {
         }
     }
 
-    public void setComboOffre() {
-        OffreService tabO = new OffreService();
-        List<Offre> tabListOffre = tabO.readOffre();
-        ArrayList<Offre> Offres = new ArrayList<>();
-        for (Offre o : tabListOffre) {
-            Offre of = new Offre();
-            of.setIdOffre(o.getIdOffre());
-            of.setNomOffre(o.getNomOffre());
-            Offres.add(of);
-        }
-        ObservableList<Offre> choices = FXCollections.observableArrayList(Offres);
-        comboOffreP.setItems(choices);
-        comboOffreP.setConverter(new StringConverter<Offre>() {
-            @Override
-            public String toString(Offre offre) {
-                if (offre == null) {
-                    return null;
-                } else {
-                    return offre.getNomOffre();
-                }
-            }
-
-            @Override
-            public Offre fromString(String string) {
-                // Vous pouvez implémenter cette méthode si nécessaire
-                return null;
-            }
-        });
-    }
 
 
     public void setCombo() {
