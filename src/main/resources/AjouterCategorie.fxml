@@ -24,7 +24,10 @@
          <font>
             <Font name="Arial Black" size="12.0" />
          </font></Button>
-      <ImageView fx:id="tfImage" fitHeight="172.0" fitWidth="216.0" layoutX="766.0" layoutY="68.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="tfImage" fitHeight="172.0" fitWidth="216.0" layoutX="766.0" layoutY="68.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Photos/insertImage.jpg" />
+         </image></ImageView>
       <Button fx:id="btnImageC" layoutX="596.0" layoutY="86.0" mnemonicParsing="false" onAction="#btn_image_action" text="inserer Image">
          <font>
             <Font name="Arial Black" size="12.0" />
@@ -73,6 +76,11 @@
       <Line endX="251.6690673828125" layoutX="449.0" layoutY="236.0" startX="-100.0" />
       <Line endX="173.00241088867188" layoutX="121.0" layoutY="75.0" opacity="0.62" startX="-112.0" stroke="#ff9d26" />
       <Button fx:id="switchProduit" layoutX="58.0" layoutY="121.0" mnemonicParsing="false" onAction="#switchToProduit" prefHeight="25.0" prefWidth="165.0" text="Produit">
+         <font>
+            <Font name="Arial Black" size="16.0" />
+         </font>
+      </Button>
+      <Button fx:id="switchPanierCommande2" layoutX="55.0" layoutY="184.0" mnemonicParsing="false" onAction="#switchToPanierCommande2" prefHeight="34.0" prefWidth="193.0" text="Panier/Commande">
          <font>
             <Font name="Arial Black" size="16.0" />
          </font>

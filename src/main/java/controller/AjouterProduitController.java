@@ -224,7 +224,7 @@ public class AjouterProduitController implements Initializable {
             {
                 Alert a = new Alert(Alert.AlertType.WARNING);
                 a.setTitle("Erreur");
-                a.setContentText("prix supérieur à 0!");
+                a.setContentText("Quantité supérieur à 0!");
                 a.showAndWait();
             }
             else
@@ -247,19 +247,78 @@ public class AjouterProduitController implements Initializable {
         }
     }
     public void ModifierProduit(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
-        String nomProd = tfNomProduit.getText();
-        Categorie cat = ComboProduitC.getValue();
-       Float prix = Float.parseFloat(tfPrixProduit.getText());
-        int quantite = Integer.parseInt(tfQuantiteProduit.getText());
-        Produit p = new Produit(idProduit, nomProd, quantite, prix, cat, fn);
-        pss.modifyProduit(p);
-        Alert a = new Alert(Alert.AlertType.WARNING);
+        if (tfNomProduit.getText().isEmpty()) {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("nom Produit est vide !");
+            a.showAndWait();
 
-        a.setTitle("Succes");
-        a.setContentText("Produit Modifiée");
-        a.showAndWait();
-        showProduit();
+        }
+        else if(ComboProduitC.getValue()==null)
+        {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("il faut sélectionner une categorie !");
+            a.showAndWait();
+        }
 
+        else if (tfQuantiteProduit.getText().isEmpty())
+        {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("quantite est vide !");
+            a.showAndWait();
+        }
+        else if(tfPrixProduit.getText().isEmpty())
+        {
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("Prix est vide !");
+            a.showAndWait();
+        }
+        else if (fn == null) {
+
+            Alert a = new Alert(Alert.AlertType.WARNING);
+            a.setTitle("Erreur");
+            a.setContentText("Charger une image svp !.");
+            a.showAndWait();
+
+        }
+        else {
+
+
+            String nomProd = tfNomProduit.getText();
+            Categorie cat = ComboProduitC.getValue();
+            Float prix = Float.parseFloat(tfPrixProduit.getText());
+            int quantite = Integer.parseInt(tfQuantiteProduit.getText());
+            if(quantite<=0)
+            {
+                Alert a = new Alert(Alert.AlertType.WARNING);
+                a.setTitle("Erreur");
+                a.setContentText("Quantité supérieur à 0!");
+                a.showAndWait();
+            }
+            else
+            if(prix<=0)
+            {
+                Alert a = new Alert(Alert.AlertType.WARNING);
+                a.setTitle("Erreur");
+                a.setContentText("prix supérieur à 0!");
+                a.showAndWait();
+
+            }
+            else {
+
+                Produit p = new Produit(idProduit, nomProd, quantite, prix, cat, fn);
+                pss.modifyProduit(p);
+                Alert a = new Alert(Alert.AlertType.WARNING);
+
+                a.setTitle("Succes");
+                a.setContentText("Produit Modifiée");
+                a.showAndWait();
+                showProduit();
+            }
+        }
     }
 
     public void SupprimerProduit(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
@@ -541,7 +600,6 @@ public class AjouterProduitController implements Initializable {
                 contentStream.showText(ligne);
 
                 contentStream.newLine();
-                ;
                 contentStream.newLineAtOffset(0, -15);
 
 
@@ -608,7 +666,6 @@ public class AjouterProduitController implements Initializable {
 
     }
 
-
     private void addDataToChart() {
         // Efface les données existantes
         pieChart.getData().clear();
@@ -661,8 +718,15 @@ public class AjouterProduitController implements Initializable {
 
 
     @FXML
-    public void refreshProduit(ActionEvent actionEvent) {
-    showProduit();
+    public void refreshProduit(ActionEvent actionEvent)throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/AjouterProduit.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root1));
+        Node source = (Node) actionEvent.getSource();
+        Stage currentStage = (Stage) source.getScene().getWindow();
+        currentStage.close();
+        stage.show();
     }
 
     // navbar vers categorie
@@ -677,6 +741,19 @@ public class AjouterProduitController implements Initializable {
     currentStage.close();
     stage.show();
 }
+
+@FXML
+    public void switchToPanierCommande(ActionEvent actionEvent) throws IOException {
+    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/BackPanierCommande.fxml"));
+    Parent root1 = (Parent) fxmlLoader.load();
+    Stage stage = new Stage();
+    stage.setScene(new Scene(root1));
+    Node source = (Node) actionEvent.getSource();
+    Stage currentStage = (Stage) source.getScene().getWindow();
+    currentStage.close();
+    stage.show();
+}
+
     /*
 
     private void updateTextField (String newT){

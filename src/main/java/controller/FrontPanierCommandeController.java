@@ -68,7 +68,9 @@ public class FrontPanierCommandeController implements Initializable{
 
         tabDeletePanierr.setCellFactory(column -> new TableCell<PanierProduit, HBox>() {
             private final Button DeleteButton = new Button("Delete");
+
             {
+                DeleteButton.getStyleClass().add("addbuttonPanier");
                 DeleteButton.setOnAction(event -> {
                     PanierProduit pn = getTableView().getItems().get(getIndex());
                     Panier panier = pns.selectPanierParUserId(utilisateur.getIdUser());
@@ -78,9 +80,10 @@ public class FrontPanierCommandeController implements Initializable{
                     alert.setHeaderText(null);
                     alert.setContentText("produit supprimé de votre panier.");
                     alert.showAndWait();
-
+showProduitDuPanierUser();
                 });
             }
+
 
 
 

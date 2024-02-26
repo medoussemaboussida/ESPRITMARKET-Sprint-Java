@@ -454,3 +454,23 @@ tableCommandeBack.column-header
                   -fx-font-family: "Arial Black";
                   -fx-font-style: normal;
                   }
+                   #switchPanierCommande
+                              {
+                              -fx-background-color: #011528;
+                                  -fx-text-fill: #f4874b;
+                              }
+                              #switchPanierCommande:hover
+                              {
+                              -fx-background-color: #f4874b;
+                                  -fx-text-fill: #011528;
+                              }
+                              #switchPanierCommande2
+                               {
+                               -fx-background-color: #011528;
+                                   -fx-text-fill: #f4874b;
+                               }
+                               #switchPanierCommande2:hover
+                               {
+                               -fx-background-color: #f4874b;
+                                   -fx-text-fill: #011528;
+                               }

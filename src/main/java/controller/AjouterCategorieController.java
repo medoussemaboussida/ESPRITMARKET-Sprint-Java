@@ -519,4 +519,15 @@ public class AjouterCategorieController implements Initializable {
         currentStage.close();
         stage.show();
     }
+
+    public void switchToPanierCommande2(ActionEvent actionEvent)throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/BakcPanierCommande.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root1));
+        Node source = (Node) actionEvent.getSource();
+        Stage currentStage = (Stage) source.getScene().getWindow();
+        currentStage.close();
+        stage.show();
+    }
 }
