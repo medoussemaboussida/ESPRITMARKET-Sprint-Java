@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane prefHeight="660.0" prefWidth="1023.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ListPublication">
+   <children>
+      <TableView fx:id="publicationTable" layoutX="40.0" layoutY="229.0" prefHeight="400.0" prefWidth="641.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
+        <columns>
+          <TableColumn fx:id="titreFx" prefWidth="139.0" text="TITRE" />
+            <TableColumn fx:id="descriptionFx" prefWidth="300.0" text="DESCRIPTION" />
+            <TableColumn fx:id="dateFx" prefWidth="120.0" text="DATE" />
+            <TableColumn fx:id="imageFx" prefWidth="188.0" text="IMAGE" />
+            <TableColumn fx:id="edit" prefWidth="126.0" text="ACTION" />
+        </columns>
+      </TableView>
+      <Pane layoutY="98.0" prefHeight="3.0" prefWidth="1024.0" style="-fx-background-color: BLACK;" />
+      <Text layoutX="28.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Listes des Publications" wrappingWidth="454.4140625">
+         <font>
+            <Font name="Comic Sans MS" size="37.0" />
+         </font>
+      </Text>
+      <HBox alignment="CENTER" layoutX="952.0" layoutY="30.0" prefHeight="43.0" prefWidth="51.0">
+         <children>
+            <HBox alignment="CENTER">
+               <children>
+                  <FontAwesomeIconView glyphName="CLOSE" onMouseClicked="#close" size="20" text="" wrappingWidth="10.428571701049805" />
+               </children>
+            </HBox>
+         </children>
+      </HBox>
+      <HBox layoutX="40.0" layoutY="111.0" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <HBox>
+               <children>
+                  <FontAwesomeIconView fill="#2196f3" glyphName="PLUS_SQUARE" onMouseClicked="#addPublication" size="40" text="">
+                     <HBox.margin>
+                        <Insets top="8.0" />
+                     </HBox.margin>
+                  </FontAwesomeIconView>
+               </children>
+            </HBox>
+            <Text fill="#2196f3" strokeType="OUTSIDE" strokeWidth="0.0" text="  Ajouter une Publication">
+               <font>
+                  <Font name="Comic Sans MS" size="23.0" />
+               </font>
+               <HBox.margin>
+                  <Insets top="8.0" />
+               </HBox.margin>
+            </Text>
+         </children>
+      </HBox>
+      <HBox layoutX="40.0" layoutY="167.0" prefHeight="33.0" prefWidth="200.0">
+         <children>
+            <FontAwesomeIconView fill="#2196f3" glyphName="REFRESH" onMouseClicked="#refresh" size="40" />
+            <Text fill="#2196f3" strokeType="OUTSIDE" strokeWidth="0.0" text="  Mise à jour ">
+               <font>
+                  <Font name="Comic Sans MS" size="22.0" />
+               </font>
+            </Text>
+         </children>
+      </HBox>
+      <ComboBox fx:id="sortPublicationBox" layoutX="550.0" layoutY="175.0" onAction="#sortPublication" prefHeight="25.0" prefWidth="122.0" />
+      <TextField fx:id="RechercherPublication" layoutX="842.0" layoutY="175.0" onKeyPressed="#searchPublication" promptText="            Chercher" style="-fx-background-color: transparant; -fx-border-color: #0598ff; -fx-border-width: 0px 0px 2px 0px;" />
+      <Text fill="#2196f3" layoutX="729.0" layoutY="193.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Rechercher:">
+         <font>
+            <Font name="Comic Sans MS" size="19.0" />
+         </font>
+      </Text>
+      <Text fill="#2196f3" layoutX="481.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filtrer:">
+         <font>
+            <Font name="Comic Sans MS" size="19.0" />
+         </font>
+      </Text>
+   </children>
+</AnchorPane>
