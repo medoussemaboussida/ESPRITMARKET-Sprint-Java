@@ -1,10 +1,13 @@
 package org.example;
 
+import Service.CodePromoService;
 import Service.OffreService;
+import entities.CodePromo;
 import entities.Offre;
 import entities.Produit;
 import utils.DataSource;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,7 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Main {
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws ParseException, SQLException {
         DataSource ds= DataSource.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             // Supposons que vous ayez ces dates sous forme de chaînes
@@ -31,12 +34,12 @@ public class Main {
        // cs.deleteOffre(22);
         //cs.updateOffre(new Offre(23,"superrr","Aid Kbir", dateDebut,dateFin ));
 
-        /*CodePromo c = new CodePromo(5, 20,"jaw");
+        CodePromo c = new CodePromo(7, 20,"jaw",dateDebut,dateFin);
         CodePromoService cps=new CodePromoService();
         //cps.addCodePromo(c);
-         cps.readCodePromo().forEach(System.out::println);
+       // cps.readCodePromo().forEach(System.out::println);
         // cps.deleteCodePromo(5);
-         cps.modifyCodePromo(new CodePromo(5,50,"ey baba" ));*/
+        // cps.modifyCodePromo(new CodePromo(5,50,"ey baba" ));*/
 
     }
 }

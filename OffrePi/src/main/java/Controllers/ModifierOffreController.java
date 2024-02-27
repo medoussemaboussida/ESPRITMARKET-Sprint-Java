@@ -138,6 +138,7 @@ public class ModifierOffreController implements Initializable {
            return;
        }
 
+
        // Récupérer les produits sélectionnés par l'utilisateur
        ObservableList<Produit> produitsSelectionnes = ListeViewAModifier.getSelectionModel().getSelectedItems();
 

@@ -114,18 +114,14 @@ public class AjouterOffreController{
     }
     @FXML
     void ajouter(ActionEvent event) throws IOException {
-        System.out.println("hhhhhhhhhhaaaaaaaaaaaaaaaaaaaaaaaa");
 
         String nomOffre = nom.getText();
         String descriptionOffre = description.getText();
         LocalDate dateDebut = debut.getValue();
         LocalDate dateFin = fin.getValue();
-        System.out.println("nomOffre************"+ nomOffre);
-        System.out.println("descriptionOffre************"+ descriptionOffre);
+        System.out.println(reduction.getText().isEmpty());
 
-        int reductionOffre = Integer.parseInt(reduction.getText());
-
-        if (nomOffre.isEmpty() || descriptionOffre.isEmpty() || dateDebut == null || dateFin == null) {
+        if (nomOffre.isEmpty() || descriptionOffre.isEmpty() || dateDebut == null || dateFin == null || reduction.getText().isEmpty() || filename ==null  ) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erreur");
             alert.setHeaderText(null);
@@ -133,6 +129,19 @@ public class AjouterOffreController{
             alert.showAndWait();
             return;
         }
+
+       /**** condition of date debut et date fin **/
+        if (dateDebut.isAfter(dateFin)) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText(null);
+            alert.setContentText("date debut must be before  date fin");
+            alert.showAndWait();
+            return;
+        }
+        /**** condition of date debut et date fin **/
+
+        int reductionOffre = Integer.parseInt(reduction.getText());
 
         // Récupérer les produits sélectionnés par l'utilisateur
         ObservableList<Produit> produitsSelectionnes = produitsListView.getSelectionModel().getSelectedItems();
@@ -146,14 +155,11 @@ public class AjouterOffreController{
 
 
 
-        Offre nouvelleOffre = new Offre(nomOffre, descriptionOffre, Date.valueOf(dateDebut), Date.valueOf(dateFin),filename,reductionOffre);
-        /******************retreive ids products selected**************************/
+        Offre nouvelleOffre = new Offre(nomOffre, descriptionOffre, Date.valueOf(dateDebut), Date.valueOf(dateFin),reductionOffre);
         List<Produit> modifiedList = selectedItems.stream().collect(Collectors.toList());
-        /******************retreive ids products selected**************************/
-        System.out.println("**************modifiedList***************"+modifiedList);
         nouvelleOffre.setProduits(modifiedList);
-        //  nouvelleOffre.setProduits();
-        System.out.println("nouvellle offre****************** "+ nouvelleOffre);
+        nouvelleOffre.setImageOffre(filename);
+
         os.addOffre(nouvelleOffre);
 
         //

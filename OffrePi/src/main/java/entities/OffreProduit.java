@@ -1,22 +1,22 @@
 package entities;
 
 public class OffreProduit {
-    int idOffreProduit;
+    int id;
     Produit produit;
     Offre offre;
 
-    public OffreProduit(int idOffreProduit, Produit produit, Offre offre) {
-        this.idOffreProduit = idOffreProduit;
+    public OffreProduit(int id, Produit produit, Offre offre) {
+        this.id = id;
         this.produit = produit;
         this.offre = offre;
     }
 
-    public int getIdOffreProduit() {
-        return idOffreProduit;
+    public int getId() {
+        return id;
     }
 
-    public void setIdOffreProduit(int idOffreProduit) {
-        this.idOffreProduit = idOffreProduit;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Produit getProduit() {
@@ -38,7 +38,7 @@ public class OffreProduit {
     @Override
     public String toString() {
         return "OffreProduit{" +
-                "idOffreProduit=" + idOffreProduit +
+                "id=" + id +
                 ", produit=" + produit +
                 ", offre=" + offre +
                 '}';

@@ -46,14 +46,12 @@ public class Offre {
 
     }
 
-    public Offre( String descriptionOffre, String nomOffre, Date dateDebut, Date dateFin, String imageOffre, int reduction) {
+    public Offre( String descriptionOffre, String nomOffre, Date dateDebut, Date dateFin, int reduction) {
         this.descriptionOffre = descriptionOffre;
         this.nomOffre = nomOffre;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
-        this.imageOffre = imageOffre;
         this.reduction = reduction;
-        this.produits = new ArrayList<>();
     }
 
     public int getIdOffre() {

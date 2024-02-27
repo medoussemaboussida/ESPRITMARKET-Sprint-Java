@@ -25,12 +25,10 @@ public class OffreProduitService implements IServiceOffreProduit<OffreProduit>{
         }
     }
 
+
+   // public void supprimerProduitDeLOffre(Offre offre, int idProduit) {
     @Override
-    public void DeleteProduitAuOffre(Offre offre, int idProduit) {
-
-    }
-
-    public void supprimerProduitDeLOffre(Offre offre, int idProduit) {
+   public void DeleteProduitAuOffre(Offre offre, int idProduit) {
         String requete = "DELETE FROM offreProduit WHERE idOffre = ? AND idProduit = ?";
         try {
             PreparedStatement pst = conn.prepareStatement(requete);

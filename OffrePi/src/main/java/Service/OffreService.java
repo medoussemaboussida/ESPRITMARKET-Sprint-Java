@@ -19,12 +19,12 @@ public class OffreService implements IServiceOffre<Offre> {
         produitService = new ProduitService(); // Initialisation du service des produits
     }
     public void addOffre(Offre o) {
-        System.out.println("addOffre");
-        System.out.println("offree "+o);
-        String insertOffreQuery = "INSERT INTO offre (nomOffre, descriptionOffre, dateDebut, dateFin, imageOffre, reduction) VALUES (?,?,?, ?, ?, ?)";
+        System.out.println("********************offre" + o.toString());
+        String insertOffreQuery = "INSERT INTO offre (nomOffre, descriptionOffre,dateDebut,dateFin, imageOffre,reduction) VALUES (?,?,?,?,?,?)";
 
         try {
             PreparedStatement pstOffre = conn.prepareStatement(insertOffreQuery, Statement.RETURN_GENERATED_KEYS);
+
             pstOffre.setString(1, o.getNomOffre());
             pstOffre.setString(2, o.getDescriptionOffre());
             if (o.getDateDebut() != null) {
@@ -39,12 +39,20 @@ public class OffreService implements IServiceOffre<Offre> {
                 pstOffre.setNull(4, Types.DATE);
             }
             pstOffre.setString(5, o.getImageOffre());
-
             pstOffre.setInt(6, o.getReduction());
 
-            pstOffre.executeUpdate();
+            int affectedRows = pstOffre.executeUpdate();
 
+            if (affectedRows > 0) {
+                ResultSet generatedKeys = pstOffre.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    // Handle generated keys if necessary
+                }
 
+                System.out.println("Offer inserted successfully!");
+            } else {
+                System.out.println("No rows affected. Offer not inserted.");
+            }
             ResultSet generatedKeys = pstOffre.getGeneratedKeys();
             int idOffre = -1;
             if (generatedKeys.next()) {
@@ -52,13 +60,22 @@ public class OffreService implements IServiceOffre<Offre> {
             } else {
                 throw new SQLException("Failed to retrieve the ID of the offer.");
             }
-
             insertOffreProduits(idOffre, o.getProduits());
 
-            System.out.println("Offer added successfully!");
         } catch (SQLException e) {
-            throw new RuntimeException("Error adding offer: " + e.getMessage());
+            e.printStackTrace(); // Print the detailed error message
+
+            // Optionally, print specific information from the SQLException
+            System.err.println("SQL State: " + e.getSQLState());
+            System.err.println("Error Code: " + e.getErrorCode());
+            System.err.println("Error Message: " + e.getMessage());
+
+            // Print the values you're trying to insert for further inspection
+            System.err.println("Nom Offre: " + o.getNomOffre());
+            System.err.println("Description Offre: " + o.getDescriptionOffre());
         }
+
+
     }
 
     private void insertOffreProduits(int idOffre, List<Produit> produits) {

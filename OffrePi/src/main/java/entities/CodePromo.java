@@ -1,21 +1,24 @@
 package entities;
 
+import java.util.Date;
+
 public class CodePromo {
     private int idCode;
     private int reductionAssocie;
     private String code;
-    private boolean utilise;
-    private String email;
+    private Date dateDebut;
+    private Date dateFin;
 
-    public CodePromo(int idCode, int reductionAssocie, String code, boolean utilise, String email) {
+    public CodePromo(int idCode, int reductionAssocie, String code, Date dateDebut, Date dateFin) {
         this.idCode = idCode;
         this.reductionAssocie = reductionAssocie;
         this.code = code;
-        this.utilise = utilise;
-        this.email = email;
+        this.dateDebut = dateDebut;
+        this.dateFin = dateFin;
     }
 
-    public CodePromo(String email) {
+    public CodePromo() {
+
     }
 
     public int getIdCode() {
@@ -42,20 +45,20 @@ public class CodePromo {
         this.code = code;
     }
 
-    public boolean isUtilise() {
-        return utilise;
+    public Date getDateDebut() {
+        return dateDebut;
     }
 
-    public void setUtilise(boolean utilise) {
-        this.utilise = utilise;
+    public void setDateDebut(Date dateDebut) {
+        this.dateDebut = dateDebut;
     }
 
-    public String getEmail() {
-        return email;
+    public Date getDateFin() {
+        return dateFin;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setDateFin(Date dateFin) {
+        this.dateFin = dateFin;
     }
 
     @Override
@@ -64,12 +67,11 @@ public class CodePromo {
                 "idCode=" + idCode +
                 ", reductionAssocie=" + reductionAssocie +
                 ", code='" + code + '\'' +
-                ", utilise=" + utilise +
-                ", email='" + email + '\'' +
+                ", dateDebut=" + dateDebut +
+                ", dateFin=" + dateFin +
                 '}';
     }
-
-    // Méthode pour envoyer un e-mail contenant le code promo
+    /* // Méthode pour envoyer un e-mail contenant le code promo
     public void sendPromoCodeEmail() {
         // Code pour envoyer un e-mail à l'utilisateur avec le code promo
         String subject = "Votre code promo pour votre prochain achat";
@@ -88,16 +90,9 @@ public class CodePromo {
         System.out.println("Message : " + message);
         System.out.println("E-mail envoyé avec succès !");
     }
-
+*/
     // Méthode pour vérifier si le code promo peut être utilisé
-    public boolean peutUtiliser() {
-        return !utilise;
-    }
 
-    // Méthode pour marquer le code promo comme utilisé
-    public void utiliser() {
-        this.utilise = true;
-    }
 
     /*// Méthode principale pour tester
     public static void main(String[] args) {
