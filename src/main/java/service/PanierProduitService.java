@@ -116,5 +116,30 @@ public class PanierProduitService  implements IServicePanierProduit<PanierProdui
         return list;
     }
 
+    @Override
+    public float facture(Panier panier) {
+        String requete = "SELECT SUM(pr.prix) AS total " +
+                "FROM produitcart pc " +
+                "JOIN produit pr ON pc.idProduit = pr.idProduit " +
+                "JOIN panier pn ON pc.idPanier = pn.idPanier " +
+                "WHERE pc.idPanier = ?";
+        float total = 0; // Initialisation de la variable total
+
+        try {
+            PreparedStatement pst = conn.prepareStatement(requete);
+            pst.setInt(1, panier.getIdPanier());
+            ResultSet rs = pst.executeQuery(); // Exécution de la requête
+
+            // Vérification si le résultat existe
+            if (rs.next()) {
+                total = rs.getFloat(1); // Récupération de la somme des prix
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur SQL : " + e.getMessage());
+        }
+
+        return total; // Retourne le total calculé
+    }
+
 
 }

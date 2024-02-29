@@ -1,4 +1,8 @@
 package controller;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.common.BitMatrix;
 import entities.*;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
@@ -17,6 +21,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
@@ -35,9 +41,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
+
 import javafx.scene.Node;
 import javafx.scene.control.TableView;
 import javafx.fxml.FXMLLoader;
@@ -190,7 +196,6 @@ public class FrontProduitController implements Initializable {
 
         // Clear the existing content in ListView
         listView.getItems().clear();
-
         // Add each product to ListView as GridPane
         for (int i = 0; i < updatedList.size(); i += 4) {
             GridPane productGridPane = createProductGridPane(
@@ -265,6 +270,8 @@ public class FrontProduitController implements Initializable {
 
         return gridPane;
     }
+    @FXML
+    private ImageView qrcodeProduit;
     private VBox createProductBox(Produit produit) {
         VBox vbox = new VBox();
         float prix = produit.getPrix();
@@ -283,9 +290,10 @@ public class FrontProduitController implements Initializable {
         nameLabel.getStyleClass().add("product-label");
         priceLabel.getStyleClass().add("product-label");
         quantityLabel.getStyleClass().add("product-label");
-
+        Button qrCodeButton = new Button("QR code");
+        qrCodeButton.getStyleClass().add("addbuttonPanier");
         // Add components to VBox
-        vbox.getChildren().addAll(imageView, nameLabel, priceLabel, quantityLabel, addButton);
+        vbox.getChildren().addAll(imageView, nameLabel, priceLabel, quantityLabel, addButton,qrCodeButton);
 
         // Set spacing and alignment as needed
         vbox.setSpacing(11);
@@ -319,7 +327,16 @@ public class FrontProduitController implements Initializable {
             showProduitFrontp();
         });
 
+qrCodeButton.setOnAction(event ->
+        {
+            String qrData = "Nom: " + produit.getNomProduit() + "\t Quantite: " + produit.getQuantite() + "\n Prix: " + produit.getPrix() + "\t Categorie associée: " + produit.getCategorie().getNomCategorie();
 
+            // Générez et affichez le QR code
+            generateAndDisplayQRCode(qrData);
+        }
+
+
+        );
 
         return vbox;
     }
@@ -338,6 +355,54 @@ public class FrontProduitController implements Initializable {
         }
     }
 
+    //generate qrcode et l'afficher
+    private void generateAndDisplayQRCode(String qrData) {
+        try {
+            // Configuration pour générer le QR code
+            Map<EncodeHintType, Object> hints = new HashMap<>();
+            hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+
+            // Générer le QR code avec ZXing
+            BitMatrix matrix = new MultiFormatWriter().encode(qrData, BarcodeFormat.QR_CODE, 184, 199, hints);
+// Ajuster la taille de l'ImageView
+            qrcodeProduit.setFitWidth(100);
+            qrcodeProduit.setFitHeight(100);
+
+            // Convertir la matrice en image JavaFX
+            Image qrCodeImage = matrixToImage(matrix);
+
+            // Afficher l'image du QR code dans l'ImageView
+            qrcodeProduit.setImage(qrCodeImage);
+            Alert a = new Alert(Alert.AlertType.WARNING);
+
+            a.setTitle("Succes");
+            a.setContentText("qr code generer");
+            a.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Méthode pour convertir une matrice BitMatrix en image BufferedImage
+    private Image matrixToImage(BitMatrix matrix) {
+        int width = matrix.getWidth();
+        int height = matrix.getHeight();
+
+        WritableImage writableImage = new WritableImage(width, height);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int pixelColor = matrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF;
+                pixelWriter.setArgb(x, y, pixelColor);
+            }
+        }
+
+        System.out.println("Matrice convertie en image avec succès");
+
+        return writableImage;
+    }
 }
 
 

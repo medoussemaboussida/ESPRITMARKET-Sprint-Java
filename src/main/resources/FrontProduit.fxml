@@ -27,7 +27,7 @@
          </image>
       </ImageView>
       <ListView fx:id="listView" layoutX="274.0" layoutY="131.0" prefHeight="563.0" prefWidth="894.0" />
-      <ImageView fitHeight="45.0" fitWidth="46.0" layoutX="970.0" layoutY="71.0" opacity="0.67" pickOnBounds="true" preserveRatio="true" rotate="45.0">
+      <ImageView fitHeight="45.0" fitWidth="46.0" layoutX="883.0" layoutY="71.0" opacity="0.67" pickOnBounds="true" preserveRatio="true" rotate="45.0">
          <image>
             <Image url="@Photos/soda.png" />
          </image>
@@ -39,5 +39,6 @@
       </ImageView>
       <TextField layoutX="289.0" layoutY="23.0" prefHeight="31.0" prefWidth="254.0" promptText="Rechercher" />
       <Line endX="114.8309326171875" layoutX="124.0" layoutY="81.0" startX="-100.0" stroke="#ffa01a" />
+      <ImageView fx:id="qrcodeProduit" fitHeight="75.0" fitWidth="87.0" layoutX="1081.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" />
    </children>
 </AnchorPane>

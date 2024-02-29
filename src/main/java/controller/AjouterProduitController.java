@@ -626,81 +626,97 @@ public class AjouterProduitController implements Initializable {
 
     @FXML
     public void generateExcelProduit(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
-
-        String req = "SELECT idProduit,nomProduit,quantite,prix FROM produit ";
+        // Note : Assurez-vous que la jointure et la requête sont correctes selon votre schéma de base de données
+        String req = "SELECT c.nomCategorie, p.idProduit, p.nomProduit, p.quantite, p.prix, SUM(p.quantite) OVER(PARTITION BY c.nomCategorie) AS stock FROM produit p JOIN categorie c ON p.categorie_id = c.idCategorie ORDER BY c.nomCategorie, p.idProduit";
         statement = conn.createStatement();
-        Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery(req);
+        ResultSet rs = statement.executeQuery(req);
 
         HSSFWorkbook wb = new HSSFWorkbook();
         HSSFSheet sheet = wb.createSheet("Détails produit");
         HSSFRow header = sheet.createRow(0);
 
-
-        header.createCell(0).setCellValue("idProduit");
-        header.createCell(1).setCellValue("nomProduit");
-        header.createCell(2).setCellValue("quantite");
-        header.createCell(3).setCellValue("prix");
-
+        // Ajouter une cellule pour la catégorie et une pour le stock dans l'en-tête
+        header.createCell(0).setCellValue("Catégorie");
+        header.createCell(1).setCellValue("idProduit");
+        header.createCell(2).setCellValue("nomProduit");
+        header.createCell(3).setCellValue("quantite");
+        header.createCell(4).setCellValue("prix");
+        header.createCell(5).setCellValue("Stock totale ");
 
         int index = 1;
+        String currentCategory = "";
         while (rs.next()) {
-            HSSFRow row = sheet.createRow(index);
+            String category = rs.getString("nomCategorie");
+            if (!category.equals(currentCategory)) {
+                // Lorsque la catégorie change, ajoutez une nouvelle ligne pour les détails de la catégorie
+                currentCategory = category;
+            }
 
-            row.createCell(0).setCellValue(rs.getInt("idProduit"));
-            row.createCell(1).setCellValue(rs.getString("nomProduit"));
-            row.createCell(2).setCellValue(rs.getInt("quantite"));
-            row.createCell(3).setCellValue(rs.getInt("prix"));
+            HSSFRow row = sheet.createRow(index);
+            row.createCell(0).setCellValue(category);
+            row.createCell(1).setCellValue(rs.getInt("idProduit"));
+            row.createCell(2).setCellValue(rs.getString("nomProduit"));
+            row.createCell(3).setCellValue(rs.getInt("quantite"));
+            row.createCell(4).setCellValue(rs.getDouble("prix"));
+            // La dernière cellule de chaque ligne de produit affiche le stock total de la catégorie
+            row.createCell(5).setCellValue(rs.getInt("stock"));
 
             index++;
         }
 
-        FileOutputStream file = new FileOutputStream("C:/Users/Hp/Desktop/produitCategorie/src/main/java/EXCEL/produit.xls");
-        wb.write(file);
-        file.close();
+        FileOutputStream fileOut = new FileOutputStream("C:/Users/Hp/Desktop/produitCategorie/src/main/java/EXCEL/produit.xls");
+        wb.write(fileOut);
+        fileOut.close();
 
         JOptionPane.showMessageDialog(null, "Exportation 'EXCEL' effectuée avec succés");
-
-        pst.close();
         rs.close();
-
+        statement.close();
     }
+
 
     private void addDataToChart() {
         // Efface les données existantes
         pieChart.getData().clear();
 
         // Récupère les statistiques des prix
-        int produitsEntre10000Et20000 = getProduitsCountByPriceRange(0, 1000);
-        int produitsEntre30000Et50000 = getProduitsCountByPriceRange(2000, 10000);
+        int produitsEntre10000Et20000 = getProduitsCountByCategory("Boissons");
+        int produitsEntre30000Et50000 = getProduitsCountByCategory("Pattes");
         int totalProduits = getTotalProduitsCount();
 
-        // Ajoute les données au PieChart
-        PieChart.Data data1 = new PieChart.Data("Produits entre 10,000 et 20,000", produitsEntre10000Et20000);
-        PieChart.Data data2 = new PieChart.Data("Produits entre 30,000 et 50,000", produitsEntre30000Et50000);
-        PieChart.Data data3 = new PieChart.Data("Autres Produits", totalProduits - produitsEntre10000Et20000 - produitsEntre30000Et50000);
-        pieChart.getData().addAll(data1, data2, data3);
+        // Créez une liste observable de données PieChart
+        ObservableList<PieChart.Data> data = FXCollections.observableArrayList(
+                new PieChart.Data("Boissons", produitsEntre10000Et20000),
+                new PieChart.Data("Pattes", produitsEntre30000Et50000),
+                new PieChart.Data("Autres Catégories", totalProduits - produitsEntre10000Et20000 - produitsEntre30000Et50000)
+        );
+
+        // Affectez la liste de données à votre PieChart
+        pieChart.setData(data);
+
+        // Autres propriétés du PieChart
+        pieChart.setTitle("Activities");
+        pieChart.setClockwise(true);
+        pieChart.setLabelLineLength(10);
+        pieChart.setLabelsVisible(true);
+        pieChart.setStartAngle(360);
 
     }
 
-    private int getProduitsCountByPriceRange(int minPrice, int maxPrice) {
+    private int getProduitsCountByCategory(String category) {
         try {
-            String query = "SELECT COUNT(*) FROM produit WHERE prix BETWEEN ? AND ?";
+            String query = "SELECT COUNT(*) FROM produit p JOIN categorie c on p.categorie_id=c.idCategorie WHERE nomCategorie = ?";
             PreparedStatement pst = conn.prepareStatement(query);
-            pst.setInt(1, minPrice);
-            pst.setInt(2, maxPrice);
+            pst.setString(1, category);
 
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 return rs.getInt(1);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
     }
-
     private int getTotalProduitsCount() {
         try {
             String query = "SELECT COUNT(*) FROM produit";

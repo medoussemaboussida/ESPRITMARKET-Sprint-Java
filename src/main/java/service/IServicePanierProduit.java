@@ -13,5 +13,6 @@ public interface IServicePanierProduit <T>{
     void DeleteProduitAuPanier(Panier panier, int idProduit);
 
     public ObservableList<PanierProduit> getAllProduitsPanier();
+    public float facture(Panier panier);
 
     }

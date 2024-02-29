@@ -24,6 +24,8 @@ public class FrontPanierCommandeController implements Initializable{
     @FXML
     private TableView<PanierProduit> panierTable;
 
+    @FXML
+    private Label facture;
     private Connection conn;
     private PreparedStatement pst;
     private Statement statement;
@@ -46,9 +48,10 @@ public class FrontPanierCommandeController implements Initializable{
     Utilisateur utilisateur = utilisateurService.getUserById(idUtilisateur);
     //selectionner la panier de user qui est connecté
     Panier panier = pns.selectPanierParUserId(utilisateur.getIdUser());
-
+    float total = pps.facture(panier);
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        facture.setText(String.format("Montant à payer (DT): %.3f", total));
         showProduitDuPanierUser();
     }
 
@@ -117,4 +120,6 @@ showProduitDuPanierUser();
         a.setContentText("Commande passée avec succées");
         a.showAndWait();
     }
+
+
 }

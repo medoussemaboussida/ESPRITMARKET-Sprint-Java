@@ -521,7 +521,7 @@ public class AjouterCategorieController implements Initializable {
     }
 
     public void switchToPanierCommande2(ActionEvent actionEvent)throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/BakcPanierCommande.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/BackPanierCommande.fxml"));
         Parent root1 = (Parent) fxmlLoader.load();
         Stage stage = new Stage();
         stage.setScene(new Scene(root1));
