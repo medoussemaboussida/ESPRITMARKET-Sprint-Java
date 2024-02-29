@@ -19,22 +19,21 @@ public class CodePromoService implements IServiceCodePromo <CodePromo>  {
 
     @Override
     public void addCodePromo(CodePromo c) {
-        String requete = "insert into CodePromo (idCode ,reductionAssocie , code,dateDebut,dateFin) values (?,?,?,?,?)";
+        String insertCodePromoQuery = "insert into codePromo ( code,reductionAssocie,dateDebut,dateFin) values (?,?,?,?)";
         try {
-            pst = conn.prepareStatement(requete);
-            pst.setInt(1,c.getIdCode() );
+            PreparedStatement pst = conn.prepareStatement(insertCodePromoQuery, Statement.RETURN_GENERATED_KEYS);;
             pst.setInt(2,c.getReductionAssocie());
-            pst.setString(3,c.getCode());
+            pst.setString(1,c.getCode());
             if (c.getDateDebut() != null) {
-                pst.setDate(4, new java.sql.Date(c.getDateDebut().getTime()));
+                pst.setDate(3, new java.sql.Date(c.getDateDebut().getTime()));
             } else {
-                pst.setNull(4, Types.DATE);
+                pst.setNull(3, Types.DATE);
             }
             // Gestion de la date de fin
             if (c.getDateFin() != null) {
-                pst.setDate(5, new java.sql.Date(c.getDateFin().getTime()));
+                pst.setDate(4, new java.sql.Date(c.getDateFin().getTime()));
             } else {
-                pst.setNull(5, Types.DATE);
+                pst.setNull(4, Types.DATE);
             }
 
             pst.executeUpdate();
@@ -49,7 +48,7 @@ public class CodePromoService implements IServiceCodePromo <CodePromo>  {
 
     @Override
     public List<CodePromo> readCodePromo() throws SQLException {
-        String requete = "select * from CodePromo";
+        String requete = "select * from codePromo";
         List<CodePromo> list=new ArrayList<>();
         try {
             statement = conn.createStatement();
@@ -92,9 +91,10 @@ public class CodePromoService implements IServiceCodePromo <CodePromo>  {
             pst = conn.prepareStatement(requete);
             pst.setString(1,c.getCode() );
             pst.setInt(2,c.getReductionAssocie());
-            pst.setInt(5,c.getIdCode());
             pst.setDate(3, new java.sql.Date(c.getDateDebut().getTime()));
             pst.setDate(4, new java.sql.Date(c.getDateFin().getTime()));
+            pst.setInt(5,c.getIdCode());
+
             pst.executeUpdate();
             System.out.println("Code promo Modifiée!");
         } catch (SQLException e)

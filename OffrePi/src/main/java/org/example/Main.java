@@ -1,7 +1,6 @@
 package org.example;
 
 import Service.CodePromoService;
-import Service.OffreService;
 import entities.CodePromo;
 import entities.Offre;
 import entities.Produit;
@@ -27,19 +26,18 @@ public class Main {
             Date dateFin = sdf.parse(strDateFin);
         List<Produit> produits = new ArrayList<>();
 
-        Offre o = new Offre(3, "offre spéciale","offre Ramadhane",dateDebut,dateFin,null ,54);
-        OffreService cs=new OffreService();
-       // cs.addOffre(o);
-        cs.readOffre().forEach(System.out::println);
+        Offre o = new Offre(3, "offre spéciale","offre Ramadhane",dateDebut,dateFin,"" ,54);
+     //   OffreService cs=new OffreService();
+       // cs.readOffre().forEach(System.out::println);
        // cs.deleteOffre(22);
         //cs.updateOffre(new Offre(23,"superrr","Aid Kbir", dateDebut,dateFin ));
 
-        CodePromo c = new CodePromo(7, 20,"jaw",dateDebut,dateFin);
+        CodePromo c = new CodePromo(50, 25,"hbel",dateDebut,dateFin);
         CodePromoService cps=new CodePromoService();
         //cps.addCodePromo(c);
-       // cps.readCodePromo().forEach(System.out::println);
-        // cps.deleteCodePromo(5);
-        // cps.modifyCodePromo(new CodePromo(5,50,"ey baba" ));*/
+        cps.readCodePromo().forEach(System.out::println);
+         //cps.deleteCodePromo(8);
+         //cps.modifyCodePromo(new CodePromo(7,50,"ey baba",dateDebut,dateFin ));
 
     }
 }

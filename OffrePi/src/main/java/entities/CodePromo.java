@@ -21,6 +21,13 @@ public class CodePromo {
 
     }
 
+    public CodePromo(int reductionAssocie, String code, Date dateDebut, Date dateFin) {
+        this.reductionAssocie = reductionAssocie;
+        this.code = code;
+        this.dateDebut = dateDebut;
+        this.dateFin = dateFin;
+    }
+
     public int getIdCode() {
         return idCode;
     }

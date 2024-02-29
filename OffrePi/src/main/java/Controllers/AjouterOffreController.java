@@ -135,7 +135,7 @@ public class AjouterOffreController{
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erreur");
             alert.setHeaderText(null);
-            alert.setContentText("date debut must be before  date fin");
+            alert.setContentText("date debut doivent etre avant date fin");
             alert.showAndWait();
             return;
         }
@@ -153,8 +153,6 @@ public class AjouterOffreController{
 
         ObservableList<Produit> selectedItems = produitsListView.getSelectionModel().getSelectedItems();
 
-
-
         Offre nouvelleOffre = new Offre(nomOffre, descriptionOffre, Date.valueOf(dateDebut), Date.valueOf(dateFin),reductionOffre);
         List<Produit> modifiedList = selectedItems.stream().collect(Collectors.toList());
         nouvelleOffre.setProduits(modifiedList);
@@ -167,15 +165,7 @@ public class AjouterOffreController{
         a.setTitle("Succès");
         a.setContentText("Offre Ajoutée");
         a.showAndWait();
-        // showOffre(); // Décommentez ou implémentez selon besoin
-        // Chargement de la nouvelle vue après avoir ajouté l'offre
-      /* FXMLLoader loader = new FXMLLoader(getClass().getResource("/AfficherOffre.fxml"));
-        Parent root = loader.load();
-        AfficherOffreController controller = loader.getController();
-        controller.update(null); // Mettez à jour la liste des offres dans la vue AfficherOffre
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root));
-        stage.show();*/
+
         // Fermer la fenêtre actuelle après l'ajout de l'offre
         Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         currentStage.close();
