@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="rootPane" prefHeight="679.0" prefWidth="1116.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.AfficherDonsController">
+
+
+    <!-- TableView pour afficher les dons -->
+    <TableView fx:id="donsTable" layoutX="202.0" layoutY="232.0" prefHeight="436.0" prefWidth="887.0">
+        <columns>
+            <!-- Colonnes existantes pour les données des dons -->
+            <TableColumn fx:id="nomUserColumn" text="Nom" />
+            <TableColumn fx:id="prenomUserColumn" text="Prénom" />
+            <TableColumn fx:id="emailUserColumn" text="Email" />
+            <TableColumn fx:id="numTelColumn" prefWidth="135.20001220703125" text="Numéro de téléphone" />
+            <TableColumn fx:id="nbPointsColumn" prefWidth="113.5999755859375" text="Nombre de Points" />
+            <TableColumn fx:id="dateAjoutColumn" prefWidth="113.5999755859375" text="Date d'Ajout" />
+            <TableColumn fx:id="etatStatutDonsColumn" prefWidth="151.20001220703125" text="État du Statut des Dons" />
+
+        </columns>
+    </TableView>
+   <VBox layoutY="-7.0" prefHeight="690.0" prefWidth="182.0" style="-fx-background-color: #F1D2AF;">
+      <children>
+         <Button mnemonicParsing="false" prefHeight="63.0" prefWidth="194.0" style="-fx-background-color: #E6AE71;" text="Gestion des dons" textFill="#7e6544">
+            <font>
+               <Font name="System Bold" size="12.0" />
+            </font>
+         </Button>
+         <Button mnemonicParsing="false" onAction="#handleGestionDemandesDons" prefHeight="62.0" prefWidth="188.0" style="-fx-background-color: #F1D2AF;" text="Gestion des demandes de dons" textFill="#7e6544">
+            <font>
+               <Font name="System Bold" size="11.0" />
+            </font>
+         </Button>
+      </children>
+   </VBox>
+    <TextField fx:id="searchField" layoutX="893.0" layoutY="208.0" prefHeight="26.0" prefWidth="196.0" promptText="Rechercher par nom ou téléphone" />
+
+    <Text fill="#916d55" layoutX="202.0" layoutY="214.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Liste des dons récents des utilisateurs :" wrappingWidth="470.93670654296875">
+      <font>
+         <Font name="Calibri Bold" size="28.0" />
+      </font>
+   </Text>
+</AnchorPane>

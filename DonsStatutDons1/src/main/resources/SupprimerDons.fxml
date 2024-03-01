@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.Button?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="controllers.SupprimerDonsController"
+            prefWidth="600" prefHeight="400">
+
+    <children>
+        <TableView fx:id="donsTableView" layoutX="20" layoutY="20" prefWidth="560" prefHeight="300">
+            <columns>
+                <TableColumn fx:id="idDonsColumn" text="ID Dons">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="idDons"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="idUserColumn" text="ID User">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="idUser"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="nbPointsColumn" text="Nb Points">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="nbPoints"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn fx:id="dateAjoutColumn" text="Date Ajout">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="date_ajout"/>
+                    </cellValueFactory>
+                </TableColumn>
+            </columns>
+        </TableView>
+
+        <Button fx:id="supprimerButton" text="Supprimer Don" layoutX="20" layoutY="330" onAction="#handleSupprimerDon"/>
+    </children>
+</AnchorPane>
