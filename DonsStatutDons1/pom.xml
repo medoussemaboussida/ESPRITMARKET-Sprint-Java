@@ -52,6 +52,15 @@
             <version>7.1.16</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>3.5.3</version> <!-- Utilisez la version la plus récente -->
+        </dependency>
+
+
+
+
     </dependencies>
     <build>
         <plugins>

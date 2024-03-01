@@ -14,6 +14,11 @@ import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
 import service.PDFExporterService;
 import service.utilisateurService;
+import java.io.ByteArrayInputStream; // Importer ByteArrayInputStream
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import controllers.BarcodeGenerator;
 
 
 
@@ -45,11 +50,14 @@ public class DemandeDonsController {
     private entities.utilisateur utilisateur;
     private PDFExporterService pdfExporterService;
 
+    private BarcodeGenerator barcodeGenerator;
+
 
     public DemandeDonsController() {
         demandeDonsService = new DemandeDonsService();
         userService = new utilisateurService(); // Initialize the userService
         pdfExporterService = new PDFExporterService(); // Ajoutez cette ligne pour initialiser pdfExporterService
+        barcodeGenerator = new BarcodeGenerator();
 
 
 
@@ -97,13 +105,27 @@ public class DemandeDonsController {
                         exportImageView.setFitHeight(16);
                         exportButton.setGraphic(exportImageView);
                         exportButton.setOnAction(event -> exportDemandToPDF(demande));
-                        exportButton.setOnAction(event -> exportDemandToPDF(demande));
 
                         // Créer un conteneur pour afficher le texte et les boutons
                         VBox container = new VBox(new Label(sb.toString()), deleteButton, exportButton);
                         setGraphic(container);
+
+                        // Créer le code à barres pour la demande
+                        String barcodeText = demande.getNomUser() + " - Points: " + demande.getNbPoints();
+                        try {
+                            byte[] barcodeImageBytes = BarcodeGenerator.generateBarcode(barcodeText);
+                            Image barcodeImage = new Image(new ByteArrayInputStream(barcodeImageBytes));
+                            ImageView barcodeImageView = new ImageView(barcodeImage);
+                            // Ajouter barcodeImageView à votre mise en page où vous voulez afficher le code à barres
+                            // Par exemple, vous pouvez l'ajouter à un VBox :
+                            VBox barcodeContainer = new VBox(new Label("Code à barres"), barcodeImageView);
+                            container.getChildren().add(barcodeContainer);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            // Gérer l'exception
+                        }
                     } else {
-                        // Créer un conteneur pour afficher le texte et le bouton Exporter en PDF
+                        // Créer un conteneur pour afficher le texte et le bouton Supprimer
                         VBox container = new VBox(new Label(sb.toString()), deleteButton);
                         setGraphic(container);
                     }

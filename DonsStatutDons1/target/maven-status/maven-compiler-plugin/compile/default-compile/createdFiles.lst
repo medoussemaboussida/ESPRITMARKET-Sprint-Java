@@ -8,6 +8,7 @@ controllers\adminController.class
 controllers\GestionDemandeDonsController$2.class
 controllers\AjouterDonsController$1.class
 controllers\AfficherDonsController$1.class
+controllers\BarcodeGenerator.class
 service\PDFExporterService.class
 controllers\FaireDonsController.class
 controllers\AfficherDonsController$2$1.class
