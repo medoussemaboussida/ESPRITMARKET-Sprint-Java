@@ -45,6 +45,13 @@
             <version>2.22.1</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>layout</artifactId>
+            <version>7.1.16</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class GestionDemandeDonsController {
 
@@ -268,6 +269,8 @@ public class GestionDemandeDonsController {
     }
 
 
+
+
     @FXML
     private void handleGestionDons() {
         try {
@@ -288,4 +291,28 @@ public class GestionDemandeDonsController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    @FXML
+    private TextField searchField;
+
+    @FXML
+    private void handleSearch() {
+        String searchText = searchField.getText().trim().toLowerCase();
+
+        // Filtrer la liste des demandes de dons en fonction du texte de recherche
+        List<DemandeDons> filteredList = demandeDonsService.getDemandesAvecUsers().stream()
+                .filter(demande -> demande.getNomUser().toLowerCase().contains(searchText) ||
+                        demande.getPrenomUser().toLowerCase().contains(searchText) ||
+                        demande.getContenu().toLowerCase().contains(searchText) ||
+                        demande.getDatePublication().toString().toLowerCase().contains(searchText))
+                .collect(Collectors.toList());
+
+        // Effacer la TableView et ajouter la liste filtrée
+        demandeDonsTableView.getItems().clear();
+        demandeDonsTableView.getItems().addAll(filteredList);
+    }
+
+
+
+
 }

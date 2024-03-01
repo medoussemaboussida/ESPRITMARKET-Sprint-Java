@@ -9,11 +9,15 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
 <AnchorPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="679.0" prefWidth="1116.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.GestionDemandeDonsController">
     <children>
 
-        <ComboBox fx:id="triComboBox" layoutX="802.0" layoutY="144.0" prefHeight="26.0" prefWidth="200.0" promptText="Trier Date de publication par" />
-
+        <HBox layoutX="257.0" layoutY="144.0" spacing="10.0">
+            <ComboBox fx:id="triComboBox" prefHeight="26.0" prefWidth="200.0" promptText="Trier Date de publication par" />
+            <TextField fx:id="searchField" promptText="Rechercher par nom, prénom, contenu ou date de publication" onKeyReleased="#handleSearch" />
+        </HBox>
         <TableView fx:id="demandeDonsTableView" layoutX="257.0" layoutY="178.0" prefHeight="497.0" prefWidth="746.0">
             <columns>
                 <TableColumn fx:id="nomUserColumn" prefWidth="90.4000244140625" text="Nom User" />

@@ -12,8 +12,17 @@ import java.awt.event.ActionEvent;
 import java.util.Optional;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
+import service.PDFExporterService;
 import service.utilisateurService;
 
+
+
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import java.io.File;
 
 public class DemandeDonsController {
     private int userIdConnecte = 1; // Définir directement l'ID de l'utilisateur connecté à 1
@@ -34,15 +43,19 @@ public class DemandeDonsController {
     private DemandeDonsService demandeDonsService;
     private utilisateurService userService;
     private entities.utilisateur utilisateur;
+    private PDFExporterService pdfExporterService;
+
 
     public DemandeDonsController() {
         demandeDonsService = new DemandeDonsService();
         userService = new utilisateurService(); // Initialize the userService
+        pdfExporterService = new PDFExporterService(); // Ajoutez cette ligne pour initialiser pdfExporterService
+
+
 
     }
     @FXML
     public void initialize() {
-
         // Personnaliser l'affichage des demandes dans la ListView
         demandeListView.setCellFactory(param -> new ListCell<DemandeDons>() {
             @Override
@@ -50,50 +63,80 @@ public class DemandeDonsController {
                 super.updateItem(demande, empty);
                 if (empty || demande == null) {
                     setText(null);
+                    setGraphic(null);
                 } else {
                     // Construire le texte à afficher dans la cellule
                     StringBuilder sb = new StringBuilder();
                     sb.append("Utilisateur: ").append(demande.getNomUser()).append(" ").append(demande.getPrenomUser());
                     sb.append("\nContenu: ").append(demande.getContenu());
-                    sb.append("\nDate de publication: ").append(demande.getDatePublication()); // Affichage de la date de publication
-                    int pointsGagnes = demande.getNbPoints();
+                    sb.append("\nDate de publication: ").append(demande.getDatePublication());
+                    sb.append("\nPoints gagnés: ").append(demande.getNbPoints());
 
-                    // Vérifier si des points ont été transférés pour cette demande
-                    if (demande.getIdDons() != 0) {
-                        // Si oui, utiliser le nombre de points du don comme points gagnés
-                        pointsGagnes = demande.getNbPoints();
-                    }
+                    // Créer un bouton Supprimer avec une icône
+                    Button deleteButton = new Button("Supprimer");
+                    ImageView deleteImageView = new ImageView(new Image(getClass().getResourceAsStream("/img/deleteimg.png")));
+                    deleteImageView.setFitWidth(16);
+                    deleteImageView.setFitHeight(16);
+                    deleteButton.setGraphic(deleteImageView);
 
-
-                    sb.append("\nPoints gagnés: ").append(pointsGagnes);
                     // Vérifier si l'utilisateur connecté est l'auteur de la demande
                     if (demande.getIdUtilisateur() == userIdConnecte) {
-                        // Ajouter un bouton Supprimer avec une icône
-                        Button deleteButton = new Button("Supprimer");
-                        ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/img/deleteimg.png")));
-                        imageView.setFitWidth(16); // Ajustez la largeur de l'icône
-                        imageView.setFitHeight(16); // Ajustez la hauteur de l'icône
-                        deleteButton.setGraphic(imageView);
                         deleteButton.setOnAction(event -> deleteDemande(demande));
+                    } else {
+                        // Si l'utilisateur n'est pas l'auteur de la demande, ne pas créer le bouton Supprimer
+                        deleteButton.setVisible(false);
+                        deleteButton.setManaged(false);
+                    }
 
+                    // Vérifier si l'utilisateur connecté est l'auteur de la demande pour afficher le bouton "Exporter en PDF"
+                    if (demande.getIdUtilisateur() == userIdConnecte) {
+                        // Créer un bouton Exporter en PDF
+                        Button exportButton = new Button("Exporter en PDF");
+                        ImageView exportImageView = new ImageView(new Image(getClass().getResourceAsStream("/img/exporter.png")));
+                        exportImageView.setFitWidth(16);
+                        exportImageView.setFitHeight(16);
+                        exportButton.setGraphic(exportImageView);
+                        exportButton.setOnAction(event -> exportDemandToPDF(demande));
+                        exportButton.setOnAction(event -> exportDemandToPDF(demande));
 
-                        // Créer un conteneur pour afficher le texte et le bouton Supprimer
-                        VBox container = new VBox(new Label(sb.toString()), deleteButton);
+                        // Créer un conteneur pour afficher le texte et les boutons
+                        VBox container = new VBox(new Label(sb.toString()), deleteButton, exportButton);
                         setGraphic(container);
                     } else {
-                        // Afficher uniquement le texte
-                        setText(sb.toString());
-                        setGraphic(null); // Assurer que le bouton Supprimer n'est pas affiché
+                        // Créer un conteneur pour afficher le texte et le bouton Exporter en PDF
+                        VBox container = new VBox(new Label(sb.toString()), deleteButton);
+                        setGraphic(container);
                     }
                 }
             }
         });
-
         // Charger les demandes existantes lors de l'initialisation
         loadDemandes();
 
         // Ajouter un écouteur d'événement au bouton "Poster Demande"
         posterDemandeButton.setOnAction(event -> posterDemande());
+    }
+
+
+
+    @FXML
+    private void exportDemandToPDF(DemandeDons demande) {
+        // Afficher un sélecteur de fichier pour choisir l'emplacement de sauvegarde du fichier PDF
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers PDF (*.pdf)", "*.pdf"));
+        fileChooser.setInitialFileName("demande_" + demande.getIdDemande() + ".pdf");
+        Stage stage = (Stage) demandeListView.getScene().getWindow();
+        File file = fileChooser.showSaveDialog(stage);
+
+        // Si un fichier est sélectionné, exporter la demande en PDF
+        if (file != null) {
+            boolean success = pdfExporterService.exportDemandToPDF(demande, file);
+            if (success) {
+                afficherAlerte("Succès", "La demande a été exportée avec succès en PDF.");
+            } else {
+                afficherAlerte("Erreur", "Une erreur est survenue lors de l'exportation en PDF.");
+            }
+        }
     }
 
 
@@ -229,6 +272,7 @@ public class DemandeDonsController {
 
 
 
+
     private void afficherAlerte(String titre, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(titre);
@@ -236,6 +280,7 @@ public class DemandeDonsController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
 
 
 
