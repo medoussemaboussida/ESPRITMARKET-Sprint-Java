@@ -18,45 +18,7 @@ public class utilisateurService {
         conn = DataSource.getInstance().getCnx();
     }
 
-    public void addUser(utilisateur user) {
-        try {
-            String query = "INSERT INTO utilisateur (nbpoints, nomUser, prenomUser, emailUser, numTel) VALUES (?, ?, ?, ?, ?)";
 
-            pst = conn.prepareStatement(query);
-
-            pst.setInt(1, user.getNbPoints());
-            pst.setString(2, user.getNomUser());
-            pst.setString(3, user.getPrenomUser());
-            pst.setString(4, user.getEmailUser());
-            pst.setString(5, user.getNumTel());
-
-            pst.executeUpdate();
-
-            System.out.println("Utilisateur ajouté avec succès.");
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de l'ajout de l'utilisateur: " + e.getMessage());
-        } finally {
-            // Fermeture des ressources (PreparedStatement, ResultSet, etc.)
-        }
-    }
-
-    public void deleteUser(int id) {
-        try {
-            String query = "DELETE FROM utilisateur WHERE idUser = ?";
-
-            pst = conn.prepareStatement(query);
-
-            pst.setInt(1, id);
-
-            pst.executeUpdate();
-
-            System.out.println("Utilisateur supprimé avec succès.");
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de la suppression de l'utilisateur: " + e.getMessage());
-        } finally {
-            // Fermeture des ressources (PreparedStatement, ResultSet, etc.)
-        }
-    }
 
     public List<utilisateur> getAllUsers() {
         List<utilisateur> userList = new ArrayList<>();
@@ -124,5 +86,4 @@ public class utilisateurService {
 
 
 
-    // Ajoutez d'autres méthodes au besoin...
 }

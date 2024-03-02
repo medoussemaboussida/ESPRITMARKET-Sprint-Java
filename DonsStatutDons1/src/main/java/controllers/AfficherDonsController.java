@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
 import javafx.scene.control.*;
 import entities.Dons;
 import javafx.scene.image.Image;
@@ -14,6 +15,14 @@ import javafx.stage.Stage;
 import service.DonsService;
 import controllers.AjouterEtatStatutController;
 import java.util.stream.Collectors;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import service.DonsService;
+import java.util.List;
+import java.util.Map;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 
 
 
@@ -49,6 +58,9 @@ public class AfficherDonsController {
     private AnchorPane rootPane;
 
     @FXML
+    private LineChart<String, Number> donationsChart;
+
+    @FXML
     private TextField searchField;
 
     @FXML
@@ -71,7 +83,8 @@ public class AfficherDonsController {
 
     @FXML
     private TableColumn<Dons, String> etatStatutDonsColumn;
-
+    @FXML
+    private BarChart<String, Number> barChart;
     public AfficherDonsController() {
         donsService = new DonsService();
     }
@@ -151,7 +164,9 @@ public class AfficherDonsController {
         loadDons();
 
 
+
     }
+
 
 
     @FXML

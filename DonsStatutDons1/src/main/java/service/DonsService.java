@@ -345,117 +345,13 @@ public class DonsService implements IServiceDons {
 
 
 
-    public void updateEtatStatutDons(int donsId, String nouvelEtat) {
-        try {
-            String query = "UPDATE Dons SET etatStatutDons = ? WHERE idDons = ?";
-            pst = conn.prepareStatement(query);
-            pst.setString(1, nouvelEtat);
-            pst.setInt(2, donsId);
-            pst.executeUpdate();
-            System.out.println("État du statut de don mis à jour avec succès.");
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de la mise à jour de l'état du statut de don : " + e.getMessage());
-        } finally {
-            closeStatement();
-        }
-    }
-
-
-    public boolean deleteEtatStatutDons(String etatStatutDons) {
-        try {
-            // Vérifier si l'état du statut de dons existe
-            String checkQuery = "SELECT COUNT(*) FROM EtatStatutDons WHERE etatStatutDons = ?";
-            pst = conn.prepareStatement(checkQuery);
-            pst.setString(1, etatStatutDons);
-            ResultSet rs = pst.executeQuery();
-            rs.next();
-            int count = rs.getInt(1);
-            if (count == 0) {
-                System.out.println("L'état du statut de dons spécifié n'existe pas.");
-                return false;
-            }
-
-            // Supprimer l'état du statut de dons de la table EtatStatutDons
-            String deleteQuery = "DELETE FROM EtatStatutDons WHERE etatStatutDons = ?";
-            pst = conn.prepareStatement(deleteQuery);
-            pst.setString(1, etatStatutDons);
-            pst.executeUpdate();
-
-            System.out.println("État du statut de dons supprimé avec succès : " + etatStatutDons);
-            return true;
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de la suppression de l'état du statut de dons : " + e.getMessage());
-            return false;
-        } finally {
-            closeStatement();
-        }
-    }
-    // Ajouter la méthode addDonsForDemande dans la classe DonsService
-    public void addDonsForDemande(utilisateur user, int donPoints, int idDemande) {
-        // Insérer le don dans la table Dons avec l'ID de l'utilisateur, les points de don et la date actuelle
-        int donId = addDons(user, donPoints);
-
-        // Mettre à jour la table demande_dons avec l'ID du don correspondant
-        if (donId != -1) {
-            String updateQuery = "UPDATE demandedons SET idDons = ?, nbpoints = ? WHERE idDemande = ?";
-            try {
-                PreparedStatement pst = conn.prepareStatement(updateQuery);
-                pst.setInt(1, donId);
-                pst.setInt(2, donPoints); // Ajout du nombre de points ajoutés
-                pst.setInt(3, idDemande);
-                pst.executeUpdate();
-                System.out.println("Don ajouté avec succès pour la demande avec l'ID : " + idDemande);
-            } catch (SQLException e) {
-                System.out.println("Erreur lors de l'ajout du don pour la demande : " + e.getMessage());
-            }
-        }
-    }
-
-    // Méthode pour récupérer l'ID du dernier don ajouté
-    public int getLastInsertedDonId() {
-        String query = "SELECT LAST_INSERT_ID() AS last_id FROM dons";
-        try {
-            PreparedStatement pst = conn.prepareStatement(query);
-            ResultSet rs = pst.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("last_id");
-            }
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de la récupération de l'ID du dernier don : " + e.getMessage());
-        }
-        return -1; // Retourne -1 si aucune ID n'est trouvée ou s'il y a une erreur
-    }
- //   @Override
 
 
 
-    // Méthode pour récupérer tous les e-mails des utilisateurs
 
 
-    public Map<String, Integer> getAllUserNbPoints() throws SQLException {
-        Map<String, Integer> userNbPoints = new HashMap<>();
-        String query = "SELECT emailUser, nbPoints FROM Utilisateur JOIN Dons ON Utilisateur.idUser = Dons.idUser";
-        try (PreparedStatement pst = conn.prepareStatement(query); ResultSet rs = pst.executeQuery()) {
-            while (rs.next()) {
-                String email = rs.getString("emailUser");
-                int nbPoints = rs.getInt("nbPoints");
-                userNbPoints.put(email, nbPoints);
-            }
-        }
-        return userNbPoints;
-    }
-    public int getDonsIdByEmail(String email) throws SQLException {
-        String query = "SELECT idDons FROM Dons JOIN Utilisateur ON Dons.idUser = Utilisateur.idUser WHERE emailUser = ?";
-        try (PreparedStatement pst = conn.prepareStatement(query)) {
-            pst.setString(1, email);
-            try (ResultSet rs = pst.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("idDons");
-                }
-            }
-        }
-        // Gérer le cas où aucun don n'est associé à cet e-mail
-        return -1;
-    }
+
+
+
 
 }

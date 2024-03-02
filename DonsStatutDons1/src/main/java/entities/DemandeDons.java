@@ -120,6 +120,8 @@ public class DemandeDons {
         this.nbPoints = nbPoints;
     }
 
+
+
     public int getIdDons() {
         return idDons;
     }

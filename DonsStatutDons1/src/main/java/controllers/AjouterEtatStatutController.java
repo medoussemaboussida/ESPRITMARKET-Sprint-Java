@@ -41,6 +41,7 @@ public class AjouterEtatStatutController {
     // Méthode appelée lors du clic sur le bouton "Ajouter Etat"
     @FXML
     private void handleAjouterEtat() {
+
         String selectedEtat = etatComboBox.getValue();
 
         if (don != null && selectedEtat != null) {

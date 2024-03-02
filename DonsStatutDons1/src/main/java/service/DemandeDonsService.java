@@ -39,20 +39,7 @@ public class DemandeDonsService {
     }
 
 
-    public boolean modifierDemande(DemandeDons demandeDons) {
-        String query = "UPDATE demandedons SET contenu = ?, image = ? WHERE idDemande = ?";
-        try {
-            pst = conn.prepareStatement(query);
-            pst.setString(1, demandeDons.getContenu());
-            pst.setString(2, demandeDons.getImage());
-            pst.setInt(3, demandeDons.getIdDemande());
-            int rowsUpdated = pst.executeUpdate();
-            return rowsUpdated > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+
 
     public boolean supprimerDemande(int idDemande) {
         String query = "DELETE FROM demandedons WHERE idDemande = ?";
@@ -199,18 +186,7 @@ public class DemandeDonsService {
     }
 
 
-    public boolean deleteDemandeByUserId(int idUtilisateur) {
-        String query = "DELETE FROM demandedons WHERE idUtilisateur = ?";
-        try (PreparedStatement pst = conn.prepareStatement(query)) {
-            pst.setInt(1, idUtilisateur);
-            int rowsDeleted = pst.executeUpdate();
-            System.out.println(rowsDeleted + " lignes ont été supprimées de la table demandedons pour l'utilisateur avec l'ID : " + idUtilisateur);
-            return rowsDeleted > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+
     public boolean supprimerDemandes(int idDemande) {
         String query = "DELETE FROM demandedons WHERE idDemande = ?";
         try (PreparedStatement pst = conn.prepareStatement(query)) {
@@ -222,20 +198,7 @@ public class DemandeDonsService {
             return false;
         }
     }
-    public boolean incrementerNbPointsDemande(int idDemande, int nbPointsAjoutes) {
-        String query = "UPDATE demandedons SET nbpoints = nbpoints + ? WHERE idDemande = ?";
-        try {
-            pst = conn.prepareStatement(query);
-            pst.setInt(1, nbPointsAjoutes);
-            pst.setInt(2, idDemande);
 
-            int rowsUpdated = pst.executeUpdate();
-            return rowsUpdated > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     public int getUserPoints(int userId) {
         int userPoints = -1; // Valeur par défaut en cas d'erreur

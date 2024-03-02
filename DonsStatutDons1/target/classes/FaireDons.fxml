@@ -47,9 +47,9 @@
                 <Font name="Calibri Bold" size="24.0" />
             </font>
         </Label>
-        <Label fx:id="donsLabel" layoutX="14.0" layoutY="313.0" prefHeight="223.0" prefWidth="694.0" textFill="#33302c">
+        <Label fx:id="donsLabel" layoutX="34.0" layoutY="303.0" prefHeight="223.0" prefWidth="694.0" textFill="#33302c">
             <font>
-                <Font name="Calibri Bold" size="14.0" />
+                <Font name="Berlin Sans FB Demi Bold" size="14.0" />
             </font>
         </Label>
 

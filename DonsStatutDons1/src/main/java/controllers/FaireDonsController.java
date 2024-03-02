@@ -5,13 +5,14 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -20,8 +21,6 @@ import javafx.stage.Stage;
 import service.DonsService;
 import service.utilisateurService;
 import entities.utilisateur;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
 
 
 import java.text.SimpleDateFormat;
@@ -210,6 +209,8 @@ public class FaireDonsController {
             VBox vbox = new VBox(); // Conteneur pour les boutons et le texte
 
             List<Dons> donsList = donsService.getDonsByUserId(userId);
+            ListView<HBox> listView = new ListView<>(); // Créer une ListView pour afficher les HBox
+
             for (Dons don : donsList) {
                 HBox hbox = new HBox(); // Conteneur pour un bouton et le texte du don
 
@@ -217,10 +218,12 @@ public class FaireDonsController {
                 Label donLabel = new Label("L'état de votre don de " + don.getNbPoints() +
                         " points effectué le " + don.getDate_ajout() +
                         " est " + don.getEtatStatutDons());
+                Region spacer = new Region();
+                HBox.setHgrow(spacer, Priority.ALWAYS);
 
-                Button btnUpdate = new Button();
+                if (!don.getEtatStatutDons().equals("Reçu")) {
+                    Button btnUpdate = new Button(); // Ajouter le bouton "Modifier"
 
-                {
                     // Ajouter une icône au bouton
                     Image image = new Image(getClass().getResourceAsStream("/img/modifier.png"));
                     ImageView imageView = new ImageView(image);
@@ -232,28 +235,30 @@ public class FaireDonsController {
                     btnUpdate.setOnAction(event -> {
                         showModifierDialog(don);
                     });
+
+                    // Créer un conteneur pour les boutons
+                    HBox buttonsContainer = new HBox(btnUpdate);
+
+                    // Ajouter les éléments dans l'ordre souhaité à la HBox
+                    hbox.getChildren().addAll(donLabel, spacer, buttonsContainer);
+                } else {
+                    // Si l'état est "Reçu", n'ajoutez pas le bouton de modification
+                    hbox.getChildren().addAll(donLabel, spacer); // Ajouter seulement le label
                 }
 
-
-
-
-                // Créer un conteneur pour les boutons
-                HBox buttonsContainer = new HBox(btnUpdate);
-
-                // Ajouter les éléments dans l'ordre souhaité à la HBox
-                hbox.getChildren().addAll(donLabel, buttonsContainer);
-
-                // Ajouter le conteneur hbox au conteneur vbox
+                VBox.setMargin(hbox, new Insets(0, 0, 10, 0)); // 10 est l'espacement entre les lignes
                 vbox.getChildren().add(hbox);
+
+                // Ajouter la HBox actuelle à la ListView
+                listView.getItems().add(hbox);
             }
 
-            // Afficher les dons avec les boutons dans le label "donsLabel"
-            donsLabel.setGraphic(vbox);
+            // Afficher la ListView avec les HBox dans le label "donsLabel"
+            donsLabel.setGraphic(listView);
         } else {
             System.out.println("Utilisateur non trouvé");
         }
     }
-
 
 
 }
