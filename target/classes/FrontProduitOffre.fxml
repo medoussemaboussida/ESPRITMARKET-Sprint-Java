@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+
+<AnchorPane prefHeight="400.0" prefWidth="1236.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.FrontProduitOffreController">
+   <children>
+      <ComboBox fx:id="ComboProduitC" layoutX="566.0" layoutY="36.0" onAction="#filtrerProduit" prefHeight="25.0" prefWidth="114.0" promptText="Reduction" stylesheets="@../../../../Users/ghassen/Downloads/PIDEV_3A27_The_Starks-ProduitCategorie/PIDEV_3A27_The_Starks-ProduitCategorie/src/main/resources/css/button.css" />
+      <ImageView fitHeight="322.0" fitWidth="733.0" layoutX="-211.0" layoutY="184.0" pickOnBounds="true" preserveRatio="true" rotate="89.5">
+         <image>
+            <Image url="@../../../../Users/ghassen/Downloads/PIDEV_3A27_The_Starks-ProduitCategorie/PIDEV_3A27_The_Starks-ProduitCategorie/src/main/resources/Photos/011528.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="427.0" fitWidth="298.0" layoutX="-8.0" layoutY="-100.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../Users/ghassen/Downloads/PIDEV_3A27_The_Starks-ProduitCategorie/PIDEV_3A27_The_Starks-ProduitCategorie/src/main/resources/Photos/EspritMarket-logos_transparent.png" />
+         </image>
+      </ImageView>
+      <ImageView fx:id="PanierImage" fitHeight="25.0" fitWidth="27.0" layoutX="693.0" layoutY="36.0" onMouseClicked="#checkPanier" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../Users/ghassen/Downloads/PIDEV_3A27_The_Starks-ProduitCategorie/PIDEV_3A27_The_Starks-ProduitCategorie/src/main/resources/Photos/panier.png" />
+         </image>
+      </ImageView>
+      <ListView fx:id="listView" layoutX="284.0" layoutY="141.0" prefHeight="563.0" prefWidth="894.0" />
+      <ImageView fitHeight="45.0" fitWidth="46.0" layoutX="980.0" layoutY="81.0" opacity="0.67" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../Users/ghassen/Downloads/PIDEV_3A27_The_Starks-ProduitCategorie/PIDEV_3A27_The_Starks-ProduitCategorie/src/main/resources/Photos/soda.png" />
+         </image>
+      </ImageView>
+      <ImageView fitHeight="53.0" fitWidth="64.0" layoutX="430.0" layoutY="77.0" opacity="0.64" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../Users/ghassen/Downloads/PIDEV_3A27_The_Starks-ProduitCategorie/PIDEV_3A27_The_Starks-ProduitCategorie/src/main/resources/Photos/shop2.png" />
+         </image>
+      </ImageView>
+      <TextField layoutX="299.0" layoutY="33.0" prefHeight="31.0" prefWidth="254.0" promptText="Rechercher" />
+      <Line endX="114.8309326171875" layoutX="134.0" layoutY="91.0" startX="-100.0" stroke="#ffa01a" />
+   </children>
+</AnchorPane>
