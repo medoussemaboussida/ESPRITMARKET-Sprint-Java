@@ -33,6 +33,8 @@ public class FrontPublicationController implements Initializable {
 
     @FXML
     private ListView<VBox> listView;
+    @FXML
+    private FontAwesomeIconView emp;
 
     private PublicationService publicationService;
     private CommentaireService commentaireService;
@@ -44,7 +46,7 @@ public class FrontPublicationController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        int idUtilisateur = 4;
+        int idUtilisateur = 2;
         userService = new UserService();
         utilisateur = userService.findById(idUtilisateur);
         if (utilisateur != null) {
@@ -167,7 +169,7 @@ public class FrontPublicationController implements Initializable {
                 }
             });
 
-            VBox.setMargin(addCommentButton, new Insets(10, 0, 0, 0));
+
 
             publicationBox.getChildren().addAll(titleLabel, imageView, descriptionLabel, commentairesBox, addCommentButton);
             publicationBox.setAlignment(Pos.CENTER);
@@ -183,4 +185,23 @@ public class FrontPublicationController implements Initializable {
     void refresh(MouseEvent event) {
         loadPublications();
     }
+
+    @FXML
+    void emp(MouseEvent event) {
+        // L'URL de l'emplacement que vous souhaitez afficher sur Google Maps
+        String locationURL = "https://www.google.com/maps/place/ESB+:+Esprit+School+of+Business/@36.8512328,10.1282324,13z/data=!4m10!1m2!2m1!1sESPRIT!3m6!1s0x12e2cb745e5c6f1b:0xf69a51ee3c65c12e!8m2!3d36.8992352!4d10.189445!15sCgZFU1BSSVQiA4gBAZIBCnVuaXZlcnNpdHngAQA!16s%2Fg%2F11cs3ytq00?entry=ttu";
+
+        try {
+            java.awt.Desktop.getDesktop().browse(new URL(locationURL).toURI());
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Gérer les erreurs, par exemple une URL incorrecte ou une exception d'ouverture de navigateur
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText(null);
+            alert.setContentText("Impossible d'ouvrir Google Maps. Veuillez vérifier votre connexion Internet.");
+            alert.showAndWait();
+        }
+    }
+
 }

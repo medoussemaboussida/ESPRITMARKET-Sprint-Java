@@ -12,9 +12,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane prefHeight="660.0" prefWidth="1023.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ListPublication">
+<AnchorPane prefHeight="755.0" prefWidth="1027.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ListPublication">
    <children>
-      <TableView fx:id="publicationTable" layoutX="40.0" layoutY="229.0" prefHeight="400.0" prefWidth="641.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
+      <TableView fx:id="publicationTable" layoutX="40.0" layoutY="338.0" prefHeight="400.0" prefWidth="641.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="40.0">
         <columns>
           <TableColumn fx:id="titreFx" prefWidth="139.0" text="TITRE" />
             <TableColumn fx:id="descriptionFx" prefWidth="300.0" text="DESCRIPTION" />
@@ -79,6 +79,18 @@
       <Text fill="#2196f3" layoutX="481.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filtrer:">
          <font>
             <Font name="Comic Sans MS" size="19.0" />
+         </font>
+      </Text>
+      <FontAwesomeIconView fill="#2196f3" glyphName="BAR_CHART" layoutX="42.0" layoutY="251.0" onMouseClicked="#stat" size="40" />
+      <Text fill="#2196f3" layoutX="91.0" layoutY="246.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Statistiques">
+         <font>
+            <Font name="Comic Sans MS" size="22.0" />
+         </font>
+      </Text>
+      <FontAwesomeIconView fx:id="pdfPublication" fill="#2196f3" glyphName="FILE_PDF_ALT" layoutX="49.0" layoutY="302.0" onMouseClicked="#generatePdfPublication" size="40" />
+      <Text fill="#2196f3" layoutX="92.0" layoutY="298.0" strokeType="OUTSIDE" strokeWidth="0.0" text="PDF">
+         <font>
+            <Font name="Comic Sans MS" size="22.0" />
          </font>
       </Text>
    </children>

@@ -4,6 +4,8 @@ import entities.user;
 import utils.DataSource;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserService implements IServiceUser<user>{
 
@@ -70,7 +72,9 @@ public class UserService implements IServiceUser<user>{
                 utilisateur = new user(
                         resultSet.getInt("idUser"),
                         resultSet.getString("nomUser"),
-                        resultSet.getString("prenomUser")
+                        resultSet.getString("prenomUser"),
+                        resultSet.getString("emailUser")
+
 
 
                 );
@@ -100,6 +104,39 @@ public class UserService implements IServiceUser<user>{
             e.printStackTrace();
             // Gérer les exceptions SQL lors de la fermeture des ressources
         }
+    }
+
+    @Override
+    public List<user> getAllUsers() {
+        List<user> users = new ArrayList<>();
+        String query = "SELECT * FROM utilisateur";
+
+        try {
+            conn = DataSource.getInstance().getCnx();
+            ste = conn.createStatement();
+            ResultSet rs = ste.executeQuery(query);
+
+            while (rs.next()) {
+                int id = rs.getInt("idUser");
+                String nom = rs.getString("nomUser");
+                String prenom = rs.getString("prenomUser");
+                String email = rs.getString("emailUser");
+
+                user utilisateur = new user(id, nom, prenom, email);
+                users.add(utilisateur);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ste != null) {
+                    ste.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return users;
     }
 }
 

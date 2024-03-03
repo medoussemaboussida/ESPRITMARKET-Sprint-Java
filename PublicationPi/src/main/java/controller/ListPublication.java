@@ -1,8 +1,14 @@
 package controller;
 
+import com.lowagie.text.*;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView;
 import entities.Publication;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -22,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Callback;
@@ -30,13 +37,14 @@ import service.PublicationService;
 import javafx.scene.image.ImageView;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -70,6 +78,9 @@ public class ListPublication implements Initializable {
     private ComboBox<String> sortPublicationBox;
 
     @FXML
+    private FontAwesomeIconView pdfPublication;
+
+    @FXML
     private TextField RechercherPublication;
 
     private List<Publication> temp;
@@ -83,6 +94,8 @@ public class ListPublication implements Initializable {
     private PublicationService publicationService;
     private CommentaireService commentaireService;
 
+    private final ObjectProperty<Publication> observableValue = new SimpleObjectProperty<>();
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -92,6 +105,14 @@ public class ListPublication implements Initializable {
         sortPublicationBox.getItems().addAll("Trier", "Trier par Date ↑", "Trier par Date ↓");
         sortPublicationBox.getSelectionModel().select("Trier");
         loadPublicationData();
+
+        // Initialiser l'observableValue ici
+        observableValue.set(new Publication()); // ou avec une instance existante, selon vos besoins
+
+        // Lier l'observableValue à la sélection de la TableView
+        publicationTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            observableValue.set(newValue);
+        });
     }
 
 
@@ -331,6 +352,131 @@ public class ListPublication implements Initializable {
         sort.comparatorProperty().bind(publicationTable.comparatorProperty());
         publicationTable.setItems(sort);
     }
+
+    @FXML
+    void stat(MouseEvent event) throws IOException {
+        Parent parent = FXMLLoader.load(getClass().getResource("/StaticPublication.fxml"));
+        Scene scene = new Scene(parent);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.initStyle(StageStyle.UTILITY);
+        stage.show();
+
+    }
+
+    @FXML
+    void generatePdfPublication(MouseEvent event) {
+        ObservableList<Publication> allPublications = publicationTable.getItems();
+
+        if (allPublications != null && !allPublications.isEmpty()) {
+            // Créer une map pour stocker les publications par mois
+            Map<String, List<Publication>> publicationsByMonth = new LinkedHashMap<>();
+
+            for (Publication publication : allPublications) {
+                // Récupérer le mois de la publication au format "Mois Année"
+                String monthYear = getMonthYear(publication.getDatePublication());
+
+                // Vérifier si la map contient déjà ce mois
+                if (publicationsByMonth.containsKey(monthYear)) {
+                    // Ajouter la publication à la liste existante pour ce mois
+                    publicationsByMonth.get(monthYear).add(publication);
+                } else {
+                    // Créer une nouvelle liste pour ce mois et y ajouter la publication
+                    List<Publication> publications = new ArrayList<>();
+                    publications.add(publication);
+                    publicationsByMonth.put(monthYear, publications);
+                }
+            }
+
+            Document document = new Document(PageSize.A4);
+
+            try {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+                File file = fileChooser.showSaveDialog(new Stage());
+                if (file != null) {
+                    PdfWriter.getInstance(document, new FileOutputStream(file));
+                    document.open();
+
+                    Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
+
+                    // Parcourir les publications par mois
+                    for (Map.Entry<String, List<Publication>> entry : publicationsByMonth.entrySet()) {
+                        String monthYear = entry.getKey();
+                        List<Publication> publications = entry.getValue();
+
+                        // Si la liste des publications pour ce mois n'est pas vide
+                        if (!publications.isEmpty()) {
+                            PdfPTable pdfTable = new PdfPTable(3);
+                            pdfTable.setWidthPercentage(100);
+                            pdfTable.setSpacingBefore(10f);
+                            pdfTable.setSpacingAfter(10f);
+
+                            PdfPCell cell = new PdfPCell();
+
+                            cell.setPadding(5);
+
+                            cell.setPhrase(new Phrase("Titre", titleFont));
+                            pdfTable.addCell(cell);
+
+                            cell.setPhrase(new Phrase("Description", titleFont));
+                            pdfTable.addCell(cell);
+
+                            cell.setPhrase(new Phrase("Date", titleFont));
+                            pdfTable.addCell(cell);
+
+                            for (Publication publication : publications) {
+                                pdfTable.addCell(new Phrase(publication.getTitrePublication()));
+                                pdfTable.addCell(new Phrase(publication.getDescription()));
+
+                                if (publication.getDatePublication() != null) {
+                                    pdfTable.addCell(new Phrase(publication.getDatePublication().toString()));
+                                } else {
+                                    pdfTable.addCell(new Phrase(""));
+                                }
+                            }
+
+                            document.add(new Paragraph("Publications de " + monthYear, titleFont));
+                            document.add(Chunk.NEWLINE);
+                            document.add(pdfTable);
+                            document.newPage(); // Saut de page pour le prochain mois
+                        }
+                    }
+
+                    document.close();
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("PDF Généré");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Le fichier PDF a été généré avec succès.");
+                    alert.showAndWait();
+                }
+            } catch (DocumentException | IOException ex) {
+                Logger.getLogger(ListPublication.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText(null);
+            alert.setContentText("Aucune publication à afficher dans le PDF.");
+            alert.showAndWait();
+        }
+    }
+
+    // Méthode utilitaire pour obtenir le mois et l'année à partir d'une date
+    private String getMonthYear(Date date) {
+        if (date == null) {
+            return "";
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat("MMMM yyyy", Locale.FRENCH);
+        return formatter.format(date);
+    }
+
+
+
+
+
 
 
 }

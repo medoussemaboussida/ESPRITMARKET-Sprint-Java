@@ -1,6 +1,7 @@
 package controller;
 
 import entities.Publication;
+import entities.user;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -9,6 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import service.PublicationService;
+import service.UserService;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,9 +19,16 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 public class AjouterPublicationController {
     private final PublicationService ps = new PublicationService();
+    private UserService userService = new UserService();
 
     @FXML
     private TextField descriptionTF;
@@ -87,6 +96,9 @@ public class AjouterPublicationController {
                     filename
             ));
 
+            // Envoi d'un e-mail à l'utilisateur
+            sendEmailToUser(new Publication(titre, datePublicationDate, description, filename));
+
             // Afficher une confirmation à l'utilisateur
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Succès");
@@ -132,4 +144,55 @@ public class AjouterPublicationController {
         titreTF.clear();
         descriptionTF.clear();
     }
+
+    private void sendEmailToUser(Publication publication) {
+        String sujet = "Nouvelle publication ajoutée  " ;
+        String contenu = "Bonjour,\n\n"
+                + "Une nouvelle publication a été ajoutée avec succès !\n\n"
+                + "Titre : " + publication.getDescription() + "\n"
+                + "Description : " + publication.getImagePublication() + "\n"
+                + "Date : " + publication.getDatePublication() + "\n\n"
+                + "Cordialement,\n"
+                + "Esprit Market";
+
+        // Configurer les propriétés pour la session e-mail
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port", "587");
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
+        properties.put("mail.smtp.ssl.trust", "*"); // Ignorer la vérification du certificat SSL
+
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication("yassinedhahbi65@gmail.com", "iotj bgqf flab lwsl");
+            }
+        });
+
+        try {
+            List<user> users = userService.getAllUsers(); // Récupérer tous les utilisateurs
+
+            for (user utilisateur : users) {
+                // Créer un objet MimeMessage pour chaque utilisateur
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress("yassinedhahbi65@gmail.com"));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(utilisateur.getEmailUser()));
+                message.setSubject(sujet);
+                message.setText(contenu);
+
+                // Envoyer le message pour chaque utilisateur
+                Transport.send(message);
+            }
+
+            System.out.println("E-mails envoyés avec succès à tous les utilisateurs.");
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            System.out.println("Erreur lors de l'envoi des e-mails : " + e.getMessage());
+        }
+    }
+
+
+
 }

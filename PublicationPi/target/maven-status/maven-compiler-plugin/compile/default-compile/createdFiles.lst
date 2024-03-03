@@ -2,6 +2,9 @@ controller\ModifierCommentaireController.class
 controller\FrontPublicationController.class
 controller\ListPublication$1.class
 controller\AjouterCommentaireController.class
+controller\StaticPublicationController.class
+controller\StaticPublicationController$1.class
+controller\AjouterPublicationController$1.class
 controller\DetailPublicationController$1.class
 controller\ListPublication.class
 controller\DetailPublicationController.class

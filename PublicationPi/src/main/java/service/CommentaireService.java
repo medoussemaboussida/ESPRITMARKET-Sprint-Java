@@ -240,6 +240,36 @@ public class CommentaireService implements IServiceCommentaire<commentaire> {
         }
     }
 
+    @Override
+    public int countCommentairesParPublication(int idPublication) {
+        String requete = "SELECT COUNT(*) AS total FROM commentaire WHERE idPublication = ?";
+        int nombreCommentaires = 0;
+
+        try {
+            pste = conn.prepareStatement(requete);
+            pste.setInt(1, idPublication);
+            rs = pste.executeQuery();
+
+            if (rs.next()) {
+                nombreCommentaires = rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors du comptage des commentaires par publication", e);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pste != null) pste.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Erreur lors de la fermeture des ressources", e);
+            }
+        }
+
+        return nombreCommentaires;
+    }
+
+
+
+
 
 
 

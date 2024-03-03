@@ -7,6 +7,8 @@ public class user {
 
     private String prenomUser;
 
+    private String emailUser;
+
     public user() {
     }
 
@@ -14,10 +16,11 @@ public class user {
         this.idUser = idUser;
     }
 
-    public user(int idUser, String nomUser, String prenomUser) {
+    public user(int idUser, String nomUser, String prenomUser,String emailUser) {
         this.idUser = idUser;
         this.nomUser = nomUser;
         this.prenomUser = prenomUser;
+        this.emailUser = emailUser;
     }
 
     public int getIdUser() {
@@ -42,5 +45,13 @@ public class user {
 
     public void setPrenomUser(String prenomUser) {
         this.prenomUser = prenomUser;
+    }
+
+    public String getEmailUser() {
+        return emailUser;
+    }
+
+    public void setEmailUser(String emailUser) {
+        this.emailUser = emailUser;
     }
 }

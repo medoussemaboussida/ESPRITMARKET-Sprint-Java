@@ -22,4 +22,6 @@ public interface IServiceCommentaire <T>{
     List<commentaire> sortProduitPrixDESC(int idPublication);
 
     void updateCommentaire(commentaire commentaire);
+
+    int countCommentairesParPublication(int idPublication);
 }

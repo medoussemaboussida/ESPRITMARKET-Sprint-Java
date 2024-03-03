@@ -15,5 +15,6 @@
       </ImageView>
       <ListView fx:id="listView" layoutX="72.0" layoutY="105.0" prefHeight="596.0" prefWidth="989.0" />
       <FontAwesomeIconView fill="#f58c1e" glyphName="REFRESH" layoutX="1039.0" layoutY="49.0" onMouseClicked="#refresh" size="30" />
+      <FontAwesomeIconView fx:id="emp" fill="#f58c1e" glyphName="MAP_MARKER" layoutX="986.0" layoutY="48.0" onMouseClicked="#emp" size="30" />
    </children>
 </AnchorPane>
