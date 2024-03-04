@@ -10,7 +10,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="713.0" prefWidth="1125.0" stylesheets="@css/button.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.BackPanierCommandeController">
+<AnchorPane prefHeight="713.0" prefWidth="1125.0" stylesheets="@css/button.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.back.BackPanierCommandeController">
    <children>
       <ImageView fitHeight="314.0" fitWidth="713.0" layoutX="-210.0" layoutY="201.0" pickOnBounds="true" preserveRatio="true" rotate="90.0">
          <image>
@@ -72,5 +72,10 @@
             <Image url="@Photos/shop2.png" />
          </image>
       </ImageView>
+      <Button fx:id="retour" layoutX="106.0" layoutY="209.0" mnemonicParsing="false" onAction="#retourMenu" text="Retour">
+         <font>
+            <Font name="Arial Black" size="16.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>

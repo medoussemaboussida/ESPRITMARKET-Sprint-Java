@@ -55,7 +55,7 @@ public class CommandeService implements IServiceCommande<Commande>{
             statement = conn.createStatement();
             ResultSet rs=statement.executeQuery(requete);
             while (rs.next()) {
-                Utilisateur u=new Utilisateur(rs.getInt("u.idUser"),rs.getString("u.nomUser"),rs.getString("u.prenomUser"), rs.getString("u.emailUser"),rs.getString("u.mdp"),rs.getString("u.nbPoints"),rs.getInt("u.numTel"),rs.getString("u.Role"));
+                Utilisateur u=new Utilisateur(rs.getInt("u.idUser"),rs.getString("u.nomUser"),rs.getString("u.prenomUser"), rs.getString("u.emailUser"),rs.getString("u.mdp"),rs.getInt("u.nbPoints"),rs.getInt("u.numTel"),rs.getString("u.Role"));
                 Panier pn=new Panier(rs.getInt("pn.idPanier"),u);
                 Commande c =new Commande(rs.getInt(1),pn,rs.getDate(3));
                 list.add(c);

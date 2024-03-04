@@ -17,12 +17,14 @@ public class MainFx extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        //FXMLLoader loader =new FXMLLoader(getClass().getResource("/FrontProduit.fxml"));
-        FXMLLoader loader =new FXMLLoader(getClass().getResource("/AjouterProduit.fxml"));
+        FXMLLoader loader =new FXMLLoader(getClass().getResource("/SeConnecter.fxml"));
+    // FXMLLoader loader =new FXMLLoader(getClass().getResource("/SeConnecterAdmin.fxml"));
         Parent root = loader.load();
         Scene scene=new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.setTitle("ESPRIT-MARKET");
+        //primaryStage.setTitle("ADMIN DASHBOARD");
+
         primaryStage.show();
 
     }

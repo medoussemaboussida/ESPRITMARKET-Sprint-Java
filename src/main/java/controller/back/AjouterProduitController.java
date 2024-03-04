@@ -1,4 +1,4 @@
-package controller;
+package controller.back;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -59,7 +59,6 @@ import java.util.*;
 import java.util.List;
 
 public class AjouterProduitController implements Initializable {
-
     @FXML
     private PieChart pieChart;
     private Connection conn;
@@ -69,74 +68,56 @@ public class AjouterProduitController implements Initializable {
     private ProduitService pss = new ProduitService();
     @FXML
     private TextField RechercherProduit;
-
     @FXML
     private ComboBox<Categorie> ComboProduitC;
-
     @FXML
     private Button ajouterProduit;
-
     @FXML
     private Button btImageProduit;
-
     @FXML
     private Button modifierProduit;
-
     @FXML
     private Button supprimerProduit;
-
     @FXML
     private ImageView tfImageP;
-
     @FXML
     private TextField tfNomProduit;
-
     @FXML
     private TextField tfPrixProduit;
-
     @FXML
     private TextField tfQuantiteProduit;
     @FXML
     private TableView<Produit> tabProduit;
     @FXML
     private TableColumn<Produit, String> nomCategorieTab;
-
     @FXML
     private TableColumn<Produit, Float> nomPrixTab;
-
     @FXML
     private TableColumn<Produit, String> nomProduitTab;
-
     @FXML
     private TableColumn<Produit, Integer> nomQuantiteTab;
     @FXML
     private TableColumn<Produit, String> imageProduitTab;
     @FXML
     private TableColumn<Produit, String> OffreProduitTab;
-
     String filepath = null, filename = null, fn = null;
     String uploads = "C:/xampp/htdocs/";
     FileChooser fc = new FileChooser();
     ObservableList<Produit> list = FXCollections.observableArrayList();
     public int idProduit;
-
     public int getIdProduit() {
         return getIdProduit();
     }
-
     public void setIdProduit(int id) {
         this.idProduit = id;
     }
-
     @FXML
     private ComboBox<String> sortProduitBox;
     private List<Produit> temp;
-
     @FXML
     private ImageView qrcodeProduit;
     @FXML
     private Button pdfProduit;
-
     @FXML
     private Button excelProduit;
 
@@ -148,11 +129,11 @@ public class AjouterProduitController implements Initializable {
         sortProduitBox.getSelectionModel().select("Trier");
         setCombo();
         showProduit();
-
         addDataToChart();
 
     }
 
+    //choisir une image
     public void btn_image_produit_action(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = fc.showOpenDialog(null);
@@ -174,6 +155,7 @@ public class AjouterProduitController implements Initializable {
         }
     }
 
+    //add et cs
     @FXML
     public void AjouterProduit(ActionEvent actionEvent) throws SQLException {
 
@@ -321,6 +303,7 @@ public class AjouterProduitController implements Initializable {
         }
     }
 
+    //delete
     public void SupprimerProduit(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
         Produit selected = tabProduit.getSelectionModel().getSelectedItem();
         if (selected != null) {
@@ -346,6 +329,7 @@ public class AjouterProduitController implements Initializable {
     }
 
 
+    //affichage du produit
     public void showProduit() {
         nomProduitTab.setCellValueFactory(new PropertyValueFactory<>("nomProduit"));
         nomQuantiteTab.setCellValueFactory(new PropertyValueFactory<>("quantite"));
@@ -419,6 +403,7 @@ public class AjouterProduitController implements Initializable {
 
 
 
+    //combo box du categorie
     public void setCombo() {
         CategorieService tabC = new CategorieService();
         List<Categorie> tabList = tabC.readCategorie();
@@ -451,19 +436,8 @@ public class AjouterProduitController implements Initializable {
         });
     }
 
-    /*
-    public void backProduit(ActionEvent actionEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/MenuProduitCategorie.fxml"));
-        Parent root1 = (Parent) fxmlLoader.load();
-        Stage stage = new Stage();
-        stage.setScene(new Scene(root1));
-        Node source = (Node) actionEvent.getSource();
-        Stage currentStage = (Stage) source.getScene().getWindow();
-        currentStage.close();
-        stage.show();
 
-    }*/
-
+//trier liste des produits
     @FXML
     public void sortProduit(ActionEvent actionEvent) {
         String selected = sortProduitBox.getSelectionModel().getSelectedItem();
@@ -480,6 +454,8 @@ public class AjouterProduitController implements Initializable {
         // Mettre à jour la TableView
         tabProduit.setItems(updatedList);
     }
+
+
 
     //qrcode produit
     @FXML
@@ -548,6 +524,8 @@ public class AjouterProduitController implements Initializable {
         return writableImage;
     }
 
+
+    //chercher produit selon le nom
     @FXML
     public void searchProduit(KeyEvent keyEvent) {
         FilteredList<Produit> filter = new FilteredList<>(list, ev -> true);
@@ -557,66 +535,113 @@ public class AjouterProduitController implements Initializable {
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
+
                 String lowerCaseFilter = newValue.toLowerCase();
-                if (String.valueOf(t.getNomProduit()).toLowerCase().contains(lowerCaseFilter)) {
-                    return true;
-                } else {
-                    return false;
-                }
+
+                // Recherche dans le nom du produit
+                boolean nomProduitMatch = t.getNomProduit().toLowerCase().startsWith(lowerCaseFilter);
+
+                // Recherche dans le nom de la catégorie
+                boolean nomCategorieMatch = t.getCategorie().getNomCategorie().toLowerCase().contains(lowerCaseFilter);
+
+                // Recherche dans le prix (ajustez selon vos besoins)
+                boolean prixMatch = String.valueOf(t.getPrix()).toLowerCase().contains(lowerCaseFilter);
+
+                // Combiner les conditions avec des opérateurs logiques (par exemple, ET (&&) ou OU (||))
+                return nomProduitMatch || nomCategorieMatch || prixMatch;
             });
         });
 
         SortedList<Produit> sort = new SortedList<>(filter);
         sort.comparatorProperty().bind(tabProduit.comparatorProperty());
         tabProduit.setItems(sort);
-
     }
 
+    //pdf
     @FXML
     public void generatePdfProduit(ActionEvent actionEvent) {
         ObservableList<Produit> data = tabProduit.getItems();
+        String outputPath = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/PDF/produits.pdf";
+        File file = new File(outputPath);
 
-        try {
-            // Créez un nouveau document PDF
-            PDDocument document = new PDDocument();
-
-            // Créez une page dans le document
+        try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage();
             document.addPage(page);
 
-            // Obtenez le contenu de la page
-            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+            try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
+                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 18);
+                contentStream.beginText();
+                contentStream.newLineAtOffset(50, 750); // Ajustez la position selon vos besoins
+                contentStream.showText("Liste des Produits");
+                contentStream.endText();
 
-            // Écrivez du texte dans le document
-            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
-            contentStream.beginText();
-            contentStream.newLineAtOffset(100, 700);
+                // Définir la police et la taille de la police pour le tableau
+                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
 
+                // Les marges du tableau
+                final float margin = 50;
+                // Position de départ Y pour le tableau
+                final float startY = page.getMediaBox().getUpperRightY() - margin;
+                // Position de départ X pour le tableau
+                final float startX = page.getMediaBox().getLowerLeftX() + margin;
 
-            for (Produit produit : data) {
+                // Hauteur de la ligne
+                final float rowHeight = 20;
+                // Largeur de la page moins les marges
+                final float tableWidth = page.getMediaBox().getWidth() - (2 * margin);
+                // Largeur des colonnes
+                float[] colWidths = {tableWidth * 0.15f, tableWidth * 0.4f, tableWidth * 0.2f, tableWidth * 0.25f};
+                // Nombre total de colonnes
+                int cols = colWidths.length;
+                // Nombre total de lignes
+                int rows = data.size() + 1; // +1 pour l'en-tête du tableau
 
+                // Dessiner l'en-tête du tableau
+                String[] headers = new String[]{"ID", "Nom", "Quantité", "Prix"};
+                float textX = startX;
+                float textY = startY - 15; // Décaler de 15 pour centrer le texte dans la ligne
 
-                String ligne = "ID : " + produit.getIdProduit() + "        Nom : " + produit.getNomProduit() + "     Quantité : " + produit.getQuantite() + "        Prix : " + produit.getPrix();
-                contentStream.showText(ligne);
+                for (int i = 0; i < cols; i++) {
+                    contentStream.beginText();
+                    contentStream.newLineAtOffset(textX, textY);
+                    contentStream.showText(headers[i]);
+                    contentStream.endText();
+                    textX += colWidths[i];
+                }
 
-                contentStream.newLine();
-                contentStream.newLineAtOffset(0, -15);
+                // Dessiner les lignes du tableau
+                float nextY = startY;
+                for (int i = 0; i <= rows; i++) {
+                    contentStream.moveTo(startX, nextY);
+                    contentStream.lineTo(startX + tableWidth, nextY);
+                    contentStream.stroke();
+                    nextY -= rowHeight;
+                }
 
+                // Remplir le tableau avec les données
+                textY -= rowHeight;
+                for (Produit produit : data) {
+                    textX = startX;
+                    String[] produitData = {
+                            String.valueOf(produit.getIdProduit()),
+                            produit.getNomProduit(),
+                            String.valueOf(produit.getQuantite()),
+                            String.valueOf(produit.getPrix())
+                    };
 
+                    for (int i = 0; i < cols; i++) {
+                        contentStream.beginText();
+                        contentStream.newLineAtOffset(textX, textY);
+                        contentStream.showText(produitData[i]);
+                        contentStream.endText();
+                        textX += colWidths[i];
+                    }
+
+                    textY -= rowHeight;
+                }
             }
 
-            contentStream.endText();
-
-            // Fermez le contenu de la page
-            contentStream.close();
-
-            String outputPath = "C:/Users/Hp/Desktop/produitCategorie/src/main/java/PDF/produits.pdf";
-            File file = new File(outputPath);
             document.save(file);
-
-            // Fermez le document
-            document.close();
-
             System.out.println("Le PDF a été généré avec succès.");
             Desktop.getDesktop().open(file);
         } catch (IOException e) {
@@ -624,6 +649,8 @@ public class AjouterProduitController implements Initializable {
         }
     }
 
+
+    //excel produit par categorie
     @FXML
     public void generateExcelProduit(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
         // Note : Assurez-vous que la jointure et la requête sont correctes selon votre schéma de base de données
@@ -674,6 +701,8 @@ public class AjouterProduitController implements Initializable {
     }
 
 
+
+    //stat produit par categorie
     private void addDataToChart() {
         // Efface les données existantes
         pieChart.getData().clear();
@@ -733,6 +762,7 @@ public class AjouterProduitController implements Initializable {
     }
 
 
+    //refresh interface
     @FXML
     public void refreshProduit(ActionEvent actionEvent)throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/AjouterProduit.fxml"));
@@ -745,8 +775,9 @@ public class AjouterProduitController implements Initializable {
         stage.show();
     }
 
+
     // navbar vers categorie
-@FXML
+    @FXML
     public void switchToCategorie(ActionEvent actionEvent) throws IOException {
     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/AjouterCategorie.fxml"));
     Parent root1 = (Parent) fxmlLoader.load();
@@ -756,8 +787,10 @@ public class AjouterProduitController implements Initializable {
     Stage currentStage = (Stage) source.getScene().getWindow();
     currentStage.close();
     stage.show();
-}
+    }
 
+
+//navbar to paniercommande
 @FXML
     public void switchToPanierCommande(ActionEvent actionEvent) throws IOException {
     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/BackPanierCommande.fxml"));
@@ -770,17 +803,18 @@ public class AjouterProduitController implements Initializable {
     stage.show();
 }
 
-    /*
 
-    private void updateTextField (String newT){
-        Platform.runLater(() -> {
-            tfNomProduit.setText(newT);
-            tfQuantiteProduit.setText(newT);
-            tfPrixProduit.setText(newT);
-        });
-    }*/
-
-
+@FXML
+public void retourMenu(ActionEvent event)throws IOException {
+    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/BackMenu.fxml"));
+    Parent root1 = (Parent) fxmlLoader.load();
+    Stage stage = new Stage();
+    stage.setScene(new Scene(root1));
+    Node source = (Node) event.getSource();
+    Stage currentStage = (Stage) source.getScene().getWindow();
+    currentStage.close();
+    stage.show();
+}
 }
 
 

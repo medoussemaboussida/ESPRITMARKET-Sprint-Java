@@ -1,4 +1,4 @@
-package controller;
+package controller.back;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -51,49 +51,37 @@ import javax.swing.*;
 import javax.swing.text.Document;
 import java.util.*;
 import java.util.List;
-
 import javafx.fxml.Initializable;
 import utils.DataSource;
 
 
 public class AjouterCategorieController implements Initializable {
+    ////////Declarer variable
     private Connection conn;
     private PreparedStatement pst;
     private Statement statement;
-
     @FXML
     private ImageView qrcode;
-
     @FXML
     private Button qrcodebtn;
     //appel du service crud
     private final CategorieService cs = new CategorieService();
     private CategorieService css = new CategorieService();
-
-    //appel des elements graphiques
     @FXML
     private ComboBox<String> sortCategorieBox;
-
     @FXML
     private Button ajouterCategorie;
-
     @FXML
     private Button btnImageC;
-
     @FXML
     private ImageView tfImage;
-
     private String ImagePath;
-
     @FXML
     private TextField tfNomCategorie;
-
     @FXML
     private TableColumn<Categorie, String> imageCategorieTab;
-
     @FXML
     private TableColumn<Categorie, String> nomCategorieTab;
-
     @FXML
     private TableView<Categorie> tabCategorie;
 
@@ -104,25 +92,21 @@ public class AjouterCategorieController implements Initializable {
     FileChooser fc = new FileChooser();
     ObservableList<Categorie> list = FXCollections.observableArrayList();
     public int idCategorie;
-
     public int getIdCategorie() {
         return idCategorie;
     }
-
     public void setIdCategorie(int id) {
         this.idCategorie = id;
     }
 
-
     @FXML
     private Button modifierCategorie;
-
     @FXML
     private Button supprimerCategorie;
     private List<Categorie> temp;
-
     @FXML
     private Button excelCategorie;
+
 
     //initialisation de l'interface
     @Override
@@ -140,7 +124,8 @@ public class AjouterCategorieController implements Initializable {
     @FXML
     private Button pdfCategorie;
 
-    //telecharger une image et mettre dans dossier images
+
+    //telecharger une image et mettre dans dossier path
     public void btn_image_action(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
         fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
         File file = fc.showOpenDialog(null);
@@ -195,10 +180,11 @@ public class AjouterCategorieController implements Initializable {
         }
     }
 
-    //lettre alpha
+    //lettre alpha obligatoire
     private boolean estAlphabetique(String str) {
         return str.matches("^[a-zA-Z]+$");
     }
+
 
     //afficher les categories
     public void showCategorie() {
@@ -229,6 +215,7 @@ public class AjouterCategorieController implements Initializable {
     }
 
 
+
     //prendre les valeurs du tableView et l'affiche dans textfield quand je clique
     public void SetValue(MouseEvent mouseEvent) throws SQLException, ClassNotFoundException {
         Categorie selected = tabCategorie.getSelectionModel().getSelectedItem();
@@ -241,6 +228,7 @@ public class AjouterCategorieController implements Initializable {
             tfImage.setImage(im);
         }
     }
+
 
     //modifier une categorie
     @FXML
@@ -277,6 +265,8 @@ public class AjouterCategorieController implements Initializable {
         }
     }
 
+
+
     //supprimer une categorie
     public void SupprimerCategorie(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
         Categorie selected = tabCategorie.getSelectionModel().getSelectedItem();
@@ -300,6 +290,7 @@ public class AjouterCategorieController implements Initializable {
             });
         }
     }
+
 
 
     //action chercher categorie par nom
@@ -328,6 +319,7 @@ public class AjouterCategorieController implements Initializable {
     }
 
 
+
     //trie selon le nom de categorie
     @FXML
     public void sortCategorie(ActionEvent actionEvent) {
@@ -345,6 +337,7 @@ public class AjouterCategorieController implements Initializable {
         // Mettre à jour la TableView
         tabCategorie.setItems(updatedList);
     }
+
 
     //generate pdf
     @FXML
@@ -370,7 +363,7 @@ public class AjouterCategorieController implements Initializable {
 
 
             for (Categorie categorie : data) {
-// Ajouter l'image
+            // Ajouter l'image
                 String imagePath = uploads + categorie.getImageCategorie();
                 PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, document);
 
@@ -419,7 +412,6 @@ public class AjouterCategorieController implements Initializable {
             // Affichez un message d'erreur ou prenez une autre action appropriée
             System.out.println("Aucune catégorie sélectionnée.");
         }
-
     }
 
     //generate qrcode et l'afficher
@@ -431,7 +423,7 @@ public class AjouterCategorieController implements Initializable {
 
             // Générer le QR code avec ZXing
             BitMatrix matrix = new MultiFormatWriter().encode(qrData, BarcodeFormat.QR_CODE, 184, 199, hints);
-// Ajuster la taille de l'ImageView
+           // Ajuster la taille de l'ImageView
             qrcode.setFitWidth(184);
             qrcode.setFitHeight(199);
 
@@ -471,6 +463,7 @@ public class AjouterCategorieController implements Initializable {
         return writableImage;
     }
 
+
     //generate excel
     @FXML
     public void generateExcelCategorie(ActionEvent actionEvent) throws SQLException, FileNotFoundException, IOException {
@@ -508,6 +501,10 @@ public class AjouterCategorieController implements Initializable {
         rs.close();
     }
 
+
+
+
+    //navbar to produit
     @FXML
     public void switchToProduit(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/AjouterProduit.fxml"));
@@ -520,12 +517,25 @@ public class AjouterCategorieController implements Initializable {
         stage.show();
     }
 
+    //navbar to paniercommande
     public void switchToPanierCommande2(ActionEvent actionEvent)throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/BackPanierCommande.fxml"));
         Parent root1 = (Parent) fxmlLoader.load();
         Stage stage = new Stage();
         stage.setScene(new Scene(root1));
         Node source = (Node) actionEvent.getSource();
+        Stage currentStage = (Stage) source.getScene().getWindow();
+        currentStage.close();
+        stage.show();
+    }
+
+    @FXML
+    public void retourMenu(ActionEvent event)  throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/BackMenu.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root1));
+        Node source = (Node) event.getSource();
         Stage currentStage = (Stage) source.getScene().getWindow();
         currentStage.close();
         stage.show();

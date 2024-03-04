@@ -1,5 +1,6 @@
 package service;
 
+import entities.Produit;
 import javafx.collections.ObservableList;
 
 import java.util.List;
@@ -12,4 +13,5 @@ public interface IServiceProduit <T>{
     ObservableList<T> sortProduitPrixAsc();
     ObservableList<T> sortProduitPrixDesc();
     ObservableList<T> readProduitByCategorie(int categorieId);
+    ObservableList<Produit> getAllProduits();
 }

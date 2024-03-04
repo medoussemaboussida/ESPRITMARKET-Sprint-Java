@@ -1,4 +1,4 @@
-package controller;
+package controller.back;
 import entities.Commande;
 import entities.Panier;
 import entities.PanierProduit;
@@ -149,6 +149,18 @@ showCommandeAll();
         Stage stage = new Stage();
         stage.setScene(new Scene(root1));
         Node source = (Node) actionEvent.getSource();
+        Stage currentStage = (Stage) source.getScene().getWindow();
+        currentStage.close();
+        stage.show();
+    }
+
+    @FXML
+    public void retourMenu(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/BackMenu.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root1));
+        Node source = (Node) event.getSource();
         Stage currentStage = (Stage) source.getScene().getWindow();
         currentStage.close();
         stage.show();

@@ -1,9 +1,11 @@
-package controller;
+package controller.front;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import entities.*;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -18,11 +20,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
@@ -53,105 +57,41 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 public class FrontProduitController implements Initializable {
     private final ProduitService ps = new ProduitService();
+    @FXML
+    public TextField searchProductFront;
     String filepath = null, filename = null, fn = null;
     String uploads = "C:/xampp/htdocs/";
     FileChooser fc = new FileChooser();
     ObservableList<Produit> list = FXCollections.observableArrayList();
     public int idProduit;
     PanierService pns = new PanierService();
-
     public int getIdProduit() {
         return getIdProduit();
     }
-
     public void setIdProduit(int id) {
         this.idProduit = id;
     }
-
-   /* @FXML
-    private TableColumn<Produit, HBox> panierTab;
-    @FXML
-    private TableColumn<PanierProduit, HBox> tabDeletePanierr;
-
-    @FXML
-    private TableColumn<Produit, Integer> nomPrixTab;
-
-    @FXML
-    private TableColumn<Produit, String> imageProduitTab;
-
-    @FXML
-    private TableColumn<Produit, Integer> nomQuantiteTab;
-
-    @FXML
-    private TableView<Produit> tabProduitFront;
-    */
-
     @FXML
     private ComboBox<Categorie> ComboProduitC;
+    private Utilisateur userData;
+    public void setUserData(Utilisateur user) {
+        this.userData = user;
+        // Now you can use this.userData to access the user's information in your controller
+        System.out.println("Received User ID: " + user.getIdUser());
+        System.out.println("Received User Name: " + user.getNomUser());
+        System.out.println("Received User Email: " + user.getEmailUser());
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
-
-        int idUtilisateur = 1; // Remplacez cela par l'ID réel de l'utilisateur connecté
-        UtilisateurService utilisateurService = new UtilisateurService();
-        Utilisateur utilisateur = utilisateurService.getUserById(idUtilisateur);
-        // Vérifiez si l'utilisateur est récupéré avec succès
-        if (utilisateur != null) {
-            // Afficher une alerte de bienvenue avec le nom de l'utilisateur
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Bienvenue");
-            alert.setHeaderText("Bienvenue " + utilisateur.getNomUser());
-            alert.setContentText("Vous êtes connecté avec succès!\n"
-                    + "Email: " + utilisateur.getEmailUser() + "\n"
-                    + "Numéro de téléphone: " + utilisateur.getNumTel());
-            alert.showAndWait();
-        } else {
-            // Gérer le cas où l'utilisateur n'a pas été trouvé
-            System.out.println("Utilisateur non trouvé");
-        }
-
-
-
-
         setCombo();
         ComboProduitC.setOnAction(this::filtrerProduit);
-       // showProduitFront();
+
         showProduitFrontp();
 
     }
 
-/*
-    public void showProduitFront() {
-        imageProduitTab.setCellFactory(column -> new TableCell<Produit, String>() {
-            private final javafx.scene.image.ImageView imageView = new ImageView();
-
-            @Override
-            protected void updateItem(String imagePath, boolean empty) {
-                super.updateItem(imagePath, empty);
-
-                if (empty || imagePath == null) {
-                    setGraphic(null);
-                } else {
-                    // Charger et afficher l'image
-                    javafx.scene.image.Image image = new Image("file:///" + uploads + imagePath);
-                    imageView.setImage(image);
-                    imageView.setFitWidth(120); // Réglez la largeur de l'image selon vos besoins
-                    imageView.setFitHeight(100); // Réglez la hauteur de l'image selon vos besoins
-                    setGraphic(imageView);
-                }
-            }
-        });
-        imageProduitTab.setCellValueFactory(new PropertyValueFactory<>("imageProduit"));
-        nomQuantiteTab.setCellValueFactory(new PropertyValueFactory<>("quantite"));
-        nomPrixTab.setCellValueFactory(new PropertyValueFactory<>("prix"));
-
-        list = ps.readProduit();
-        tabProduitFront.setItems(list);
-
-    }
-*/
-
+//combobox categorie
     public void setCombo() {
         CategorieService tabC = new CategorieService();
         List<Categorie> tabList = tabC.readCategorie();
@@ -184,9 +124,11 @@ public class FrontProduitController implements Initializable {
         });
     }
 
+
     private List<Produit> temp;
     private List<PanierProduit> temp1;
 
+    //filtrage selon categorie choisi
     @FXML
     public void filtrerProduit(ActionEvent actionEvent) {
         Categorie selectedCategorie = ComboProduitC.getValue();
@@ -208,17 +150,47 @@ public class FrontProduitController implements Initializable {
         }
     }
 
+
     @FXML
     private ImageView PanierImage;
 
+    //clique sur logo panier pour ouvrir interface panier
     public void checkPanier(MouseEvent mouseEvent) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FrontPanierCommande.fxml"));
-        Parent root1 = (Parent) fxmlLoader.load();
-        Stage stage = new Stage();
-        stage.setTitle("Votre Panier");
-        stage.setScene(new Scene(root1));
-        Node source = (Node) mouseEvent.getSource();
-        stage.show();
+        if (userData != null) {
+            // Print or display user information as needed
+            System.out.println("User ID: " + userData.getIdUser());
+            System.out.println("User Name: " + userData.getNomUser());
+            System.out.println("User Email: " + userData.getEmailUser());
+            // Add more fields as needed
+            // Load the new scene and pass user data
+
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FrontPanierCommande.fxml"));
+            Parent root1 = null;
+            try {
+                root1 = fxmlLoader.load();
+
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            FrontPanierCommandeController fpc = fxmlLoader.getController();
+            fpc.setUserData(userData);
+
+            Stage stage = new Stage();
+            stage.setTitle("Votre Panier");
+            stage.setScene(new Scene(root1));
+            Node source = (Node) mouseEvent.getSource();
+            stage.show();
+            // Close the current scene if needed
+
+            System.out.println("Login successful!");
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Attention");
+            alert.setHeaderText(null);
+            alert.setContentText("Email ou mot de passe incorrect.");
+            alert.showAndWait();
+        }
     }
 
 
@@ -226,7 +198,7 @@ public class FrontProduitController implements Initializable {
     @FXML
     private ListView<GridPane> listView;
 
-
+//affichage de la liste pour user
     public void showProduitFrontp() {
         // Clear the existing content in ListView
         listView.getItems().clear();
@@ -301,11 +273,8 @@ public class FrontProduitController implements Initializable {
 
 
         addButton.setOnAction(event -> {
-            int idUtilisateur = 1; // Remplacez cela par l'ID réel de l'utilisateur connecté
-            UtilisateurService utilisateurService = new UtilisateurService();
-            Utilisateur utilisateur = utilisateurService.getUserById(idUtilisateur);
-            Panier panier = pns.selectPanierParUserId(utilisateur.getIdUser());
-            Panier panierExistant = pns.selectPanierParUserId(utilisateur.getIdUser());
+            Panier panier = pns.selectPanierParUserId(userData.getIdUser());
+            Panier panierExistant = pns.selectPanierParUserId(userData.getIdUser());
 
             if (panierExistant != null) {
                 PanierProduitService panierProduitService = new PanierProduitService();
@@ -321,7 +290,7 @@ public class FrontProduitController implements Initializable {
                 alert.setHeaderText(null);
                 alert.setContentText("Vous n'avez pas de panier. Veuillez créer un panier d'abord.");
                 alert.showAndWait();
-                pns.ajouterPanier(utilisateur.getIdUser());
+                pns.ajouterPanier(userData.getIdUser());
             }
             // Rafraîchir la vue du produit
             showProduitFrontp();
@@ -402,6 +371,66 @@ qrCodeButton.setOnAction(event ->
         System.out.println("Matrice convertie en image avec succès");
 
         return writableImage;
+    }
+
+
+
+    //recherche avance
+  @FXML
+    public void searchProduct(KeyEvent keyEvent) {
+      // Récupérer le texte de recherche
+      String searchTerm = searchProductFront.getText().toLowerCase();
+
+      // Effacer la ListView
+      listView.getItems().clear();
+
+      // Traiter le produit recherché à part
+      Produit searchedProduct = null;
+      for (Produit produit : list) {
+          if (produit.getNomProduit().toLowerCase().startsWith(searchTerm)) {
+              searchedProduct = produit;
+              break;  // Sortir de la boucle dès qu'on a trouvé le produit recherché
+          }
+      }
+
+      // Afficher le produit recherché s'il existe
+      if (searchedProduct != null) {
+          GridPane searchedProductGridPane = createProductGridPane(searchedProduct, null, null, null);
+          listView.getItems().add(searchedProductGridPane);
+          // css
+          searchedProductGridPane.getStyleClass().add("grid-pane-product");
+      }
+
+      // Filtrer et ajouter les autres produits correspondants au texte de recherche
+      for (Produit produit : list) {
+          // Ignorer le produit recherché car il a déjà été traité
+          if (produit.equals(searchedProduct)) {
+              continue;
+          }
+
+          if (produit.getNomProduit().toLowerCase().contains(searchTerm)) {
+              // Ajouter le produit à la ListView
+              GridPane gridPane = createProductGridPane(produit, null, null, null);
+              listView.getItems().add(gridPane);
+              // css
+              gridPane.getStyleClass().add("grid-pane-product");
+          }
+      }
+    }
+
+
+    @FXML
+    public void retourMenuFront(ActionEvent event) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/FrontMenu.fxml"));
+        Parent root1 = (Parent) fxmlLoader.load();
+        FrontMenuController fm =fxmlLoader.getController();
+        fm.setUserData(userData);
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root1));
+        Node source = (Node) event.getSource();
+        Stage currentStage = (Stage) source.getScene().getWindow();
+        currentStage.close();
+        stage.show();
     }
 }
 

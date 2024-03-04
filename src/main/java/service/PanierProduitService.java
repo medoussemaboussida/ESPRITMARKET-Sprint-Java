@@ -100,7 +100,7 @@ public class PanierProduitService  implements IServicePanierProduit<PanierProdui
             ResultSet rs = preparedStatement.executeQuery();
 
             while (rs.next()) {
-                Utilisateur u=new Utilisateur(rs.getInt("u.idUser"),rs.getString("u.nomUser"),rs.getString("u.prenomUser"), rs.getString("u.emailUser"),rs.getString("u.mdp"),rs.getString("u.nbPoints"),rs.getInt("u.numTel"),rs.getString("u.Role"));
+                Utilisateur u=new Utilisateur(rs.getInt("u.idUser"),rs.getString("u.nomUser"),rs.getString("u.prenomUser"), rs.getString("u.emailUser"),rs.getString("u.mdp"),rs.getInt("u.nbPoints"),rs.getInt("u.numTel"),rs.getString("u.Role"));
                 Panier pn=new Panier(rs.getInt("pn.idPanier"),u);
                 Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"),rs.getString("c.imageCategorie"));
                 Produit prod = new Produit(rs.getInt("pr.idProduit"), rs.getString("pr.nomProduit"), rs.getInt("pr.quantite"), rs.getFloat("pr.prix"), c, rs.getString("pr.imageProduit"));
