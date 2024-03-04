@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Line?>
+
+<AnchorPane prefHeight="400.0" prefWidth="1236.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.FrontProduitOffreController">
+    <children>
+        <ComboBox fx:id="ComboProduitC" layoutX="566.0" layoutY="36.0" onAction="#filtrerProduit" prefHeight="25.0" prefWidth="114.0" promptText="Catégories" stylesheets="@css/button.css" />
+        <ImageView fitHeight="322.0" fitWidth="733.0" layoutX="-211.0" layoutY="184.0" pickOnBounds="true" preserveRatio="true" rotate="89.5">
+            <image>
+                <Image url="@Photos/011528.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="427.0" fitWidth="298.0" layoutX="-8.0" layoutY="-100.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@Photos/EspritMarket-logos_transparent.png" />
+            </image>
+        </ImageView>
+        <ImageView fx:id="PanierImage" fitHeight="25.0" fitWidth="27.0" layoutX="837.0" layoutY="36.0" onMouseClicked="#checkPanier" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@Photos/panier.png" />
+            </image>
+        </ImageView>
+        <ListView fx:id="listView" layoutX="327.0" layoutY="130.0" prefHeight="563.0" prefWidth="894.0" />
+        <ImageView fitHeight="45.0" fitWidth="46.0" layoutX="980.0" layoutY="81.0" opacity="0.67" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@Photos/shopp.png" />
+            </image>
+        </ImageView>
+        <ImageView fitHeight="53.0" fitWidth="64.0" layoutX="430.0" layoutY="77.0" opacity="0.64" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@Photos/shop2.png" />
+            </image>
+        </ImageView>
+        <TextField layoutX="299.0" layoutY="33.0" prefHeight="31.0" prefWidth="254.0" promptText="Rechercher" />
+        <Line endX="114.8309326171875" layoutX="134.0" layoutY="91.0" startX="-100.0" stroke="#ffa01a" />
+      <ComboBox fx:id="comboBoxFiltrerReduction" layoutX="697.0" layoutY="36.0" onAction="#filtrerProduit" prefHeight="25.0" prefWidth="114.0" promptText="Reduction" stylesheets="@css/button.css" />
+    </children>
+</AnchorPane>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.AfficherCpController">
+   <children>
+      <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="400.0" prefWidth="863.0">
+         <children>
+            <TableView fx:id="rList" layoutX="5.0" layoutY="127.0" prefHeight="267.0" prefWidth="853.0">
+               <columns>
+                  <TableColumn fx:id="rId" prefWidth="60.80001986026764" text="Id" />
+                  <TableColumn fx:id="rReduction" prefWidth="119.99996948242188" text="Réduction associé" />
+                  <TableColumn fx:id="rCode" prefWidth="265.59999084472656" text="Code" />
+                  <TableColumn fx:id="rDebut" prefWidth="140.79998779296875" text="Date de début" />
+                  <TableColumn fx:id="rFin" prefWidth="120.800048828125" text="Date de fin" />
+                  <TableColumn fx:id="actionCol" maxWidth="237.5999755859375" prefWidth="147.2000732421875" text="Action" />
+               </columns>
+            </TableView>
+            <Text layoutX="258.0" layoutY="44.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Liste des Codes promos">
+               <font>
+                  <Font name="Arial Rounded MT Bold" size="28.0" />
+               </font>
+            </Text>
+            <Pane layoutX="14.0" layoutY="58.0" prefHeight="6.0" prefWidth="830.0" style="-fx-background-color: black;" />
+            <HBox alignment="CENTER" layoutX="554.0" layoutY="17.0" />
+            <FontAwesomeIconView glyphName="CLOSE" layoutX="832.0" layoutY="31.0" onMouseClicked="#close" size="20" text="" />
+            <HBox layoutX="19.0" layoutY="86.0" prefHeight="33.0" prefWidth="200.0" spacing="10">
+               <children>
+                  <FontAwesomeIconView glyphName="PLUS_CIRCLE" onMouseClicked="#ajouter" size="30" />
+                  <FontAwesomeIconView glyphName="REFRESH" onMouseClicked="#update" size="30" />
+               </children>
+            </HBox>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
