@@ -18,10 +18,10 @@ public class MainFx extends Application {
     public void start(Stage primaryStage) throws IOException {
       //FXMLLoader loader =new FXMLLoader(getClass().getResource("/CodePromoAfficher.fxml"));
         //FXMLLoader loader =new FXMLLoader(getClass().getResource("/AjouterOffre.fxml"));
-        // FXMLLoader loader =new FXMLLoader(getClass().getResource("/CodePromoAjouter.fxml"));
-         FXMLLoader loader =new FXMLLoader(getClass().getResource("/AfficherOffre.fxml"));
+         FXMLLoader loader =new FXMLLoader(getClass().getResource("/CodePromoAjouter.fxml"));
+         //FXMLLoader loader =new FXMLLoader(getClass().getResource("/AfficherOffre.fxml"));
         // FXMLLoader loader =new FXMLLoader(getClass().getResource("/FrontPanierCommande.fxml"));
-       //  FXMLLoader loader =new FXMLLoader(getClass().getResource("/FrontProduitOffre.fxml"));
+        // FXMLLoader loader =new FXMLLoader(getClass().getResource("/FrontProduitOffre.fxml"));
 
         Parent root = loader.load();
         Scene scene=new Scene(root);

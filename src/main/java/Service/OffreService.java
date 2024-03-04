@@ -104,11 +104,12 @@ public class OffreService implements IServiceOffre<Offre> {
              ResultSet rs = statement.executeQuery(query)) {
             while (rs.next()) {
                 Offre offre = new Offre();
-                offre.setIdOffre(rs.getInt("idOffre"));
+                offre.setReduction(rs.getInt("reduction"));
                 offre.setNomOffre(rs.getString("nomOffre"));
                 offre.setDescriptionOffre(rs.getString("descriptionOffre"));
                 offre.setDateDebut(rs.getDate("dateDebut"));
                 offre.setDateFin(rs.getDate("dateFin"));
+                offre.setImageOffre(rs.getString("imageOffre")); // Récupérer l'image de l'offre depuis la base de données
                 offre.setProduits(getProduitsOfOffre(offre.getIdOffre())); // Set associated products
                 offres.add(offre);
             }
@@ -161,6 +162,37 @@ public class OffreService implements IServiceOffre<Offre> {
         } catch (SQLException e) {
             throw new RuntimeException("Erreur lors de la mise à jour de l'offre : " + e.getMessage());
         }
+    }
+
+    public List<Offre> getAllOffres() {
+        List<Offre> offres = new ArrayList<>();
+
+        // Requête SQL pour sélectionner toutes les offres
+        String query = "SELECT * FROM offre";
+
+        try (PreparedStatement statement = conn.prepareStatement(query)) {
+            // Exécution de la requête
+            ResultSet resultSet = statement.executeQuery();
+
+            // Parcourir le résultat de la requête et créer des objets Offre correspondants
+            while (resultSet.next()) {
+                Offre offre = new Offre();
+                offre.setIdOffre(resultSet.getInt("idOffre"));
+                offre.setDescriptionOffre(resultSet.getString("descriptionOffre"));
+                offre.setNomOffre(resultSet.getString("nomOffre"));
+                offre.setDateDebut(resultSet.getDate("dateDebut"));
+                offre.setDateFin(resultSet.getDate("dateFin"));
+                offre.setImageOffre(resultSet.getString("imageOffre"));
+                offre.setReduction(resultSet.getInt("reduction"));
+
+                // Ajouter l'offre à la liste
+                offres.add(offre);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return offres;
     }
 
     private List<Produit> getProduitsOfOffre(int idOffre) {

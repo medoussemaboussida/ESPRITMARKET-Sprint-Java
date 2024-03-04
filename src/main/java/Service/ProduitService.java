@@ -200,6 +200,44 @@ public class ProduitService  implements IServiceProduit<Produit> {
         }
         return null; // Retourne null si aucune catégorie trouvée pour l'ID donné
     }
+
+    public int getReduction(int idProduit) {
+        String query = "SELECT reduction FROM offre o INNER JOIN offreProduit op ON o.idOffre = op.idOffre WHERE op.idProduit = ?";
+        try (PreparedStatement pst = conn.prepareStatement(query)) {
+            pst.setInt(1, idProduit);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("reduction");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la récupération de la réduction du produit : " + e.getMessage());
+        }
+        return 0; // Si aucune réduction n'est trouvée pour le produit, retourne 0
+    }
+
+    public ObservableList<Produit> readProduitByCategorieAndReduction(int categorieId, float reductionMin) {
+        String requete = "SELECT * FROM produit p JOIN categorie c ON p.categorie_id = c.idCategorie WHERE c.idCategorie = ? AND ps.getReduction(p.idProduit()) >= ?";
+        ObservableList<Produit> list = FXCollections.observableArrayList();
+
+        try {
+            PreparedStatement preparedStatement = conn.prepareStatement(requete);
+            preparedStatement.setInt(1, categorieId);
+            preparedStatement.setFloat(2, reductionMin);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                Categorie c = new Categorie(rs.getInt("c.idCategorie"), rs.getString("c.nomCategorie"), rs.getString("c.imageCategorie"));
+                Produit prod = new Produit(rs.getInt(1), rs.getString(3), rs.getInt(4), rs.getFloat(5), c, rs.getString(6));
+                list.add(prod);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+
 }
 
 

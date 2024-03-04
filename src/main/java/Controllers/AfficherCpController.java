@@ -2,6 +2,7 @@ package Controllers;
 
 import Service.CodePromoService;
 import entities.CodePromo;
+import entities.Offre;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -10,10 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -21,13 +19,16 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import javax.sql.ConnectionPoolDataSource;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class AfficherCpController implements Initializable {
 
@@ -53,10 +54,25 @@ public class AfficherCpController implements Initializable {
 
     @FXML
     private TableColumn<CodePromo, Integer> rReduction;
+    @FXML
+    private TextField searchField;
+
+    @FXML
+    private Button triReduction;
+
+    @FXML
+    private Button trieDate;
+
+    private ObservableList<CodePromo> originalCodePromoList;
+    private ObservableList<CodePromo> codePromosList;
+
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
+
+
+
             // Récupérer les données des code promo depuis le service
             CodePromoService codePromoService = new CodePromoService();
             List<CodePromo> codePromos = codePromoService.readCodePromo();
@@ -64,6 +80,9 @@ public class AfficherCpController implements Initializable {
 
             // Créer une ObservableList à partir des code promos récupérées
             ObservableList<CodePromo> codePromoList = FXCollections.observableArrayList(codePromos);
+
+            originalCodePromoList = FXCollections.observableArrayList(codePromos);
+            codePromosList = FXCollections.observableArrayList(codePromos);
 
             // Associer les propriétés des objets code promos aux colonnes de la TableView
             rId.setCellValueFactory(new PropertyValueFactory<>("idCode"));
@@ -74,6 +93,14 @@ public class AfficherCpController implements Initializable {
 
             // Définir les données de la TableView
             rList.setItems(codePromoList);
+
+            // Définir les données de la TableView
+            rList.setItems(codePromosList);
+            searchField.setOnAction(event -> search()); // Appelle la méthode search() lorsque "Entrée" est pressé
+            searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                search(); // Appelle la méthode search() chaque fois que le texte change
+            });
+
         } catch (Exception e) {
             // Gérer les exceptions
             Logger.getLogger(AfficherCpController.class.getName()).log(Level.SEVERE, null, e);
@@ -201,6 +228,31 @@ public class AfficherCpController implements Initializable {
                     Logger.getLogger(AfficherOffreController.class.getName()).log(Level.SEVERE, null, e);
                 }
             }
+    @FXML
+    void search() {
+        String keyword = searchField.getText().trim().toLowerCase();
+        List<CodePromo> filteredList = originalCodePromoList.stream()
+                .filter(codePromo -> codePromo.getCode().toLowerCase().contains(keyword))
+                .collect(Collectors.toList());
+        codePromosList.setAll(filteredList); // Mettez à jour codePromosList avec la nouvelle liste filtrée
+    }
+    @FXML
+    void trierParReduction(MouseEvent event) {
+        // Tri de la liste des offres par réduction
+        codePromosList.sort(Comparator.comparingInt(CodePromo::getReductionAssocie));
+
+        // Mettre à jour la TableView avec la liste triée
+        rList.setItems(codePromosList);
+    }
+
+    @FXML
+    void trierParDate(MouseEvent event) {
+        // Tri de la liste des offres par date
+        codePromosList.sort(Comparator.comparing(CodePromo::getDateDebut));
+
+        // Mettre à jour la TableView avec la liste triée
+        rList.setItems(codePromosList);
+    }
 
 
 }

@@ -93,6 +93,8 @@ public class Produit {
                 ", imageProduit='" + imageProduit + '\'' +
                 '}';
     }
+
+
 }
 
 

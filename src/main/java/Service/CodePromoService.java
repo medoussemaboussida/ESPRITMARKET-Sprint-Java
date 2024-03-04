@@ -1,11 +1,18 @@
 package Service;
 
 import entities.CodePromo;
+import jakarta.mail.Authenticator;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import utils.DataSource;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class CodePromoService implements IServiceCodePromo <CodePromo>  {
 
@@ -15,6 +22,21 @@ public class CodePromoService implements IServiceCodePromo <CodePromo>  {
     public CodePromoService()
     {
         conn= DataSource.getInstance().getCnx();
+    }
+
+    public List<String> getAllUserEmails() throws SQLException {
+        List<String> emails = new ArrayList<>();
+        String query = "SELECT emailUser FROM Utilisateur"; // Assurez-vous que le nom de la colonne et de la table sont corrects
+        try (PreparedStatement pst = conn.prepareStatement(query)) {
+            ResultSet rs = pst.executeQuery();
+            while (rs.next()) {
+                emails.add(rs.getString("emailUser"));
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des e-mails des utilisateurs: " + e.getMessage());
+            throw e;
+        }
+        return emails;
     }
 
     @Override
@@ -38,10 +60,57 @@ public class CodePromoService implements IServiceCodePromo <CodePromo>  {
 
             pst.executeUpdate();
             System.out.println("Code promo ajouté!");
+            //String to = getUserEmail(reponse.getId_reclamation()); // Get user email from database
+            // Envoyer l'email à tous les utilisateurs
+            List<String> userEmails = getAllUserEmails(); // Récupérer les emails des utilisateurs
+            for (String email : userEmails) {
+                String subject = "Nouveaux Code Promo Ajouter";
+                String body = "Bonjour,\n\nUn Nouveaux Code Promo Ajouter Dans notre épicerie Le code est : " + c.getCode() + " .\n\nCordialement,\n de Esprit Market";
+                sendEmail(email, subject, body); // Envoyer l'email
+            }
+
         } catch (SQLException e)
         {
             throw new RuntimeException(e);
         }
+
+    }
+    private void sendEmail(String to, String subject, String body) {
+        String username = "ghassenbenmahmoud3@gmail.com";
+        String password = "ieyhxlffpvcwkeil";
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com"); // Change this to your SMTP server host(yahoo...)
+        props.put("mail.smtp.port", "587"); // Change this to your SMTP server port
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+
+        Session session;
+        session = Session.getInstance(props,new Authenticator() {
+            protected jakarta.mail.PasswordAuthentication getPasswordAuthentication() {
+                return new jakarta.mail.PasswordAuthentication(username, password);
+            }
+        });
+
+
+        try {
+            // Create a MimeMessage object
+
+            // Create a new message
+            MimeMessage message = new MimeMessage(session);
+            // Set the From, To, Subject, and Text fields of the message
+            message.setFrom(new InternetAddress(username));
+            message.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(to));
+            message.setSubject(subject);
+            message.setText(body);
+
+            // Send the message using Transport.send
+            Transport.send(message);
+
+            System.out.println("Email sent successfully");
+        } catch (MessagingException ex) {
+            System.err.println("Failed to send email: " + ex.getMessage());
+        }
+
     }
 
 

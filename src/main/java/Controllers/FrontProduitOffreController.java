@@ -14,6 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -35,9 +36,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+
 import javafx.scene.Node;
 import javafx.scene.control.TableView;
 import javafx.fxml.FXMLLoader;
@@ -45,6 +52,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import jfxtras.scene.control.agenda.Agenda;
+
 public class FrontProduitOffreController implements Initializable {
     private final ProduitService ps = new ProduitService();
     String filepath = null, filename = null, fn = null;
@@ -62,14 +71,20 @@ public class FrontProduitOffreController implements Initializable {
         this.idProduit = id;
     }
 
+    private ObservableList<Produit> produitList;
 
-
+    private ObservableList<Produit> originalProduitList;
+    @FXML
+    private TextField searchField;
     @FXML
     private ComboBox<Categorie> ComboProduitC;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        searchField.setOnAction(event -> search()); // Appelle la méthode search() lorsque "Entrée" est pressé
+        // Appelle la méthode search() chaque fois que le texte change
 
+        produitList = FXCollections.observableArrayList();
 
         int idUtilisateur = 1; // Remplacez cela par l'ID réel de l'utilisateur connecté
         UtilisateurService utilisateurService = new UtilisateurService();
@@ -96,6 +111,7 @@ public class FrontProduitOffreController implements Initializable {
         ComboProduitC.setOnAction(this::filtrerProduit);
         // showProduitFront();
         showProduitFrontp();
+
 
     }
 
@@ -184,6 +200,8 @@ public class FrontProduitOffreController implements Initializable {
         OffreProduitService offreProduitService = new OffreProduitService();
         ObservableList<Produit> produitsOffre = offreProduitService.getAllProduitsOffre();
 
+        originalProduitList = FXCollections.observableArrayList(produitsOffre);
+
         // Add each product to ListView
         for (int i = 0; i < produitsOffre.size(); i += 4) {
             GridPane gridPane = createProductGridPane(
@@ -221,8 +239,10 @@ public class FrontProduitOffreController implements Initializable {
     private VBox createProductBox(Produit produit) {
         VBox vbox = new VBox();
         float prix = produit.getPrix();
+        float prixReduction = (prix * (100 - ps.getReduction(produit.getIdProduit()))) / 100;
         DecimalFormat decimalFormat = new DecimalFormat("#,##0.000"); // Format avec trois chiffres après la virgule
         String prixFormate = decimalFormat.format(prix);
+        String prixReductionFormate = decimalFormat.format(prixReduction);
 
         // Create and set up UI components for each product
         javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView();
@@ -230,15 +250,18 @@ public class FrontProduitOffreController implements Initializable {
 
         Label nameLabel = new Label(produit.getNomProduit());
         Label priceLabel = new Label("Prix: " + prixFormate);
-        Label quantityLabel = new Label("Quantité en stock: " + produit.getQuantite());
+        //Label quantityLabel = new Label("Quantité en stock: " + produit.getQuantite());
+        Label reductionLabel = new Label("Réduction: " + ps.getReduction(produit.getIdProduit()) + "%");
+        Label priceReductionLabel = new Label("Prix aprés reduction: " + prixReductionFormate);
+
         Button addButton = new Button("+");
         addButton.getStyleClass().add("addbuttonPanier");
         nameLabel.getStyleClass().add("product-label");
         priceLabel.getStyleClass().add("product-label");
-        quantityLabel.getStyleClass().add("product-label");
-
+        reductionLabel.getStyleClass().add("product-label");
+        priceReductionLabel.getStyleClass().add("product-label");
         // Add components to VBox
-        vbox.getChildren().addAll(imageView, nameLabel, priceLabel, quantityLabel, addButton);
+        vbox.getChildren().addAll(imageView, nameLabel, priceLabel, priceReductionLabel, addButton);
 
         // Set spacing and alignment as needed
         vbox.setSpacing(11);
@@ -290,6 +313,71 @@ public class FrontProduitOffreController implements Initializable {
             imageView.setImage(null);
         }
     }
+    @FXML
+    void search() {
+        String keyword = searchField.getText().trim().toLowerCase();
+        List<Produit> filteredList = originalProduitList.stream()
+                .filter(produit -> produit.getNomProduit().toLowerCase().contains(keyword))
+                .collect(Collectors.toList());
+
+        // Mettre à jour la liste des produits affichés dans la vue
+        listView.getItems().clear();
+        for (int i = 0; i < filteredList.size(); i += 4) {
+            GridPane gridPane = createProductGridPane(
+                    filteredList.get(i),
+                    (i + 1 < filteredList.size()) ? filteredList.get(i + 1) : null,
+                    (i + 2 < filteredList.size()) ? filteredList.get(i + 2) : null,
+                    (i + 3 < filteredList.size()) ? filteredList.get(i + 3) : null
+            );
+            listView.getItems().add(gridPane);
+            //css
+            gridPane.getStyleClass().add("grid-pane-product");
+        }
+    }
+
+
+    @FXML
+    void showCallender(ActionEvent event) {
+        Agenda agenda = new Agenda();
+
+        loadPromosIntoAgenda(agenda);
+
+        Stage calendarStage = new Stage();
+        calendarStage.setScene(new Scene(agenda, 800, 600));
+        calendarStage.setTitle("Calendrier des Offres Pour Cette Semaines");
+        calendarStage.show();
+    }
+
+
+    OffreService offreService = new OffreService();
+
+    private void loadPromosIntoAgenda(Agenda agenda) {
+        // Fetch offres from your data source
+        List<Offre> offres = offreService.getAllOffres();
+
+        // Add offres to the agenda
+        for (Offre offre : offres) {
+
+            // Convert java.sql.Date to java.util.Date
+            Date dateDebut = new Date(offre.getDateDebut().getTime());
+            Date dateFin = new Date(offre.getDateFin().getTime());
+
+            // Convertir les dates en LocalDateTime avec l'heure fixée à minuit
+            LocalDateTime startDateTime = dateDebut.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay();
+            LocalDateTime endDateTime = dateFin.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().atStartOfDay();
+
+            // Créer un rendez-vous avec la date de début et de fin
+            Agenda.Appointment appointment = new Agenda.AppointmentImplLocal()
+                    .withStartLocalDateTime(startDateTime)
+                    .withEndLocalDateTime(endDateTime)
+                    .withSummary(offre.getNomOffre());
+
+            // Ajouter le rendez-vous à l'agenda
+            agenda.appointments().add(appointment);
+        }
+    }
+
+
 
 }
 

@@ -1,6 +1,7 @@
 package Controllers;
 
 import Service.OffreService;
+import Service.PDFExporterService;
 import entities.Offre;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,13 +17,16 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Date;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -43,25 +47,17 @@ public class AfficherOffreController implements Initializable {
     @FXML
     private TableColumn<Offre, String> rDesc;
     @FXML
-    private TableColumn<Offre, Integer> rId;
+    private TableColumn<Offre, Integer> rReduction;
     @FXML
     private TableColumn<Offre, Date> rFin;
     @FXML
     private TextField searchField;
+
     @FXML
-    private Button triTitre;
+    private Button triReduction;
 
     @FXML
     private Button trieDate;
-    @FXML
-    void search(MouseEvent event) {
-        String keyword = searchField.getText().trim().toLowerCase();
-        List<Offre> filteredList = originalOffreList.stream()
-                .filter(offre -> offre.getNomOffre().toLowerCase().contains(keyword))
-                .collect(Collectors.toList());
-        offreList.setAll(filteredList); // Mettez à jour offreList avec la nouvelle liste filtrée
-    }
-
 
     private ObservableList<Offre> offreList;
 
@@ -70,7 +66,6 @@ public class AfficherOffreController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
-
             // Récupérer les données des offres depuis le service
             OffreService offreService = new OffreService();
             List<Offre> offres = offreService.readOffre();
@@ -79,12 +74,11 @@ public class AfficherOffreController implements Initializable {
             offreList = FXCollections.observableArrayList();
             originalOffreList = FXCollections.observableArrayList(offres); // Initialisez la liste originale
 
-
             // Créer une ObservableList à partir des offres récupérées
-            ObservableList<Offre> offreList = FXCollections.observableArrayList(offres);
+            offreList.addAll(offres);
 
             // Associer les propriétés des objets Offre aux colonnes de la TableView
-            rId.setCellValueFactory(new PropertyValueFactory<>("idOffre"));
+            rReduction.setCellValueFactory(new PropertyValueFactory<>("reduction"));
             rNom.setCellValueFactory(new PropertyValueFactory<>("nomOffre"));
             rDesc.setCellValueFactory(new PropertyValueFactory<>("descriptionOffre"));
             rDebut.setCellValueFactory(new PropertyValueFactory<>("dateDebut"));
@@ -92,6 +86,10 @@ public class AfficherOffreController implements Initializable {
 
             // Définir les données de la TableView
             rList.setItems(offreList);
+            searchField.setOnAction(event -> search()); // Appelle la méthode search() lorsque "Entrée" est pressé
+            searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                search(); // Appelle la méthode search() chaque fois que le texte change
+            });
         } catch (Exception e) {
             // Gérer les exceptions
             Logger.getLogger(AfficherOffreController.class.getName()).log(Level.SEVERE, null, e);
@@ -239,7 +237,63 @@ public class AfficherOffreController implements Initializable {
             // Gérer l'exception
         }
     }
+    @FXML
+    void search() {
+        String keyword = searchField.getText().trim().toLowerCase();
+        List<Offre> filteredList = originalOffreList.stream()
+                .filter(offre -> offre.getNomOffre().toLowerCase().contains(keyword))
+                .collect(Collectors.toList());
+        offreList.setAll(filteredList); // Mettez à jour offreList avec la nouvelle liste filtrée
+    }
+    @FXML
+    void trierParReduction(MouseEvent event) {
+        // Tri de la liste des offres par réduction
+        offreList.sort(Comparator.comparingInt(Offre::getReduction));
 
+        // Mettre à jour la TableView avec la liste triée
+        rList.setItems(offreList);
+    }
 
+    @FXML
+    void trierParDate(MouseEvent event) {
+        // Tri de la liste des offres par date
+        offreList.sort(Comparator.comparing(Offre::getDateDebut));
+
+        // Mettre à jour la TableView avec la liste triée
+        rList.setItems(offreList);
+    }
+
+    private PDFExporterService pdfExporterService;
+    private void afficherAlerte(String titre, String contenu) {
+        Alert alerte = new Alert(Alert.AlertType.INFORMATION);
+        alerte.setTitle(titre);
+        alerte.setHeaderText(null);
+        alerte.setContentText(contenu);
+        alerte.showAndWait();
+    }
+    @FXML
+    private void exportOffreToPDF() {
+        // Récupérer la liste des offres depuis le service
+        OffreService offreService = new OffreService();
+        List<Offre> offres = offreService.getAllOffres();
+
+        // Utiliser le service PDFExporterService pour exporter les offres en PDF
+        PDFExporterService pdfExporterService = new PDFExporterService();
+        try {
+            boolean success = pdfExporterService.exportToPDF(offres, "offres.pdf");
+
+            // Afficher une alerte en fonction du résultat de l'exportation
+
+                afficherAlerte("Succès", "Les offres ont été exportées avec succès en PDF.");
+
+        } catch (IOException e) {
+            // Gérer toute exception d'E/S qui pourrait survenir lors de l'exportation en PDF
+            e.printStackTrace();
+            afficherAlerte("Erreur", "Une erreur est survenue lors de l'exportation en PDF.");
+        }
+    }
 
 }
+
+
+
