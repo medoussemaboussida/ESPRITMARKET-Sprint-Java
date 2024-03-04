@@ -558,7 +558,7 @@ public class AjouterProduitController implements Initializable {
                     return true;
                 }
                 String lowerCaseFilter = newValue.toLowerCase();
-                if (String.valueOf(t.getNomProduit()).toLowerCase().contains(lowerCaseFilter)) {
+                if (String.valueOf(t.getNomProduit()).toLowerCase().startsWith(lowerCaseFilter)) {
                     return true;
                 } else {
                     return false;

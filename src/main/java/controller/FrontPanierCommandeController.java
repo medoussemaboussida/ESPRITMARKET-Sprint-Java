@@ -1,5 +1,8 @@
 package controller;
 import entities.*;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -17,6 +20,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class FrontPanierCommandeController implements Initializable{
@@ -43,7 +47,7 @@ public class FrontPanierCommandeController implements Initializable{
     ObservableList<PanierProduit> list1 = FXCollections.observableArrayList();
     @FXML
     private Button commandeButton;
-    int idUtilisateur = 1; //  l'utilisateur connecté
+    int idUtilisateur = 2; //  l'utilisateur connecté
     UtilisateurService utilisateurService = new UtilisateurService();
     Utilisateur utilisateur = utilisateurService.getUserById(idUtilisateur);
     //selectionner la panier de user qui est connecté
@@ -115,11 +119,51 @@ showProduitDuPanierUser();
     public void passerCommande(ActionEvent actionEvent) throws SQLException {
 
         commandeService.ajouterCommande(panier);
+        String subject = "Confirmation Commande ESPRIT MARKET";
+        String body = "Cher Client  "+utilisateur.getNomUser()+", Votre commande a été traitée avec succès et est en cours de préparation.";
+        sendEmail(utilisateur.getEmailUser(), subject, body); // Envoyer l'email
         Alert a = new Alert(Alert.AlertType.WARNING);
         a.setTitle("Succes");
-        a.setContentText("Commande passée avec succées");
+        a.setContentText("Commande passée avec succées ! Check your Email");
+
         a.showAndWait();
     }
 
+    private void sendEmail(String to, String subject, String body) {
+        String username = "medoussemaboussida@gmail.com";
+        String password = "wmgq nkfy btsz ubdf";
+        Properties props = new Properties();
+        props.put("mail.smtp.host", "smtp.gmail.com"); // Change this to your SMTP server host(yahoo...)
+        props.put("mail.smtp.port", "587"); // Change this to your SMTP server port
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
 
+        jakarta.mail.Session session;
+        session = jakarta.mail.Session.getInstance(props,new jakarta.mail.Authenticator() {
+            protected jakarta.mail.PasswordAuthentication getPasswordAuthentication() {
+                return new jakarta.mail.PasswordAuthentication(username, password);
+            }
+        });
+
+
+        try {
+            // Create a MimeMessage object
+
+            // Create a new message
+            jakarta.mail.internet.MimeMessage message = new MimeMessage(session);
+            // Set the From, To, Subject, and Text fields of the message
+            message.setFrom(new jakarta.mail.internet.InternetAddress(username));
+            message.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(to));
+            message.setSubject(subject);
+            message.setText(body);
+
+            // Send the message using Transport.send
+            jakarta.mail.Transport.send(message);
+
+            System.out.println("Email sent successfully");
+        } catch (MessagingException ex) {
+            System.err.println("Failed to send email: " + ex.getMessage());
+        }
+
+    }
 }

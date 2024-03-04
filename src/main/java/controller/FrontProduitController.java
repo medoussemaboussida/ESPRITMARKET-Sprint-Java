@@ -4,6 +4,8 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import entities.*;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
@@ -18,11 +20,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
@@ -53,6 +57,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 public class FrontProduitController implements Initializable {
     private final ProduitService ps = new ProduitService();
+    @FXML
+    public TextField searchProductFront;
+
     String filepath = null, filename = null, fn = null;
     String uploads = "C:/xampp/htdocs/";
     FileChooser fc = new FileChooser();
@@ -68,24 +75,6 @@ public class FrontProduitController implements Initializable {
         this.idProduit = id;
     }
 
-   /* @FXML
-    private TableColumn<Produit, HBox> panierTab;
-    @FXML
-    private TableColumn<PanierProduit, HBox> tabDeletePanierr;
-
-    @FXML
-    private TableColumn<Produit, Integer> nomPrixTab;
-
-    @FXML
-    private TableColumn<Produit, String> imageProduitTab;
-
-    @FXML
-    private TableColumn<Produit, Integer> nomQuantiteTab;
-
-    @FXML
-    private TableView<Produit> tabProduitFront;
-    */
-
     @FXML
     private ComboBox<Categorie> ComboProduitC;
 
@@ -93,7 +82,7 @@ public class FrontProduitController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 
 
-        int idUtilisateur = 1; // Remplacez cela par l'ID réel de l'utilisateur connecté
+        int idUtilisateur = 2; // Remplacez cela par l'ID réel de l'utilisateur connecté
         UtilisateurService utilisateurService = new UtilisateurService();
         Utilisateur utilisateur = utilisateurService.getUserById(idUtilisateur);
         // Vérifiez si l'utilisateur est récupéré avec succès
@@ -121,36 +110,6 @@ public class FrontProduitController implements Initializable {
 
     }
 
-/*
-    public void showProduitFront() {
-        imageProduitTab.setCellFactory(column -> new TableCell<Produit, String>() {
-            private final javafx.scene.image.ImageView imageView = new ImageView();
-
-            @Override
-            protected void updateItem(String imagePath, boolean empty) {
-                super.updateItem(imagePath, empty);
-
-                if (empty || imagePath == null) {
-                    setGraphic(null);
-                } else {
-                    // Charger et afficher l'image
-                    javafx.scene.image.Image image = new Image("file:///" + uploads + imagePath);
-                    imageView.setImage(image);
-                    imageView.setFitWidth(120); // Réglez la largeur de l'image selon vos besoins
-                    imageView.setFitHeight(100); // Réglez la hauteur de l'image selon vos besoins
-                    setGraphic(imageView);
-                }
-            }
-        });
-        imageProduitTab.setCellValueFactory(new PropertyValueFactory<>("imageProduit"));
-        nomQuantiteTab.setCellValueFactory(new PropertyValueFactory<>("quantite"));
-        nomPrixTab.setCellValueFactory(new PropertyValueFactory<>("prix"));
-
-        list = ps.readProduit();
-        tabProduitFront.setItems(list);
-
-    }
-*/
 
     public void setCombo() {
         CategorieService tabC = new CategorieService();
@@ -402,6 +361,50 @@ qrCodeButton.setOnAction(event ->
         System.out.println("Matrice convertie en image avec succès");
 
         return writableImage;
+    }
+
+
+
+  @FXML
+    public void searchProduct(KeyEvent keyEvent) {
+      // Récupérer le texte de recherche
+      String searchTerm = searchProductFront.getText().toLowerCase();
+
+      // Effacer la ListView
+      listView.getItems().clear();
+
+      // Traiter le produit recherché à part
+      Produit searchedProduct = null;
+      for (Produit produit : list) {
+          if (produit.getNomProduit().toLowerCase().startsWith(searchTerm)) {
+              searchedProduct = produit;
+              break;  // Sortir de la boucle dès qu'on a trouvé le produit recherché
+          }
+      }
+
+      // Afficher le produit recherché s'il existe
+      if (searchedProduct != null) {
+          GridPane searchedProductGridPane = createProductGridPane(searchedProduct, null, null, null);
+          listView.getItems().add(searchedProductGridPane);
+          // css
+          searchedProductGridPane.getStyleClass().add("grid-pane-product");
+      }
+
+      // Filtrer et ajouter les autres produits correspondants au texte de recherche
+      for (Produit produit : list) {
+          // Ignorer le produit recherché car il a déjà été traité
+          if (produit.equals(searchedProduct)) {
+              continue;
+          }
+
+          if (produit.getNomProduit().toLowerCase().contains(searchTerm)) {
+              // Ajouter le produit à la ListView
+              GridPane gridPane = createProductGridPane(produit, null, null, null);
+              listView.getItems().add(gridPane);
+              // css
+              gridPane.getStyleClass().add("grid-pane-product");
+          }
+      }
     }
 }
 
