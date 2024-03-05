@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="911.0" prefWidth="1313.0" style="-fx-background-color: #FFDAB9;" stylesheets="@fullpackstyling.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.demo4.AfficherparticipantController">
+   <children>
+      <ImageView fitHeight="911.0" fitWidth="1321.0">
+
+      </ImageView>
+      <TableView fx:id="tableparticipant" layoutX="76.0" layoutY="551.0" onMouseClicked="#choisirparticipant" prefHeight="318.0" prefWidth="680.0">
+        <columns>
+          <TableColumn fx:id="iduserTv" prefWidth="191.0" text="id utilisateur" />
+          <TableColumn fx:id="idabonnTv" prefWidth="238.0" text="id Evenement" />
+            <TableColumn fx:id="datePartTv" prefWidth="233.0" text="date participant" />
+        </columns>
+      </TableView>
+      <Button fx:id="modifierPartBtn" layoutX="1039.0" layoutY="704.0" mnemonicParsing="false" onAction="#modifierparticipant" prefHeight="59.0" prefWidth="201.0" style="-fx-background-radius: 30;" text="modifier participant" textFill="#f05c00" />
+      <Button fx:id="supprimerPartBtn" layoutX="1039.0" layoutY="801.0" mnemonicParsing="false" onAction="#supprimerparticipant" prefHeight="59.0" prefWidth="201.0" style="-fx-background-radius: 30;" text="supprimer participant" textFill="#ff4400">
+         <font>
+            <Font size="11.0" />
+         </font></Button>
+      <TextField fx:id="idread" layoutX="778.0" layoutY="551.0" prefHeight="45.0" prefWidth="214.0" promptText="Id Participant" />
+      <TextField fx:id="iduserField" layoutX="778.0" layoutY="621.0" prefHeight="45.0" prefWidth="214.0" promptText="Id Utilisateur" />
+      <TextField fx:id="idabonnField" layoutX="778.0" layoutY="688.0" prefHeight="45.0" prefWidth="214.0" promptText="Id Evenement" />
+      <TextField fx:id="datepartField1" layoutX="778.0" layoutY="756.0" prefHeight="45.0" prefWidth="214.0" promptText="Date participant" />
+      <DatePicker fx:id="datepartField" layoutX="778.0" layoutY="823.0" prefHeight="45.0" prefWidth="221.0" promptText="entrer le date" />
+      <Label layoutX="363.0" layoutY="44.0" prefHeight="60.0" prefWidth="424.0" text="AFFICHER Participant">
+         <font>
+            <Font name="Calisto MT Bold" size="28.0" />
+         </font>
+         <textFill>
+            <LinearGradient endX="1.0" endY="1.0" startY="1.0">
+               <stops>
+                  <Stop color="#8a8a8ae8" />
+                  <Stop color="#ff1600" offset="1.0" />
+               </stops>
+            </LinearGradient>
+         </textFill>
+      </Label>
+      <Button fx:id="ajouter" layoutX="25.0" layoutY="75.0" mnemonicParsing="false" onAction="#ajouterevenement" prefHeight="59.0" prefWidth="201.0" style="-fx-background-radius: 30;" text="ajouter evenement" textFill="#ff4400">
+         <font>
+            <Font size="11.0" />
+         </font>
+      </Button>
+      <TextField fx:id="chercherabonnField" layoutX="1031.0" layoutY="574.0" nodeOrientation="LEFT_TO_RIGHT" onKeyPressed="#rechercherevenement" prefHeight="57.0" prefWidth="246.0" promptText="donner le nom d'evenement" style="-fx-background-radius: 30;" />
+   </children>
+</AnchorPane>
